@@ -2,8 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState, useCallback } 
 import {
   collection, doc, onSnapshot, addDoc, setDoc, updateDoc, deleteDoc, query,
 } from 'firebase/firestore';
-import { ref, uploadString, getDownloadURL, deleteObject } from 'firebase/storage';
-import { db, storage, isFirebaseConfigured, GROUP_ID } from '../lib/firebase';
+import { db, isFirebaseConfigured, GROUP_ID } from '../lib/firebase';
 import { CLUB_ORDER, DEFAULT_MY_CLUBS, SEED_PLAYERS, SEED_COURSE, seedRounds, seedRange } from '../lib/seed';
 import { finalizeRound, coursePar } from '../lib/scoring';
 
@@ -80,17 +79,11 @@ export function DataProvider({ children }) {
     else setLocal((s) => ({ ...s, players: [...s.players, { id, ...player }] }));
   }, []);
 
+  // dataUrl is expected pre-resized/compressed (see lib/image.js) so it fits
+  // comfortably inside a Firestore document — no Storage/billing plan needed.
   const setPlayerPhoto = useCallback(async (playerId, dataUrl) => {
     if (isFirebaseConfigured) {
-      if (dataUrl) {
-        const storageRef = ref(storage, `groups/${GROUP_ID}/photos/${playerId}.jpg`);
-        await uploadString(storageRef, dataUrl, 'data_url');
-        const url = await getDownloadURL(storageRef);
-        await updateDoc(doc(db, 'groups', GROUP_ID, 'players', playerId), { customPhotoUrl: url });
-      } else {
-        try { await deleteObject(ref(storage, `groups/${GROUP_ID}/photos/${playerId}.jpg`)); } catch {}
-        await updateDoc(doc(db, 'groups', GROUP_ID, 'players', playerId), { customPhotoUrl: null });
-      }
+      await updateDoc(doc(db, 'groups', GROUP_ID, 'players', playerId), { customPhotoUrl: dataUrl || null });
       return;
     }
     setLocal((s) => ({

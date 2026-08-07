@@ -5,6 +5,7 @@ import Avatar from '../components/Avatar';
 import Card from '../components/Card';
 import { useData } from '../contexts/DataContext';
 import { avatarSrc } from '../lib/avatar';
+import { resizeImageFile } from '../lib/image';
 import { playerStats, parLabel, scoreColor, coursePar, clubAverage } from '../lib/scoring';
 
 function StatCard({ label, value }) {
@@ -48,13 +49,12 @@ export default function Profile() {
   const orderedClubs = CLUB_ORDER.filter((c) => clubsPresent.includes(c));
 
   const onPickFile = () => { setPhotoMenuOpen(false); fileInputRef.current?.click(); };
-  const onFileChange = (ev) => {
+  const onFileChange = async (ev) => {
     const file = ev.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => setPlayerPhoto(playerId, reader.result);
-    reader.readAsDataURL(file);
     ev.target.value = '';
+    if (!file) return;
+    const dataUrl = await resizeImageFile(file);
+    setPlayerPhoto(playerId, dataUrl);
   };
   const clearPhoto = () => { setPlayerPhoto(playerId, null); setPhotoMenuOpen(false); };
 
