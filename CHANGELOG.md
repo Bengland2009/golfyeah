@@ -2,6 +2,14 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.2.0 — 2026-08-07
+
+- Remplace le déploiement Firebase Hosting/GitHub Actions (nécessitait une
+  clé de service manuelle) par **Vercel** : connexion GitHub en un clic
+  dans leur interface, redéploiement automatique à chaque push, aucun
+  secret à gérer.
+- `vercel.json` ajouté pour le routage SPA (React Router).
+
 ## v1.1.0 — 2026-08-07
 
 - Déploiement automatique sur Firebase Hosting à chaque push (GitHub Actions).
