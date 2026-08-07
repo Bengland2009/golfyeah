@@ -2,6 +2,20 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.3.0 — 2026-08-07
+
+- Auth Google : repli automatique sur `signInWithRedirect` si le popup est
+  bloqué, et les erreurs de connexion sont maintenant affichées à l'écran
+  (au lieu d'échouer silencieusement) — inclut la capture du résultat d'un
+  retour de redirection après rechargement de page.
+- Chargement en 3 paliers (SDK/session connue → données Firestore prêtes) :
+  les abonnements Firestore n'écoutent qu'une fois l'utilisateur authentifié
+  (évite les erreurs de permission silencieuses avant connexion), et l'app
+  attend que toutes les collections aient reçu leur premier instantané avant
+  d'afficher l'accueil — plus de flash de classement/parties vides.
+- Erreur de synchronisation (ex. compte pas dans `memberEmails`) affichée
+  clairement avec option de déconnexion, plutôt qu'un écran vide silencieux.
+
 ## v1.2.0 — 2026-08-07
 
 - Remplace le déploiement Firebase Hosting/GitHub Actions (nécessitait une

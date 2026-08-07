@@ -1,8 +1,11 @@
 import Button from '../components/Button';
 import { useAuth } from '../contexts/AuthContext';
+import { authErrorMessage } from '../lib/authErrors';
 
 export default function Login() {
-  const { login, isFirebaseConfigured } = useAuth();
+  const { login, isFirebaseConfigured, authError } = useAuth();
+  const errorMessage = authErrorMessage(authError);
+
   return (
     <div
       style={{
@@ -24,6 +27,11 @@ export default function Login() {
       </div>
       <div style={{ flex: 1 }} />
       <div style={{ width: '100%', maxWidth: 320, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {errorMessage && (
+          <div style={{ font: 'var(--text-small)', color: '#FFD9DE', textAlign: 'center', background: 'rgba(200,16,46,0.25)', borderRadius: 'var(--radius-sm)', padding: '10px 14px' }}>
+            {errorMessage}
+          </div>
+        )}
         <Button variant="primary" onClick={login} style={{ borderRadius: 999, height: 52, width: '100%', background: '#fff', color: 'var(--brand-primary)' }}>
           Continuer avec Google
         </Button>

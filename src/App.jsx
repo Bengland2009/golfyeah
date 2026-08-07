@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { DataProvider } from './contexts/DataContext';
+import { DataProvider, useData } from './contexts/DataContext';
 import BottomNav from './components/BottomNav';
+import Button from './components/Button';
 
 import Login from './screens/Login';
 import Home from './screens/Home';
@@ -35,12 +36,24 @@ function navActiveFor(pathname) {
 const NAV_TARGET = { home: '/', rounds: '/parties', courses: '/terrains', range: '/range', players: '/joueurs' };
 
 function Shell() {
-  const { user, loading } = useAuth();
+  const { user, loading, logout } = useAuth();
+  const { dataReady, dataError } = useData();
   const location = useLocation();
   const navigate = useNavigate();
 
   if (loading) return null;
   if (!user) return <Login />;
+
+  if (dataError) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, padding: 32, textAlign: 'center' }}>
+        <div style={{ font: 'var(--text-h3)' }}>Impossible de synchroniser</div>
+        <div style={{ font: 'var(--text-body)', color: 'var(--text-muted)' }}>{dataError}</div>
+        <Button variant="secondary" onClick={logout} style={{ borderRadius: 999 }}>Se déconnecter</Button>
+      </div>
+    );
+  }
+  if (!dataReady) return null;
 
   const showNav = location.pathname !== '/partie/en-cours';
 

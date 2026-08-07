@@ -3,8 +3,11 @@ import {
   collection, doc, onSnapshot, addDoc, setDoc, updateDoc, deleteDoc, query,
 } from 'firebase/firestore';
 import { db, isFirebaseConfigured, GROUP_ID } from '../lib/firebase';
+import { useAuth } from './AuthContext';
 import { CLUB_ORDER, DEFAULT_MY_CLUBS, SEED_PLAYERS, SEED_COURSE, seedRounds, seedRange } from '../lib/seed';
 import { finalizeRound, coursePar } from '../lib/scoring';
+
+const FS_COLLECTIONS = ['players', 'courses', 'rounds', 'range', 'myClubs'];
 
 const DataContext = createContext(null);
 
@@ -29,6 +32,7 @@ function saveLocal(state) {
 }
 
 export function DataProvider({ children }) {
+  const { user } = useAuth();
   const [season, setSeason] = useState(2026);
 
   // ---- local (no-Firebase) backend ----
@@ -41,23 +45,47 @@ export function DataProvider({ children }) {
   const [fsRounds, setFsRounds] = useState([]);
   const [fsRange, setFsRange] = useState([]);
   const [fsMyClubs, setFsMyClubs] = useState({});
+  const [loadedCollections, setLoadedCollections] = useState(() => new Set());
+  const [dataError, setDataError] = useState(null);
 
   useEffect(() => {
-    if (!isFirebaseConfigured) return;
+    // Wait for a known, authenticated user before subscribing — reading
+    // before that is certain to fail Firestore's rules (see firestore.rules)
+    // and would otherwise fire silent permission-denied errors on every load.
+    if (!isFirebaseConfigured || !user) {
+      setFsPlayers([]); setFsCourses([]); setFsRounds([]); setFsRange([]); setFsMyClubs({});
+      setLoadedCollections(new Set());
+      setDataError(null);
+      return;
+    }
     const g = (name) => collection(db, 'groups', GROUP_ID, name);
+    const markLoaded = (name) => setLoadedCollections((s) => (s.has(name) ? s : new Set(s).add(name)));
+    const onError = (name) => (err) => {
+      console.error(`[golfyeah] groups/${GROUP_ID}/${name} subscription failed:`, err);
+      setDataError(err.code === 'permission-denied'
+        ? "Accès refusé — vérifie que ton compte est dans la liste des membres du groupe (Firestore : groups/default.memberEmails)."
+        : `Erreur de synchronisation (${err.code || err.message}).`);
+      markLoaded(name);
+    };
     const unsubs = [
-      onSnapshot(query(g('players')), (snap) => setFsPlayers(snap.docs.map((d) => ({ id: d.id, ...d.data() })))),
-      onSnapshot(query(g('courses')), (snap) => setFsCourses(snap.docs.map((d) => ({ id: d.id, ...d.data() })))),
-      onSnapshot(query(g('rounds')), (snap) => setFsRounds(snap.docs.map((d) => ({ id: d.id, ...d.data() })))),
-      onSnapshot(query(g('range')), (snap) => setFsRange(snap.docs.map((d) => ({ id: d.id, ...d.data() })))),
+      onSnapshot(query(g('players')), (snap) => { setFsPlayers(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); markLoaded('players'); }, onError('players')),
+      onSnapshot(query(g('courses')), (snap) => { setFsCourses(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); markLoaded('courses'); }, onError('courses')),
+      onSnapshot(query(g('rounds')), (snap) => { setFsRounds(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); markLoaded('rounds'); }, onError('rounds')),
+      onSnapshot(query(g('range')), (snap) => { setFsRange(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); markLoaded('range'); }, onError('range')),
       onSnapshot(query(g('myClubs')), (snap) => {
         const m = {};
         snap.docs.forEach((d) => { m[d.id] = d.data().clubs || []; });
         setFsMyClubs(m);
-      }),
+        markLoaded('myClubs');
+      }, onError('myClubs')),
     ];
     return () => unsubs.forEach((u) => u());
-  }, []);
+  }, [user]);
+
+  // False only during the brief window between "authenticated" and "first
+  // Firestore snapshot for every collection has arrived" — lets the shell
+  // show a loading state instead of flashing empty leaderboards/round lists.
+  const dataReady = !isFirebaseConfigured || !user || FS_COLLECTIONS.every((c) => loadedCollections.has(c));
 
   const players = isFirebaseConfigured ? fsPlayers : local.players;
   const courses = isFirebaseConfigured ? fsCourses : local.courses;
@@ -271,6 +299,7 @@ export function DataProvider({ children }) {
 
   const value = {
     season, setSeason,
+    dataReady, dataError,
     players, courses, range, allRounds, completedRounds,
     liveRound, currentLiveCourse, getHolePar, getHoleYardage,
     addPlayer, setPlayerPhoto,
