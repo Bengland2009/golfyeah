@@ -1,0 +1,24 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // A user is a member of a group if their Google account email is listed
+    // in that group document's memberEmails array. The group doc itself is
+    // managed by hand in the Firebase console (allow write: if false below)
+    // so members can't add/remove themselves or each other.
+    function isMember(groupId) {
+      return request.auth != null &&
+        request.auth.token.email in
+          get(/databases/$(database)/documents/groups/$(groupId)).data.memberEmails;
+    }
+
+    match /groups/{groupId} {
+      allow read: if isMember(groupId);
+      allow write: if false;
+    }
+
+    // players, courses, rounds, range, myClubs — anything nested under a group.
+    match /groups/{groupId}/{document=**} {
+      allow read, write: if isMember(groupId);
+    }
+  }
+}
