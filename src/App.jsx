@@ -8,6 +8,7 @@ import Login from './screens/Login';
 import Home from './screens/Home';
 import NewRound from './screens/NewRound';
 import Live from './screens/Live';
+import GolfTracker from './screens/GolfTracker';
 import Summary from './screens/Summary';
 import Rounds from './screens/Rounds';
 import Courses from './screens/Courses';
@@ -57,7 +58,7 @@ function Shell() {
   }
   if (!dataReady) return null;
 
-  const showNav = location.pathname !== '/partie/en-cours';
+  const showNav = !location.pathname.startsWith('/partie/en-cours');
 
   return (
     <div className="gy-app-shell gy-phone-col">
@@ -66,6 +67,7 @@ function Shell() {
           <Route path="/" element={<Home />} />
           <Route path="/nouvelle-partie" element={<NewRound />} />
           <Route path="/partie/en-cours" element={<Live />} />
+          <Route path="/partie/en-cours/tracker/:playerId" element={<GolfTracker />} />
           <Route path="/resume/:roundId" element={<Summary />} />
           <Route path="/parties" element={<Rounds />} />
           <Route path="/terrains" element={<Courses />} />

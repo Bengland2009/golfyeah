@@ -255,10 +255,12 @@ export function DataProvider({ children }) {
   const changeHole = useCallback((delta) => {
     if (!liveRound) return;
     const idx = Math.max(0, Math.min(liveRound.format - 1, liveRound.holeIndex + delta));
-    const par = getHolePar(idx);
-    const scores = ensureHole(liveRound.scores, liveRound.playerIds, idx, par);
-    patchLiveRound({ holeIndex: idx, scores });
-  }, [liveRound, getHolePar, patchLiveRound]);
+    // Deliberately doesn't pre-write a default entry for the new hole — the
+    // scorecard's ScoreStepper already falls back to par for display only,
+    // and Golf Tracker needs an untouched hole to have no entry yet so it
+    // can show a real "starts at 0" instead of a pre-filled par value.
+    patchLiveRound({ holeIndex: idx });
+  }, [liveRound, patchLiveRound]);
 
   const editHoleForRoundOnly = useCallback((par, yardage) => {
     if (!liveRound) return;

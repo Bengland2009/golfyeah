@@ -111,6 +111,14 @@ export default function Live() {
                 <Badge tone={toneFor(running)}>{parLabel(running)}</Badge>
               </div>
               <ScoreStepper value={entry.strokes} size="large" onChange={(v) => setStrokes(pid, v)} />
+              <div style={{ textAlign: 'center', marginTop: 6 }}>
+                <span
+                  onClick={() => navigate(`/partie/en-cours/tracker/${pid}`)}
+                  style={{ font: 'var(--text-small)', color: 'var(--brand-action)', fontWeight: 600, cursor: 'pointer' }}
+                >
+                  Golf Tracker
+                </span>
+              </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12 }}>
                 <StatRow label="Mulligan" value={entry.mulligans} onAdd={() => bumpHoleField(pid, 'mulligans', 1)} />
                 <StatRow label="Balle perdue" value={entry.lostBalls} onAdd={() => bumpHoleField(pid, 'lostBalls', 1)} />

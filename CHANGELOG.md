@@ -2,6 +2,24 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.5.0 — 2026-08-07
+
+- Nouveau : **Golf Tracker**, un compteur de coups en direct optionnel.
+  Accessible via "Golf Tracker" sous le score de chaque joueur pendant une
+  partie. Gros ballon de golf à taper (un tap = un coup), animation +
+  vibration au tap, annuler le dernier coup, modification manuelle du
+  score, "Terminer le trou" qui avance au trou suivant (ou termine la
+  partie sur le dernier trou).
+- Le tracker lit/écrit directement le même score que la scorecard normale
+  (aucune donnée séparée) — modifier l'un met à jour l'autre instantanément,
+  et la reprise après avoir quitté la partie restaure le trou et le compte
+  en cours automatiquement (autosave hérité du système existant).
+- Corrige un effet de bord découvert en construisant le tracker : changer
+  de trou pré-remplissait déjà un score par défaut (= la normale du trou)
+  dans Firestore avant même que le joueur ait joué — ça empêchait le
+  tracker de vraiment repartir à 0. Les trous non joués restent maintenant
+  vides tant qu'aucune vraie interaction n'a eu lieu, sur les deux écrans.
+
 ## v1.4.0 — 2026-08-07
 
 - Corrige le vert qui ne remplissait pas toute la largeur sur les téléphones
