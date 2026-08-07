@@ -28,14 +28,24 @@ button, input { font-family: inherit; }
   min-height: 100dvh;
 }
 
+/* Full width on real phones (most run 360-430px wide — capping at 390px
+   would leave dead white margins on anything wider than that); only caps
+   to a centered "phone" column on genuinely large viewports (tablet/desktop). */
+.gy-phone-col {
+  width: 100%;
+}
+@media (min-width: 431px) {
+  .gy-phone-col {
+    max-width: 390px;
+    margin: 0 auto;
+  }
+}
+
 .gy-app-shell {
-  max-width: 390px;
-  margin: 0 auto;
   min-height: 100vh;
   min-height: 100dvh;
   background: var(--surface-page);
   position: relative;
-  padding-top: var(--safe-top);
 }
 
 .gy-nav-safe-pad { padding-bottom: calc(80px + var(--safe-bottom)); }

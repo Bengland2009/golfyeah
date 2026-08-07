@@ -87,7 +87,7 @@ export default function Profile() {
         {photoMenuOpen && (
           <div style={{ position: 'fixed', inset: 0, zIndex: 60, display: 'flex', alignItems: 'flex-end' }}>
             <div onClick={() => setPhotoMenuOpen(false)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)' }} />
-            <div style={{ position: 'relative', width: '100%', maxWidth: 390, margin: '0 auto', background: '#fff', borderRadius: '16px 16px 0 0', overflow: 'hidden', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+            <div className="gy-phone-col" style={{ position: 'relative', background: '#fff', borderRadius: '16px 16px 0 0', overflow: 'hidden', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
               <div onClick={onPickFile} style={{ padding: '14px 20px', font: 'var(--text-body)', cursor: 'pointer', borderBottom: '1px solid var(--border-default)' }}>Choisir une photo</div>
               <div onClick={clearPhoto} style={{ padding: '14px 20px', font: 'var(--text-body)', cursor: 'pointer', borderBottom: '1px solid var(--border-default)' }}>Utiliser ma photo Google</div>
               <div onClick={clearPhoto} style={{ padding: '14px 20px', font: 'var(--text-body)', color: 'var(--color-score-under)', cursor: 'pointer' }}>Supprimer la photo personnalisée</div>

@@ -82,6 +82,32 @@ export function DataProvider({ children }) {
     return () => unsubs.forEach((u) => u());
   }, [user]);
 
+  // Auto-link the signed-in Google account to its matching player record —
+  // backfills that player's photoUrl the moment they first sign in (and
+  // keeps it synced if their Google photo changes later), matched by email
+  // once known, falling back to a name match for players added before this
+  // existed. Without this, "Utiliser ma photo Google" has nothing to fall
+  // back to and silently does nothing.
+  useEffect(() => {
+    if (!isFirebaseConfigured || !user || !fsPlayers.length) return;
+    const uEmail = user.email?.toLowerCase();
+    const uName = user.name?.trim().toLowerCase();
+    const me = fsPlayers.find((p) => {
+      if (p.authEmail) return p.authEmail.toLowerCase() === uEmail;
+      const pName = p.name?.trim().toLowerCase();
+      return pName && uName && (pName === uName || uName.includes(pName) || pName.includes(uName));
+    });
+    if (!me) return;
+    const patch = {};
+    if (me.authEmail !== user.email) patch.authEmail = user.email;
+    if (!me.customPhotoUrl && me.photoUrl !== user.photoUrl) patch.photoUrl = user.photoUrl || null;
+    if (Object.keys(patch).length) {
+      updateDoc(doc(db, 'groups', GROUP_ID, 'players', me.id), patch).catch((e) =>
+        console.error('[golfyeah] failed to sync Google profile photo:', e)
+      );
+    }
+  }, [user, fsPlayers]);
+
   // False only during the brief window between "authenticated" and "first
   // Firestore snapshot for every collection has arrived" — lets the shell
   // show a loading state instead of flashing empty leaderboards/round lists.

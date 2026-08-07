@@ -2,6 +2,22 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.4.0 — 2026-08-07
+
+- Corrige le vert qui ne remplissait pas toute la largeur sur les téléphones
+  plus larges que 390px (courant sur Android, ~400-430px) — l'app est
+  maintenant pleine largeur sur tout téléphone réel, et ne se limite à une
+  colonne de 390px centrée que sur desktop/tablette (effet "mockup
+  téléphone" voulu).
+- Corrige l'espace vert vide au-dessus de l'en-tête (le padding de zone
+  sécurisée était appliqué comme un vide séparé avant l'en-tête plutôt que
+  fondu dans son propre fond vert) — l'en-tête (Header/TopBar/Login)
+  s'étend maintenant proprement dans l'encoche/barre de statut.
+- Corrige "Utiliser ma photo Google" qui ne faisait rien : le joueur
+  correspondant au compte connecté n'avait jamais sa `photoUrl` Google
+  synchronisée. Elle se met maintenant à jour automatiquement à la
+  connexion (par email si déjà lié, sinon par correspondance de nom).
+
 ## v1.3.1 — 2026-08-07
 
 - Corrige l'écran de connexion (et l'écran d'erreur de synchronisation) qui

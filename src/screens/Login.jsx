@@ -15,7 +15,10 @@ export default function Login() {
         alignItems: 'center',
         justifyContent: 'flex-start',
         gap: 16,
-        padding: '72px 32px 40px',
+        paddingTop: 'calc(72px + var(--safe-top))',
+        paddingLeft: 32,
+        paddingRight: 32,
+        paddingBottom: 40,
         background: 'var(--brand-primary)',
         color: '#fff',
       }}

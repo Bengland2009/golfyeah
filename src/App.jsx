@@ -42,11 +42,11 @@ function Shell() {
   const navigate = useNavigate();
 
   if (loading) return null;
-  if (!user) return <div className="gy-app-shell"><Login /></div>;
+  if (!user) return <div className="gy-app-shell gy-phone-col"><Login /></div>;
 
   if (dataError) {
     return (
-      <div className="gy-app-shell">
+      <div className="gy-app-shell gy-phone-col">
         <div className="gy-viewport-h" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, padding: 32, textAlign: 'center' }}>
           <div style={{ font: 'var(--text-h3)' }}>Impossible de synchroniser</div>
           <div style={{ font: 'var(--text-body)', color: 'var(--text-muted)' }}>{dataError}</div>
@@ -60,7 +60,7 @@ function Shell() {
   const showNav = location.pathname !== '/partie/en-cours';
 
   return (
-    <div className="gy-app-shell">
+    <div className="gy-app-shell gy-phone-col">
       <div className={showNav ? 'gy-nav-safe-pad' : ''}>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -79,7 +79,7 @@ function Shell() {
         </Routes>
       </div>
       {showNav && (
-        <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, maxWidth: 390, margin: '0 auto' }}>
+        <div className="gy-phone-col" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, margin: '0 auto' }}>
           <BottomNav active={navActiveFor(location.pathname)} onChange={(key) => navigate(NAV_TARGET[key] || '/')} />
         </div>
       )}

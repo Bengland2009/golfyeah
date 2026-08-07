@@ -19,15 +19,17 @@ export default function TopBar() {
   const [menuOpen, setMenuOpen] = useState(false);
   return (
     <div>
-      <div
-        style={{
-          background: 'var(--brand-primary)', height: 62, display: 'flex', alignItems: 'center',
-          justifyContent: 'space-between', padding: '0 var(--page-padding-mobile)',
-        }}
-      >
-        <HamburgerBtn onClick={() => setMenuOpen(true)} />
-        <img src="/assets/icon-gy-cropped.png" alt="Golfyeah!" style={{ height: 38, objectFit: 'contain' }} />
-        <div style={{ width: 22 }} />
+      <div style={{ background: 'var(--brand-primary)', paddingTop: 'var(--safe-top)' }}>
+        <div
+          style={{
+            height: 62, display: 'flex', alignItems: 'center',
+            justifyContent: 'space-between', padding: '0 var(--page-padding-mobile)',
+          }}
+        >
+          <HamburgerBtn onClick={() => setMenuOpen(true)} />
+          <img src="/assets/icon-gy-cropped.png" alt="Golfyeah!" style={{ height: 38, objectFit: 'contain' }} />
+          <div style={{ width: 22 }} />
+        </div>
       </div>
       <AppMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
     </div>
