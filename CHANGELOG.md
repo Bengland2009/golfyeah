@@ -2,6 +2,28 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.10.1 — 2026-08-07
+
+- La liste **Commentaires** met maintenant le travail actif en avant au
+  lieu de tout trier par date :
+  - Les commentaires sont groupés par statut — **Nouveau** puis
+    **En cours** puis **Résolu** — plutôt que triés uniquement par
+    date ; à l'intérieur de chaque groupe, le plus récent reste en
+    premier.
+  - En-tête "À traiter (N)" au-dessus des sections Nouveau/En cours,
+    chaque section affichant son propre compte.
+  - La section **Résolus** est repliée par défaut (dépliable d'un tap)
+    pour ne pas encombrer l'écran avec l'historique.
+  - Hiérarchie visuelle par statut : badge rouge + carte blanche pour
+    Nouveau, badge orange + accent orange discret pour En cours, badge
+    vert + carte gris pâle et texte adouci pour Résolu (se sent
+    "archivé" sans devenir illisible).
+  - Une section sans aucun élément est simplement masquée (ex. pas de
+    "En cours" affiché s'il n'y a aucun commentaire en cours).
+  - Le filtre par statut (Tous/Nouveau/En cours/Résolu) est retiré —
+    les sections groupées le remplacent directement ; le filtre par
+    type (Bugs/Idées/Améliorations) reste disponible.
+
 ## v1.10.0 — 2026-08-07
 
 - **Commentaires** devient une vraie conversation plutôt qu'un rapport
