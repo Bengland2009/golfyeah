@@ -5,7 +5,8 @@ import Card from '../components/Card';
 import Badge from '../components/Badge';
 import Button from '../components/Button';
 import { useData } from '../contexts/DataContext';
-import { FEEDBACK_TYPES, FEEDBACK_STATUSES, typeLabel, statusLabel } from '../lib/feedback';
+import { useAuth } from '../contexts/AuthContext';
+import { FEEDBACK_TYPES, FEEDBACK_STATUSES, typeLabel, statusLabel, hasUnseenActivity } from '../lib/feedback';
 
 // Plural labels for the filter row, per spec ("Bugs", "Idées", "Améliorations").
 const TYPE_FILTER_LABELS = { tous: 'Tous', bug: 'Bugs', idee: 'Idées', amelioration: 'Améliorations' };
@@ -33,6 +34,7 @@ const statusTone = (status) => (status === 'resolu' ? 'neutral' : status === 'en
 export default function FeedbackList() {
   const navigate = useNavigate();
   const { feedback } = useData();
+  const { user } = useAuth();
   const [typeFilter, setTypeFilter] = useState('tous');
   const [statusFilter, setStatusFilter] = useState('tous');
 
@@ -67,11 +69,16 @@ export default function FeedbackList() {
         )}
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {filtered.map((f) => (
+          {filtered.map((f) => {
+            const unseen = user?.email && f.authorEmail === user.email && hasUnseenActivity(f);
+            return (
             <div key={f.id} onClick={() => navigate(`/commentaires/${f.id}`)} style={{ cursor: 'pointer' }}>
               <Card>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, marginBottom: 6 }}>
-                  <span style={{ font: 'var(--text-label)' }}>{f.title}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 6, font: 'var(--text-label)' }}>
+                    {unseen && <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--brand-action)', flexShrink: 0 }} />}
+                    {f.title}
+                  </span>
                   <Badge tone={statusTone(f.status)}>{statusLabel(f.status)}</Badge>
                 </div>
                 <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>
@@ -79,7 +86,8 @@ export default function FeedbackList() {
                 </div>
               </Card>
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

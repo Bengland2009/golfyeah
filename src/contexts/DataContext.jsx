@@ -6,8 +6,9 @@ import { db, isFirebaseConfigured, GROUP_ID } from '../lib/firebase';
 import { useAuth } from './AuthContext';
 import { CLUB_ORDER, DEFAULT_MY_CLUBS, SEED_PLAYERS, SEED_COURSE, seedRounds, seedRange } from '../lib/seed';
 import { finalizeRound, coursePar } from '../lib/scoring';
+import { matchPlayer } from '../lib/identity';
 
-const FS_COLLECTIONS = ['players', 'courses', 'rounds', 'range', 'myClubs', 'expenses', 'feedback'];
+const FS_COLLECTIONS = ['players', 'courses', 'rounds', 'range', 'myClubs', 'expenses', 'feedback', 'feedbackComments'];
 
 const DataContext = createContext(null);
 
@@ -19,7 +20,7 @@ function loadLocal() {
     // Backfill keys added after someone's local store was first created —
     // without this, a returning demo-mode user with old localStorage data
     // would crash on the missing field.
-    if (raw) return { expenses: [], feedback: [], ...JSON.parse(raw) };
+    if (raw) return { expenses: [], feedback: [], feedbackComments: [], ...JSON.parse(raw) };
   } catch {}
   return {
     players: SEED_PLAYERS,
@@ -29,6 +30,7 @@ function loadLocal() {
     myClubs: {},
     expenses: [],
     feedback: [],
+    feedbackComments: [],
   };
 }
 
@@ -52,6 +54,7 @@ export function DataProvider({ children }) {
   const [fsMyClubs, setFsMyClubs] = useState({});
   const [fsExpenses, setFsExpenses] = useState([]);
   const [fsFeedback, setFsFeedback] = useState([]);
+  const [fsFeedbackComments, setFsFeedbackComments] = useState([]);
   const [loadedCollections, setLoadedCollections] = useState(() => new Set());
   const [dataError, setDataError] = useState(null);
 
@@ -60,7 +63,7 @@ export function DataProvider({ children }) {
     // before that is certain to fail Firestore's rules (see firestore.rules)
     // and would otherwise fire silent permission-denied errors on every load.
     if (!isFirebaseConfigured || !user) {
-      setFsPlayers([]); setFsCourses([]); setFsRounds([]); setFsRange([]); setFsMyClubs({}); setFsExpenses([]); setFsFeedback([]);
+      setFsPlayers([]); setFsCourses([]); setFsRounds([]); setFsRange([]); setFsMyClubs({}); setFsExpenses([]); setFsFeedback([]); setFsFeedbackComments([]);
       setLoadedCollections(new Set());
       setDataError(null);
       return;
@@ -87,6 +90,7 @@ export function DataProvider({ children }) {
       }, onError('myClubs')),
       onSnapshot(query(g('expenses')), (snap) => { setFsExpenses(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); markLoaded('expenses'); }, onError('expenses')),
       onSnapshot(query(g('feedback')), (snap) => { setFsFeedback(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); markLoaded('feedback'); }, onError('feedback')),
+      onSnapshot(query(g('feedbackComments')), (snap) => { setFsFeedbackComments(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); markLoaded('feedbackComments'); }, onError('feedbackComments')),
     ];
     return () => unsubs.forEach((u) => u());
   }, [user]);
@@ -99,13 +103,7 @@ export function DataProvider({ children }) {
   // back to and silently does nothing.
   useEffect(() => {
     if (!isFirebaseConfigured || !user || !fsPlayers.length) return;
-    const uEmail = user.email?.toLowerCase();
-    const uName = user.name?.trim().toLowerCase();
-    const me = fsPlayers.find((p) => {
-      if (p.authEmail) return p.authEmail.toLowerCase() === uEmail;
-      const pName = p.name?.trim().toLowerCase();
-      return pName && uName && (pName === uName || uName.includes(pName) || pName.includes(uName));
-    });
+    const me = matchPlayer(fsPlayers, user);
     if (!me) return;
     const patch = {};
     if (me.authEmail !== user.email) patch.authEmail = user.email;
@@ -129,6 +127,7 @@ export function DataProvider({ children }) {
   const myClubsMap = isFirebaseConfigured ? fsMyClubs : local.myClubs;
   const expenses = isFirebaseConfigured ? fsExpenses : local.expenses;
   const feedback = isFirebaseConfigured ? fsFeedback : local.feedback;
+  const feedbackComments = isFirebaseConfigured ? fsFeedbackComments : local.feedbackComments;
 
   const liveRound = allRounds.find((r) => r.status === 'active') || null;
   const completedRounds = useMemo(
@@ -409,7 +408,10 @@ export function DataProvider({ children }) {
   // ---------- feedback ("Commentaires") ----------
   const addFeedback = useCallback(async (data) => {
     const now = Date.now();
-    const doc_ = { ...data, status: 'nouveau', createdAt: now, updatedAt: now };
+    const doc_ = {
+      ...data, status: 'nouveau', priority: 'normale', confirmedByEmails: [],
+      fixedInVersion: '', resolutionNotes: '', createdAt: now, updatedAt: now, lastActivityAt: now,
+    };
     if (isFirebaseConfigured) {
       await addDoc(collection(db, 'groups', GROUP_ID, 'feedback'), doc_);
     } else {
@@ -417,8 +419,13 @@ export function DataProvider({ children }) {
     }
   }, []);
 
+  // Any update (status change, priority, resolution notes, an edit) counts
+  // as activity the author would want to know about — see the unread
+  // indicator in FeedbackList, which compares this against a per-item
+  // "last seen" timestamp.
   const updateFeedback = useCallback(async (id, patch) => {
-    const full = { ...patch, updatedAt: Date.now() };
+    const now = Date.now();
+    const full = { ...patch, updatedAt: now, lastActivityAt: now };
     if (isFirebaseConfigured) {
       await updateDoc(doc(db, 'groups', GROUP_ID, 'feedback', id), full);
     } else {
@@ -427,10 +434,48 @@ export function DataProvider({ children }) {
   }, []);
 
   const deleteFeedback = useCallback(async (id) => {
+    const orphanedComments = feedbackComments.filter((c) => c.feedbackId === id);
     if (isFirebaseConfigured) {
-      await deleteDoc(doc(db, 'groups', GROUP_ID, 'feedback', id));
+      await Promise.all([
+        deleteDoc(doc(db, 'groups', GROUP_ID, 'feedback', id)),
+        ...orphanedComments.map((c) => deleteDoc(doc(db, 'groups', GROUP_ID, 'feedbackComments', c.id))),
+      ]);
     } else {
-      setLocal((s) => ({ ...s, feedback: s.feedback.filter((f) => f.id !== id) }));
+      setLocal((s) => ({
+        ...s,
+        feedback: s.feedback.filter((f) => f.id !== id),
+        feedbackComments: s.feedbackComments.filter((c) => c.feedbackId !== id),
+      }));
+    }
+  }, [feedbackComments]);
+
+  const toggleConfirmFeedback = useCallback(async (id, email) => {
+    const f = feedback.find((x) => x.id === id);
+    if (!f || !email) return;
+    const current = f.confirmedByEmails || [];
+    const next = current.includes(email) ? current.filter((e) => e !== email) : [...current, email];
+    if (isFirebaseConfigured) {
+      await updateDoc(doc(db, 'groups', GROUP_ID, 'feedback', id), { confirmedByEmails: next });
+    } else {
+      setLocal((s) => ({ ...s, feedback: s.feedback.map((x) => (x.id === id ? { ...x, confirmedByEmails: next } : x)) }));
+    }
+  }, [feedback]);
+
+  const addFeedbackComment = useCallback(async (feedbackId, { authorEmail, authorName, message, screenshots }) => {
+    const now = Date.now();
+    const doc_ = {
+      feedbackId, authorEmail, authorName, message: message.trim(),
+      screenshots: screenshots || [], createdAt: now,
+    };
+    if (isFirebaseConfigured) {
+      await addDoc(collection(db, 'groups', GROUP_ID, 'feedbackComments'), doc_);
+      await updateDoc(doc(db, 'groups', GROUP_ID, 'feedback', feedbackId), { lastActivityAt: now });
+    } else {
+      setLocal((s) => ({
+        ...s,
+        feedbackComments: [...s.feedbackComments, { id: 'fc' + now, ...doc_ }],
+        feedback: s.feedback.map((f) => (f.id === feedbackId ? { ...f, lastActivityAt: now } : f)),
+      }));
     }
   }, []);
 
@@ -463,7 +508,7 @@ export function DataProvider({ children }) {
   const value = {
     season, setSeason,
     dataReady, dataError,
-    players, courses, range, expenses, feedback, allRounds, completedRounds,
+    players, courses, range, expenses, feedback, feedbackComments, allRounds, completedRounds,
     liveRound, currentLiveCourse, getHolePar, getHoleYardage,
     addPlayer, setPlayerPhoto,
     addCourse, updateCourseHolePar,
@@ -472,7 +517,7 @@ export function DataProvider({ children }) {
     editHoleForRoundOnly, editHoleForCourse, finishRound, abandonRound,
     addRangeEntry, getMyClubs, addClub,
     addExpense, updateExpense, deleteExpense,
-    addFeedback, updateFeedback, deleteFeedback,
+    addFeedback, updateFeedback, deleteFeedback, toggleConfirmFeedback, addFeedbackComment,
     CLUB_ORDER,
     coursePar,
   };

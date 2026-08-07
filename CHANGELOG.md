@@ -2,6 +2,35 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.10.0 — 2026-08-07
+
+- **Commentaires** devient une vraie conversation plutôt qu'un rapport
+  statique :
+  - **Discussion** : chaque commentaire a maintenant un fil de
+    discussion (avatar, nom, date/heure, message) avec une zone
+    "Écrire un commentaire..." + bouton Envoyer en bas — les testeurs
+    peuvent échanger sans créer de nouveaux rapports.
+  - **Captures d'écran** : les messages du fil peuvent inclure jusqu'à
+    3 captures d'écran (bouton "+ Photo"), utile pour les bugs visuels.
+  - **"J'ai aussi ce problème"** : un tap pour confirmer qu'on vit le
+    même problème plutôt que de dupliquer un rapport — affiche
+    "👍 X joueurs ont ce problème".
+  - **Priorité** (Basse/Normale/Haute) : réservée à l'administrateur.
+  - **Version corrigée** : en marquant un commentaire "Résolu",
+    l'administrateur précise dans quelle version le correctif est
+    inclus (ex. "v1.10.0"), affiché sous le statut.
+  - **Notes de résolution** : l'administrateur peut expliquer
+    brièvement ce qui a été corrigé ; les notes restent visibles après
+    la résolution.
+  - **Indicateur non-lu** : un point apparaît dans la liste sur les
+    commentaires dont on est l'auteur quand il y a eu une nouvelle
+    activité (commentaire, changement de statut, résolution) depuis la
+    dernière visite.
+  - Les actions "Modifier" ont été remplacées par deux boutons
+    principaux : **Ajouter un commentaire** et **Modifier** — les
+    testeurs vont commenter bien plus souvent que modifier le rapport
+    original.
+
 ## v1.9.0 — 2026-08-07
 
 - Corrige un vrai bug rapporté : le menu ☰ affichait toujours "Benoit"
