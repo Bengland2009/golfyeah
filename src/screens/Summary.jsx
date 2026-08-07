@@ -6,6 +6,7 @@ import Badge from '../components/Badge';
 import Sheet from '../components/Sheet';
 import Input from '../components/Input';
 import Button from '../components/Button';
+import RoundExpenses from '../components/RoundExpenses';
 import { useData } from '../contexts/DataContext';
 import { parLabel, toneFor } from '../lib/scoring';
 
@@ -100,6 +101,8 @@ export default function Summary() {
             </table>
           </div>
         )}
+
+        <RoundExpenses roundId={round.id} playerIds={round.playerIds} players={players} />
       </div>
 
       <Sheet open={savePromptOpen} onClose={() => setSavePromptOpen(false)}>

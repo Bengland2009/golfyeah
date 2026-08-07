@@ -2,6 +2,26 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.8.0 — 2026-08-07
+
+- Nouveau : **Dépenses de la partie**. Chaque ronde (active ou terminée)
+  a maintenant une section "Dépenses" — ajoute qui a payé quoi (terrain,
+  bières, etc.), sélectionne qui partage la dépense (tous les joueurs de
+  la ronde par défaut, décochables individuellement), et Golfyeah!
+  calcule automatiquement :
+  - le total dépensé et ce que chacun a payé,
+  - **Régler les comptes** : le plan de remboursement le plus simple
+    possible (minimise le nombre de transactions), ex. "Sam doit 30 $ à
+    François".
+- Chaque dépense se modifie ou se supprime en la retouchant dans la
+  liste. Tous les calculs monétaires se font en cents (entiers), jamais
+  en nombres à virgule flottante — les soldes retombent toujours
+  exactement à zéro, sans dérive d'arrondi.
+- Les dépenses s'enregistrent automatiquement comme les scores ; quitter
+  et reprendre une partie active les conserve. Abandonner une partie
+  supprime aussi ses dépenses.
+- Montants affichés en dollars canadiens (ex. "45,00 $").
+
 ## v1.7.0 — 2026-08-07
 
 - **Nouvelle partie** est maintenant un seul écran adaptatif au lieu de

@@ -8,6 +8,7 @@ import ScoreStepper from '../components/ScoreStepper';
 import BeerCounter from '../components/BeerCounter';
 import Sheet from '../components/Sheet';
 import HoleSetupPrompt from '../components/HoleSetupPrompt';
+import RoundExpenses from '../components/RoundExpenses';
 import { useData } from '../contexts/DataContext';
 import { avatarSrc } from '../lib/avatar';
 import { parLabel, toneFor, playerRunningTotal } from '../lib/scoring';
@@ -159,6 +160,10 @@ export default function Live() {
         </span>
       </div>
       )}
+
+      <div style={{ padding: '0 var(--page-padding-mobile) var(--page-padding-mobile)' }}>
+        <RoundExpenses roundId={liveRound.id} playerIds={liveRound.playerIds} players={players} />
+      </div>
 
       <Sheet open={exitConfirmOpen} onClose={() => setExitConfirmOpen(false)}>
         <div style={{ font: 'var(--text-h3)' }}>Quitter la partie ?</div>

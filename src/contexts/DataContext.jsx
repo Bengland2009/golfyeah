@@ -7,7 +7,7 @@ import { useAuth } from './AuthContext';
 import { CLUB_ORDER, DEFAULT_MY_CLUBS, SEED_PLAYERS, SEED_COURSE, seedRounds, seedRange } from '../lib/seed';
 import { finalizeRound, coursePar } from '../lib/scoring';
 
-const FS_COLLECTIONS = ['players', 'courses', 'rounds', 'range', 'myClubs'];
+const FS_COLLECTIONS = ['players', 'courses', 'rounds', 'range', 'myClubs', 'expenses'];
 
 const DataContext = createContext(null);
 
@@ -16,7 +16,10 @@ const LS_KEY = 'golfyeah_local_store_v1';
 function loadLocal() {
   try {
     const raw = localStorage.getItem(LS_KEY);
-    if (raw) return JSON.parse(raw);
+    // Backfill keys added after someone's local store was first created —
+    // without this, a returning demo-mode user with old localStorage data
+    // would crash on the missing field.
+    if (raw) return { expenses: [], ...JSON.parse(raw) };
   } catch {}
   return {
     players: SEED_PLAYERS,
@@ -24,6 +27,7 @@ function loadLocal() {
     rounds: seedRounds(),
     range: seedRange(),
     myClubs: {},
+    expenses: [],
   };
 }
 
@@ -45,6 +49,7 @@ export function DataProvider({ children }) {
   const [fsRounds, setFsRounds] = useState([]);
   const [fsRange, setFsRange] = useState([]);
   const [fsMyClubs, setFsMyClubs] = useState({});
+  const [fsExpenses, setFsExpenses] = useState([]);
   const [loadedCollections, setLoadedCollections] = useState(() => new Set());
   const [dataError, setDataError] = useState(null);
 
@@ -53,7 +58,7 @@ export function DataProvider({ children }) {
     // before that is certain to fail Firestore's rules (see firestore.rules)
     // and would otherwise fire silent permission-denied errors on every load.
     if (!isFirebaseConfigured || !user) {
-      setFsPlayers([]); setFsCourses([]); setFsRounds([]); setFsRange([]); setFsMyClubs({});
+      setFsPlayers([]); setFsCourses([]); setFsRounds([]); setFsRange([]); setFsMyClubs({}); setFsExpenses([]);
       setLoadedCollections(new Set());
       setDataError(null);
       return;
@@ -78,6 +83,7 @@ export function DataProvider({ children }) {
         setFsMyClubs(m);
         markLoaded('myClubs');
       }, onError('myClubs')),
+      onSnapshot(query(g('expenses')), (snap) => { setFsExpenses(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); markLoaded('expenses'); }, onError('expenses')),
     ];
     return () => unsubs.forEach((u) => u());
   }, [user]);
@@ -118,6 +124,7 @@ export function DataProvider({ children }) {
   const allRounds = isFirebaseConfigured ? fsRounds : local.rounds;
   const range = isFirebaseConfigured ? fsRange : local.range;
   const myClubsMap = isFirebaseConfigured ? fsMyClubs : local.myClubs;
+  const expenses = isFirebaseConfigured ? fsExpenses : local.expenses;
 
   const liveRound = allRounds.find((r) => r.status === 'active') || null;
   const completedRounds = useMemo(
@@ -350,12 +357,50 @@ export function DataProvider({ children }) {
 
   const abandonRound = useCallback(async () => {
     if (!liveRound) return;
+    // Expenses belong to the round — abandoning it permanently deletes its
+    // scores, so its expenses shouldn't linger behind either.
+    const toDelete = expenses.filter((e) => e.roundId === liveRound.id);
     if (isFirebaseConfigured) {
-      await deleteDoc(doc(db, 'groups', GROUP_ID, 'rounds', liveRound.id));
+      await Promise.all([
+        deleteDoc(doc(db, 'groups', GROUP_ID, 'rounds', liveRound.id)),
+        ...toDelete.map((e) => deleteDoc(doc(db, 'groups', GROUP_ID, 'expenses', e.id))),
+      ]);
     } else {
-      setLocal((s) => ({ ...s, rounds: s.rounds.filter((r) => r.id !== liveRound.id) }));
+      setLocal((s) => ({
+        ...s,
+        rounds: s.rounds.filter((r) => r.id !== liveRound.id),
+        expenses: s.expenses.filter((e) => e.roundId !== liveRound.id),
+      }));
     }
-  }, [liveRound]);
+  }, [liveRound, expenses]);
+
+  // ---------- expenses ----------
+  const addExpense = useCallback(async (roundId, { description, amountInCents, paidByPlayerId, participantPlayerIds }) => {
+    const now = Date.now();
+    const doc_ = { roundId, description, amountInCents, paidByPlayerId, participantPlayerIds, createdAt: now, updatedAt: now };
+    if (isFirebaseConfigured) {
+      await addDoc(collection(db, 'groups', GROUP_ID, 'expenses'), doc_);
+    } else {
+      setLocal((s) => ({ ...s, expenses: [{ id: 'e' + now, ...doc_ }, ...s.expenses] }));
+    }
+  }, []);
+
+  const updateExpense = useCallback(async (expenseId, patch) => {
+    const full = { ...patch, updatedAt: Date.now() };
+    if (isFirebaseConfigured) {
+      await updateDoc(doc(db, 'groups', GROUP_ID, 'expenses', expenseId), full);
+    } else {
+      setLocal((s) => ({ ...s, expenses: s.expenses.map((e) => (e.id === expenseId ? { ...e, ...full } : e)) }));
+    }
+  }, []);
+
+  const deleteExpense = useCallback(async (expenseId) => {
+    if (isFirebaseConfigured) {
+      await deleteDoc(doc(db, 'groups', GROUP_ID, 'expenses', expenseId));
+    } else {
+      setLocal((s) => ({ ...s, expenses: s.expenses.filter((e) => e.id !== expenseId) }));
+    }
+  }, []);
 
   // ---------- range ----------
   const addRangeEntry = useCallback(async (playerId, entry) => {
@@ -386,7 +431,7 @@ export function DataProvider({ children }) {
   const value = {
     season, setSeason,
     dataReady, dataError,
-    players, courses, range, allRounds, completedRounds,
+    players, courses, range, expenses, allRounds, completedRounds,
     liveRound, currentLiveCourse, getHolePar, getHoleYardage,
     addPlayer, setPlayerPhoto,
     addCourse, updateCourseHolePar,
@@ -394,6 +439,7 @@ export function DataProvider({ children }) {
     setStrokes, bumpHoleField, addBeer, removeBeer, changeHole,
     editHoleForRoundOnly, editHoleForCourse, finishRound, abandonRound,
     addRangeEntry, getMyClubs, addClub,
+    addExpense, updateExpense, deleteExpense,
     CLUB_ORDER,
     coursePar,
   };
