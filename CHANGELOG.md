@@ -2,6 +2,16 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.3.1 — 2026-08-07
+
+- Corrige l'écran de connexion (et l'écran d'erreur de synchronisation) qui
+  s'affichaient hors du conteneur `max-width: 390px` du reste de l'app —
+  ils prenaient toute la largeur sur desktop au lieu de rester dans la
+  colonne mobile centrée.
+- Corrige `100vh` sur mobile (n'exclut pas la barre d'adresse rétractable
+  du navigateur, ce qui poussait le bouton "Continuer avec Google" hors de
+  la zone visible) — utilise `100dvh` avec repli `100vh`.
+
 ## v1.3.0 — 2026-08-07
 
 - Auth Google : repli automatique sur `signInWithRedirect` si le popup est

@@ -8,8 +8,8 @@ export default function Login() {
 
   return (
     <div
+      className="gy-viewport-h"
       style={{
-        minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',

@@ -19,10 +19,20 @@ button, input { font-family: inherit; }
 
 #root { min-height: 100vh; }
 
+/* 100vh on mobile browsers includes the area behind the collapsible
+   address bar, so content can overflow past what's actually visible.
+   100dvh tracks the real visible viewport; the 100vh line is a fallback
+   for browsers that don't support dvh. */
+.gy-viewport-h {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
 .gy-app-shell {
   max-width: 390px;
   margin: 0 auto;
   min-height: 100vh;
+  min-height: 100dvh;
   background: var(--surface-page);
   position: relative;
   padding-top: var(--safe-top);

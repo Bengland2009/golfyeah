@@ -42,14 +42,16 @@ function Shell() {
   const navigate = useNavigate();
 
   if (loading) return null;
-  if (!user) return <Login />;
+  if (!user) return <div className="gy-app-shell"><Login /></div>;
 
   if (dataError) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, padding: 32, textAlign: 'center' }}>
-        <div style={{ font: 'var(--text-h3)' }}>Impossible de synchroniser</div>
-        <div style={{ font: 'var(--text-body)', color: 'var(--text-muted)' }}>{dataError}</div>
-        <Button variant="secondary" onClick={logout} style={{ borderRadius: 999 }}>Se déconnecter</Button>
+      <div className="gy-app-shell">
+        <div className="gy-viewport-h" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, padding: 32, textAlign: 'center' }}>
+          <div style={{ font: 'var(--text-h3)' }}>Impossible de synchroniser</div>
+          <div style={{ font: 'var(--text-body)', color: 'var(--text-muted)' }}>{dataError}</div>
+          <Button variant="secondary" onClick={logout} style={{ borderRadius: 999 }}>Se déconnecter</Button>
+        </div>
       </div>
     );
   }
