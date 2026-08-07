@@ -2,6 +2,32 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.9.0 — 2026-08-07
+
+- Corrige un vrai bug rapporté : le menu ☰ affichait toujours "Benoit"
+  peu importe qui était connecté (`meId` était figé en dur au lieu de
+  résoudre le vrai compte connecté). Utilise maintenant la même
+  résolution "qui suis-je" que le reste de l'app — chacun voit son
+  propre profil.
+- Nouveau : **Commentaires**, un système de retour intégré et léger
+  (accessible via le menu ☰, pas dans la navigation du bas — c'est un
+  outil de support, pas une fonctionnalité de golf) :
+  - Créer un commentaire : Bug / Idée / Amélioration, titre,
+    comportement actuel/attendu, notes optionnelles.
+  - Liste filtrable par type (Tous/Bugs/Idées/Améliorations) et par
+    statut (Tous/Nouveau/En cours/Résolu), plus récent en premier.
+  - L'auteur peut modifier son propre commentaire tant qu'il est
+    "Nouveau" ; une fois "En cours", seul l'administrateur (le
+    développeur) peut le modifier ou changer son statut.
+  - Suppression : l'administrateur peut tout supprimer ; un utilisateur
+    normal ne peut supprimer que son propre commentaire, et seulement
+    avant qu'il ne soit pris en charge.
+  - Version de l'app, plateforme (Android/iPhone/Web) et informations
+    de l'appareil enregistrées automatiquement à la soumission — jamais
+    modifiables par l'utilisateur.
+  - Les commentaires "Résolu" restent dans l'historique, jamais
+    supprimés automatiquement.
+
 ## v1.8.0 — 2026-08-07
 
 - Nouveau : **Dépenses de la partie**. Chaque ronde (active ou terminée)

@@ -18,6 +18,9 @@ import AddRange from './screens/AddRange';
 import ClubDetail from './screens/ClubDetail';
 import Players from './screens/Players';
 import Profile from './screens/Profile';
+import FeedbackList from './screens/FeedbackList';
+import NewFeedback from './screens/NewFeedback';
+import FeedbackDetail from './screens/FeedbackDetail';
 
 const NAV_ACTIVE_BY_PREFIX = [
   ['/nouvelle-partie', 'rounds'],
@@ -84,6 +87,9 @@ function Shell() {
           <Route path="/range/:club" element={<ClubDetail />} />
           <Route path="/joueurs" element={<Players />} />
           <Route path="/joueurs/:playerId" element={<Profile />} />
+          <Route path="/commentaires" element={<FeedbackList />} />
+          <Route path="/commentaires/nouveau" element={<NewFeedback />} />
+          <Route path="/commentaires/:id" element={<FeedbackDetail />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>

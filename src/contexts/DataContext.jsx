@@ -7,7 +7,7 @@ import { useAuth } from './AuthContext';
 import { CLUB_ORDER, DEFAULT_MY_CLUBS, SEED_PLAYERS, SEED_COURSE, seedRounds, seedRange } from '../lib/seed';
 import { finalizeRound, coursePar } from '../lib/scoring';
 
-const FS_COLLECTIONS = ['players', 'courses', 'rounds', 'range', 'myClubs', 'expenses'];
+const FS_COLLECTIONS = ['players', 'courses', 'rounds', 'range', 'myClubs', 'expenses', 'feedback'];
 
 const DataContext = createContext(null);
 
@@ -19,7 +19,7 @@ function loadLocal() {
     // Backfill keys added after someone's local store was first created —
     // without this, a returning demo-mode user with old localStorage data
     // would crash on the missing field.
-    if (raw) return { expenses: [], ...JSON.parse(raw) };
+    if (raw) return { expenses: [], feedback: [], ...JSON.parse(raw) };
   } catch {}
   return {
     players: SEED_PLAYERS,
@@ -28,6 +28,7 @@ function loadLocal() {
     range: seedRange(),
     myClubs: {},
     expenses: [],
+    feedback: [],
   };
 }
 
@@ -50,6 +51,7 @@ export function DataProvider({ children }) {
   const [fsRange, setFsRange] = useState([]);
   const [fsMyClubs, setFsMyClubs] = useState({});
   const [fsExpenses, setFsExpenses] = useState([]);
+  const [fsFeedback, setFsFeedback] = useState([]);
   const [loadedCollections, setLoadedCollections] = useState(() => new Set());
   const [dataError, setDataError] = useState(null);
 
@@ -58,7 +60,7 @@ export function DataProvider({ children }) {
     // before that is certain to fail Firestore's rules (see firestore.rules)
     // and would otherwise fire silent permission-denied errors on every load.
     if (!isFirebaseConfigured || !user) {
-      setFsPlayers([]); setFsCourses([]); setFsRounds([]); setFsRange([]); setFsMyClubs({}); setFsExpenses([]);
+      setFsPlayers([]); setFsCourses([]); setFsRounds([]); setFsRange([]); setFsMyClubs({}); setFsExpenses([]); setFsFeedback([]);
       setLoadedCollections(new Set());
       setDataError(null);
       return;
@@ -84,6 +86,7 @@ export function DataProvider({ children }) {
         markLoaded('myClubs');
       }, onError('myClubs')),
       onSnapshot(query(g('expenses')), (snap) => { setFsExpenses(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); markLoaded('expenses'); }, onError('expenses')),
+      onSnapshot(query(g('feedback')), (snap) => { setFsFeedback(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); markLoaded('feedback'); }, onError('feedback')),
     ];
     return () => unsubs.forEach((u) => u());
   }, [user]);
@@ -125,6 +128,7 @@ export function DataProvider({ children }) {
   const range = isFirebaseConfigured ? fsRange : local.range;
   const myClubsMap = isFirebaseConfigured ? fsMyClubs : local.myClubs;
   const expenses = isFirebaseConfigured ? fsExpenses : local.expenses;
+  const feedback = isFirebaseConfigured ? fsFeedback : local.feedback;
 
   const liveRound = allRounds.find((r) => r.status === 'active') || null;
   const completedRounds = useMemo(
@@ -402,6 +406,34 @@ export function DataProvider({ children }) {
     }
   }, []);
 
+  // ---------- feedback ("Commentaires") ----------
+  const addFeedback = useCallback(async (data) => {
+    const now = Date.now();
+    const doc_ = { ...data, status: 'nouveau', createdAt: now, updatedAt: now };
+    if (isFirebaseConfigured) {
+      await addDoc(collection(db, 'groups', GROUP_ID, 'feedback'), doc_);
+    } else {
+      setLocal((s) => ({ ...s, feedback: [{ id: 'f' + now, ...doc_ }, ...s.feedback] }));
+    }
+  }, []);
+
+  const updateFeedback = useCallback(async (id, patch) => {
+    const full = { ...patch, updatedAt: Date.now() };
+    if (isFirebaseConfigured) {
+      await updateDoc(doc(db, 'groups', GROUP_ID, 'feedback', id), full);
+    } else {
+      setLocal((s) => ({ ...s, feedback: s.feedback.map((f) => (f.id === id ? { ...f, ...full } : f)) }));
+    }
+  }, []);
+
+  const deleteFeedback = useCallback(async (id) => {
+    if (isFirebaseConfigured) {
+      await deleteDoc(doc(db, 'groups', GROUP_ID, 'feedback', id));
+    } else {
+      setLocal((s) => ({ ...s, feedback: s.feedback.filter((f) => f.id !== id) }));
+    }
+  }, []);
+
   // ---------- range ----------
   const addRangeEntry = useCallback(async (playerId, entry) => {
     const doc_ = { playerId, club: entry.club, avg: Number(entry.avg), balls: Number(entry.balls), date: entry.date, location: entry.location || '' };
@@ -431,7 +463,7 @@ export function DataProvider({ children }) {
   const value = {
     season, setSeason,
     dataReady, dataError,
-    players, courses, range, expenses, allRounds, completedRounds,
+    players, courses, range, expenses, feedback, allRounds, completedRounds,
     liveRound, currentLiveCourse, getHolePar, getHoleYardage,
     addPlayer, setPlayerPhoto,
     addCourse, updateCourseHolePar,
@@ -440,6 +472,7 @@ export function DataProvider({ children }) {
     editHoleForRoundOnly, editHoleForCourse, finishRound, abandonRound,
     addRangeEntry, getMyClubs, addClub,
     addExpense, updateExpense, deleteExpense,
+    addFeedback, updateFeedback, deleteFeedback,
     CLUB_ORDER,
     coursePar,
   };

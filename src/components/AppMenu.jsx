@@ -3,6 +3,7 @@ import Avatar from './Avatar';
 import { avatarSrc } from '../lib/avatar';
 import { useAuth } from '../contexts/AuthContext';
 import { useData } from '../contexts/DataContext';
+import { useMe } from '../lib/useMe';
 import { APP_VERSION } from '../lib/version';
 
 function MenuLink({ label, onClick, sub }) {
@@ -17,12 +18,12 @@ function MenuLink({ label, onClick, sub }) {
   );
 }
 
-export default function AppMenu({ open, onClose, meId = 'benoit' }) {
+export default function AppMenu({ open, onClose }) {
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const { players, season } = useData();
+  const { season } = useData();
+  const me = useMe();
   if (!open) return null;
-  const me = players.find((p) => p.id === meId) || players[0];
 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 50, background: 'var(--brand-primary)', display: 'flex', flexDirection: 'column' }}>
@@ -49,6 +50,7 @@ export default function AppMenu({ open, onClose, meId = 'benoit' }) {
         <MenuLink label="Saison" onClick={onClose} sub={season + ' ›'} />
         <MenuLink label="Mon profil" onClick={() => { navigate(`/joueurs/${me?.id}`); onClose(); }} />
         <MenuLink label="Ajouter un joueur" onClick={() => { navigate('/joueurs'); onClose(); }} />
+        <MenuLink label="Commentaires" onClick={() => { navigate('/commentaires'); onClose(); }} />
         <MenuLink label="Paramètres" onClick={onClose} />
         <MenuLink label="À propos" onClick={onClose} />
       </div>
