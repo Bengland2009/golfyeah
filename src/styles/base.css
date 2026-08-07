@@ -1,0 +1,33 @@
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--surface-page);
+  color: var(--text-body);
+  font: var(--text-body);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+}
+
+h1, h2, h3 { margin: 0; font-family: var(--font-serif); }
+
+a { color: var(--brand-action); text-decoration: none; }
+a:hover { color: var(--color-green-pressed); }
+
+button, input { font-family: inherit; }
+
+#root { min-height: 100vh; }
+
+.gy-app-shell {
+  max-width: 390px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--surface-page);
+  position: relative;
+  padding-top: var(--safe-top);
+}
+
+.gy-nav-safe-pad { padding-bottom: calc(80px + var(--safe-bottom)); }
+
+::-webkit-scrollbar { display: none; }
