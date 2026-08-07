@@ -3,6 +3,7 @@ import Avatar from './Avatar';
 import { avatarSrc } from '../lib/avatar';
 import { useAuth } from '../contexts/AuthContext';
 import { useData } from '../contexts/DataContext';
+import { APP_VERSION } from '../lib/version';
 
 function MenuLink({ label, onClick, sub }) {
   return (
@@ -55,6 +56,7 @@ export default function AppMenu({ open, onClose, meId = 'benoit' }) {
         <span onClick={onClose} style={{ font: 'var(--text-body)', fontSize: 16, color: '#fff', cursor: 'pointer' }}>Aide</span>
         <span onClick={onClose} style={{ font: 'var(--text-body)', fontSize: 16, color: '#fff', cursor: 'pointer' }}>À propos de Golfyeah!</span>
         <span onClick={logout} style={{ font: 'var(--text-small)', color: 'rgba(255,255,255,0.75)', cursor: 'pointer' }}>Déconnexion</span>
+        <span style={{ font: 'var(--text-small)', fontSize: 12, color: 'rgba(255,255,255,0.5)', gridColumn: '1 / -1' }}>Golfyeah! v{APP_VERSION}</span>
       </div>
     </div>
   );
