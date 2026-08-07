@@ -7,6 +7,7 @@ import Badge from '../components/Badge';
 import ScoreStepper from '../components/ScoreStepper';
 import BeerCounter from '../components/BeerCounter';
 import Sheet from '../components/Sheet';
+import HoleSetupPrompt from '../components/HoleSetupPrompt';
 import { useData } from '../contexts/DataContext';
 import { avatarSrc } from '../lib/avatar';
 import { parLabel, toneFor, playerRunningTotal } from '../lib/scoring';
@@ -51,10 +52,15 @@ export default function Live() {
   const i = liveRound.holeIndex;
   const par = getHolePar(i);
   const yard = getHoleYardage(i);
+  const needsSetup = par == null;
 
   const openEditHole = () => {
-    setEditDraft({ par: getHolePar(i), yardage: getHoleYardage(i) });
+    setEditDraft({ par: getHolePar(i) || 4, yardage: getHoleYardage(i) || '' });
     setEditHoleOpen(true);
+  };
+
+  const saveHoleSetup = (chosenPar, yardage) => {
+    editHoleForCourse(chosenPar, yardage);
   };
 
   const finish = async () => {
@@ -89,13 +95,27 @@ export default function Live() {
           </div>
           <button onClick={() => changeHole(1)} disabled={i === liveRound.format - 1} style={navBtnStyle(i === liveRound.format - 1)}>›</button>
         </div>
-        <div style={{ display: 'flex', gap: 16, marginTop: 14, alignItems: 'baseline', justifyContent: 'center' }}>
-          <span style={{ font: 'var(--text-label)', color: '#fff' }}>PAR {par}</span>
-          <span style={{ font: 'var(--text-label)', color: 'rgba(255,255,255,0.85)' }}>{yard} vg</span>
-          <span onClick={openEditHole} style={{ font: 'var(--text-small)', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', textDecoration: 'underline' }}>Modifier</span>
-        </div>
+        {!needsSetup && (
+          <div style={{ display: 'flex', gap: 16, marginTop: 14, alignItems: 'baseline', justifyContent: 'center' }}>
+            <span style={{ font: 'var(--text-label)', color: '#fff' }}>PAR {par}</span>
+            <span style={{ font: 'var(--text-label)', color: 'rgba(255,255,255,0.85)' }}>{yard ? `${yard} vg` : 'Distance non indiquée'}</span>
+            <span onClick={openEditHole} style={{ font: 'var(--text-small)', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', textDecoration: 'underline' }}>Modifier</span>
+          </div>
+        )}
       </div>
 
+      {needsSetup && (
+        <>
+          <HoleSetupPrompt holeNumber={i + 1} onSave={saveHoleSetup} />
+          <div style={{ padding: '0 var(--page-padding-mobile) var(--page-padding-mobile)' }}>
+            <span onClick={() => setAbandonConfirmOpen(true)} style={{ display: 'block', textAlign: 'center', font: 'var(--text-small)', color: 'var(--color-score-under)', cursor: 'pointer', marginTop: 10 }}>
+              Abandonner la partie
+            </span>
+          </div>
+        </>
+      )}
+
+      {!needsSetup && (
       <div style={{ padding: 'var(--page-padding-mobile)', display: 'flex', flexDirection: 'column', gap: 16 }}>
         {liveRound.playerIds.map((pid) => {
           const player = players.find((p) => p.id === pid);
@@ -138,6 +158,7 @@ export default function Live() {
           Abandonner la partie
         </span>
       </div>
+      )}
 
       <Sheet open={exitConfirmOpen} onClose={() => setExitConfirmOpen(false)}>
         <div style={{ font: 'var(--text-h3)' }}>Quitter la partie ?</div>

@@ -2,6 +2,31 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.6.0 — 2026-08-07
+
+- Nouveau : **Partie intérieure rapide**. Depuis "Nouvelle partie", un
+  nouveau lien lance une partie de golf intérieur/simulateur avec un
+  formulaire minimal (lieu, parcours simulé optionnel, 9/18 trous,
+  joueurs) — plus besoin d'entrer 18 pars et distances avant de jouer.
+- Le par de chaque trou est demandé une seule fois, la première fois que
+  tu l'atteins (gros boutons Par 3/4/5, distance facultative), intégré
+  directement dans l'écran de score en direct — pas de formulaire séparé.
+  Le score du trou n'est disponible qu'une fois le par entré.
+- Le parcours se construit progressivement pendant que tu joues. À la fin
+  de la partie, si c'était une partie rapide, Golfyeah! propose
+  d'enregistrer le parcours pour le rejouer plus tard (pars et distances
+  préchargés, toujours modifiables trou par trou).
+- Les parcours rapides non enregistrés restent invisibles dans la liste
+  normale des terrains — la création de terrain complète existante n'a
+  pas changé.
+- Corrige un bug de connexion réel : le navigateur réutilisait
+  silencieusement le dernier compte Google connecté, sans possibilité
+  d'en choisir un autre — un compte non autorisé menait à une boucle
+  déconnexion/reconnexion sans issue. La sélection de compte Google
+  s'affiche maintenant systématiquement, et l'écran d'erreur de
+  synchronisation indique maintenant l'email connecté avec un bouton
+  "Essayer un autre compte Google".
+
 ## v1.5.0 — 2026-08-07
 
 - Nouveau : **Golf Tracker**, un compteur de coups en direct optionnel.

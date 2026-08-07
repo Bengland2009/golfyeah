@@ -188,6 +188,39 @@ export function DataProvider({ children }) {
     }
   }, [season]);
 
+  // Partie intérieure rapide: creates a minimal draft course (no pars/
+  // yardages yet — filled in progressively, one hole at a time, as the
+  // round is played) instead of requiring the full course-setup form
+  // upfront. isQuickDraft keeps it out of the normal "pick a terrain"
+  // lists until the golfer explicitly chooses to save it after the round.
+  const startQuickIndoorRound = useCallback(async (venue, simulatedCourse, format, playerIds) => {
+    const course = {
+      name: venue, city: '', kind: 'interieur', simulatedCourse: simulatedCourse || '',
+      holes: format, pars: Array(format).fill(null), yardages: Array(format).fill(null),
+      isQuickDraft: true,
+    };
+    let courseId;
+    if (isFirebaseConfigured) {
+      const ref = await addDoc(collection(db, 'groups', GROUP_ID, 'courses'), course);
+      courseId = ref.id;
+    } else {
+      courseId = 'c' + Date.now();
+      setLocal((s) => ({ ...s, courses: [...s.courses, { id: courseId, ...course }] }));
+    }
+    await startRound(courseId, format, playerIds);
+  }, [startRound]);
+
+  const saveQuickCourseAsReusable = useCallback(async (courseId, { name, simulatedCourse }) => {
+    const patch = { isQuickDraft: false };
+    if (name) patch.name = name;
+    if (simulatedCourse !== undefined) patch.simulatedCourse = simulatedCourse;
+    if (isFirebaseConfigured) {
+      await updateDoc(doc(db, 'groups', GROUP_ID, 'courses', courseId), patch);
+    } else {
+      setLocal((s) => ({ ...s, courses: s.courses.map((c) => (c.id === courseId ? { ...c, ...patch } : c)) }));
+    }
+  }, []);
+
   const patchLiveRound = useCallback(async (patch) => {
     if (!liveRound) return;
     if (isFirebaseConfigured) {
@@ -202,18 +235,22 @@ export function DataProvider({ children }) {
     return courses.find((c) => c.id === liveRound.courseId) || SEED_COURSE;
   }, [liveRound, courses]);
 
+  // Returns null (not a made-up default) when this hole genuinely has no par
+  // yet — that's the signal the Partie intérieure rapide setup prompt uses
+  // to know a hole hasn't been configured. Outdoor/fully-configured courses
+  // always have real numbers here, so this is a no-op for them.
   const getHolePar = useCallback((i) => {
-    if (!liveRound) return 4;
+    if (!liveRound) return null;
     const ov = liveRound.holeOverrides?.[i];
     if (ov) return ov.par;
-    return currentLiveCourse().pars[i] ?? 4;
+    return currentLiveCourse().pars[i] ?? null;
   }, [liveRound, currentLiveCourse]);
 
   const getHoleYardage = useCallback((i) => {
-    if (!liveRound) return 0;
+    if (!liveRound) return null;
     const ov = liveRound.holeOverrides?.[i];
-    if (ov) return ov.yardage;
-    return currentLiveCourse().yardages[i] ?? 0;
+    if (ov) return ov.yardage || null;
+    return currentLiveCourse().yardages[i] ?? null;
   }, [liveRound, currentLiveCourse]);
 
   function ensureHole(scores, playerIds, holeIndex, par) {
@@ -332,7 +369,8 @@ export function DataProvider({ children }) {
     liveRound, currentLiveCourse, getHolePar, getHoleYardage,
     addPlayer, setPlayerPhoto,
     addCourse, updateCourseHolePar,
-    startRound, setStrokes, bumpHoleField, addBeer, removeBeer, changeHole,
+    startRound, startQuickIndoorRound, saveQuickCourseAsReusable,
+    setStrokes, bumpHoleField, addBeer, removeBeer, changeHole,
     editHoleForRoundOnly, editHoleForCourse, finishRound, abandonRound,
     addRangeEntry, getMyClubs, addClub,
     CLUB_ORDER,

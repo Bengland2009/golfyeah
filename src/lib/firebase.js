@@ -22,6 +22,12 @@ if (isFirebaseConfigured) {
   auth = getAuth(app);
   db = getFirestore(app);
   googleProvider = new GoogleAuthProvider();
+  // Without this, a browser that's already signed into Google silently
+  // reuses that session on every popup — if it's the wrong account (a
+  // personal Gmail vs. the one on the group's allowlist, say), there's no
+  // way to pick a different one and "se déconnecter" + "continuer" just
+  // loops back to the same wrong account every time.
+  googleProvider.setCustomParameters({ prompt: 'select_account' });
 }
 
 export { app, auth, db, googleProvider };

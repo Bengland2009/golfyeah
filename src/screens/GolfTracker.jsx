@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Sheet from '../components/Sheet';
 import Input from '../components/Input';
 import Button from '../components/Button';
+import HoleSetupPrompt from '../components/HoleSetupPrompt';
 import { useData } from '../contexts/DataContext';
 
 // Golf Tracker is an alternate, optional UI for the same live-round data
@@ -27,7 +28,7 @@ export default function GolfTracker() {
   const navigate = useNavigate();
   const {
     players, liveRound, currentLiveCourse, getHolePar, getHoleYardage,
-    setStrokes, changeHole, finishRound,
+    setStrokes, changeHole, finishRound, editHoleForCourse,
   } = useData();
 
   const [pressed, setPressed] = useState(false);
@@ -45,6 +46,7 @@ export default function GolfTracker() {
   const par = getHolePar(i);
   const yard = getHoleYardage(i);
   const isLastHole = i === liveRound.format - 1;
+  const needsSetup = par == null;
 
   // Untouched hole (no entry written yet, by either the tracker or the
   // scorecard) shows a virtual 0 rather than jumping straight to par, so
@@ -82,7 +84,7 @@ export default function GolfTracker() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: '#fff' }}>
+    <div className="gy-viewport-h" style={{ display: 'flex', flexDirection: 'column', background: '#fff' }}>
       <div style={{ background: 'var(--brand-primary)', color: '#fff', paddingTop: 'var(--safe-top)' }}>
         <div style={{ position: 'relative', textAlign: 'center', padding: '16px var(--page-padding-mobile) 20px' }}>
           <button
@@ -94,10 +96,20 @@ export default function GolfTracker() {
           </button>
           <div style={{ font: 'var(--text-small)', color: 'rgba(255,255,255,0.7)', marginBottom: 6 }}>{course.name}</div>
           <div style={{ font: 'var(--font-serif)', fontWeight: 700, fontSize: 28, color: '#fff' }}>Trou {i + 1}</div>
-          <div style={{ font: 'var(--text-small)', color: 'rgba(255,255,255,0.85)', marginTop: 2 }}>Par {par} · {yard} vg</div>
+          {!needsSetup && (
+            <div style={{ font: 'var(--text-small)', color: 'rgba(255,255,255,0.85)', marginTop: 2 }}>
+              Par {par} · {yard ? `${yard} vg` : 'Distance non indiquée'}
+            </div>
+          )}
         </div>
       </div>
 
+      {needsSetup && (
+        <HoleSetupPrompt holeNumber={i + 1} onSave={(p, y) => editHoleForCourse(p, y)} />
+      )}
+
+      {!needsSetup && (
+      <>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 24, padding: '24px var(--page-padding-mobile)' }}>
         {player && (
           <div style={{ font: 'var(--text-label)', color: 'var(--text-muted)' }}>{player.name}</div>
@@ -149,6 +161,8 @@ export default function GolfTracker() {
           Modifier le score manuellement
         </span>
       </div>
+      </>
+      )}
 
       <Sheet open={editOpen} onClose={() => setEditOpen(false)}>
         <div style={{ font: 'var(--text-h3)' }}>Modifier le score</div>

@@ -11,7 +11,10 @@ const PILL_SEG = { borderRadius: 999, flex: 1 };
 export default function NewRound() {
   const navigate = useNavigate();
   const { courses, players, startRound } = useData();
-  const [courseId, setCourseId] = useState(courses[0]?.id);
+  // Quick indoor drafts stay out of the normal terrain picker until the
+  // golfer explicitly saves one as reusable after a round.
+  const pickableCourses = courses.filter((c) => !c.isQuickDraft);
+  const [courseId, setCourseId] = useState(pickableCourses[0]?.id);
   const [format, setFormat] = useState(18);
   const [playerIds, setPlayerIds] = useState([]);
 
@@ -29,10 +32,21 @@ export default function NewRound() {
     <div>
       <Header title="Nouvelle partie" onBack={() => navigate('/')} />
       <div style={{ padding: 'var(--page-padding-mobile)', display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <div
+          onClick={() => navigate('/nouvelle-partie/interieur-rapide')}
+          style={{ cursor: 'pointer', background: 'var(--surface-tint)', borderRadius: 'var(--radius-card)', padding: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+        >
+          <div>
+            <div style={{ font: 'var(--text-label)', marginBottom: 2 }}>Partie intérieure rapide</div>
+            <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>Golf simulateur — configure les trous en jouant</div>
+          </div>
+          <span style={{ color: 'var(--brand-action)', fontSize: 18, flexShrink: 0, marginLeft: 12 }}>›</span>
+        </div>
+
         <div>
           <div style={{ font: 'var(--text-label)', marginBottom: 8 }}>Terrain</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {courses.map((c) => (
+            {pickableCourses.map((c) => (
               <div
                 key={c.id}
                 onClick={() => setCourseId(c.id)}

@@ -1,7 +1,11 @@
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Card from '../components/Card';
 import Badge from '../components/Badge';
+import Sheet from '../components/Sheet';
+import Input from '../components/Input';
+import Button from '../components/Button';
 import { useData } from '../contexts/DataContext';
 import { parLabel, toneFor } from '../lib/scoring';
 
@@ -11,8 +15,21 @@ function td() { return { padding: '6px 10px', textAlign: 'center', borderBottom:
 export default function Summary() {
   const { roundId } = useParams();
   const navigate = useNavigate();
-  const { allRounds, players, courses } = useData();
+  const { allRounds, players, courses, saveQuickCourseAsReusable } = useData();
   const round = allRounds.find((r) => r.id === roundId) || allRounds.find((r) => r.status === 'completed');
+  const course = courses.find((c) => c.id === round?.courseId);
+
+  const [savePromptOpen, setSavePromptOpen] = useState(false);
+  const [saveName, setSaveName] = useState('');
+  const [saveSimulated, setSaveSimulated] = useState('');
+
+  useEffect(() => {
+    if (course?.isQuickDraft) {
+      setSaveName(course.name || '');
+      setSaveSimulated(course.simulatedCourse || '');
+      setSavePromptOpen(true);
+    }
+  }, [course?.id, course?.isQuickDraft]);
 
   if (!round) {
     return (
@@ -23,8 +40,13 @@ export default function Summary() {
     );
   }
 
-  const course = courses.find((c) => c.id === round.courseId);
-  const par = course ? course.pars.reduce((a, b) => a + b, 0) : (round.par || 72);
+  const par = course ? course.pars.reduce((a, b) => a + (b || 0), 0) : (round.par || 72);
+
+  const saveCourse = async () => {
+    if (!saveName.trim()) return;
+    await saveQuickCourseAsReusable(course.id, { name: saveName.trim(), simulatedCourse: saveSimulated.trim() });
+    setSavePromptOpen(false);
+  };
 
   return (
     <div>
@@ -66,7 +88,7 @@ export default function Summary() {
                 </tr>
                 <tr>
                   <td style={tdHead()}>Par</td>
-                  {course.pars.slice(0, round.holes).map((p, i) => <td key={i} style={td()}>{p}</td>)}
+                  {course.pars.slice(0, round.holes).map((p, i) => <td key={i} style={td()}>{p ?? '-'}</td>)}
                 </tr>
                 {round.playerIds.map((pid) => (
                   <tr key={pid}>
@@ -79,6 +101,19 @@ export default function Summary() {
           </div>
         )}
       </div>
+
+      <Sheet open={savePromptOpen} onClose={() => setSavePromptOpen(false)}>
+        <div style={{ font: 'var(--text-h3)' }}>Enregistrer ce parcours ?</div>
+        <div style={{ font: 'var(--text-body)', color: 'var(--text-muted)' }}>
+          Tu pourras réutiliser les pars et les distances la prochaine fois.
+        </div>
+        <Input label="Lieu" value={saveName} onChange={(e) => setSaveName(e.target.value)} />
+        <Input label="Parcours simulé (optionnel)" placeholder="Pebble Beach" value={saveSimulated} onChange={(e) => setSaveSimulated(e.target.value)} />
+        <Button variant="primary" onClick={saveCourse} style={{ height: 52, width: '100%' }}>Enregistrer le parcours</Button>
+        <span onClick={() => setSavePromptOpen(false)} style={{ textAlign: 'center', font: 'var(--text-small)', color: 'var(--text-muted)', cursor: 'pointer' }}>
+          Pas maintenant
+        </span>
+      </Sheet>
     </div>
   );
 }

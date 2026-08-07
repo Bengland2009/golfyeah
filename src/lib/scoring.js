@@ -102,6 +102,6 @@ export function finalizeRound(live, course) {
 
 export function playerRunningTotal(live, playerId, getHolePar) {
   let strokes = 0, par = 0;
-  (live.scores[playerId] || []).forEach((h, i) => { if (h) { strokes += h.strokes; par += getHolePar(i); } });
+  (live.scores[playerId] || []).forEach((h, i) => { if (h) { strokes += h.strokes; par += getHolePar(i) || 0; } });
   return strokes - par;
 }

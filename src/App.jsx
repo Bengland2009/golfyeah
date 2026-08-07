@@ -7,6 +7,7 @@ import Button from './components/Button';
 import Login from './screens/Login';
 import Home from './screens/Home';
 import NewRound from './screens/NewRound';
+import IndoorQuickRound from './screens/IndoorQuickRound';
 import Live from './screens/Live';
 import GolfTracker from './screens/GolfTracker';
 import Summary from './screens/Summary';
@@ -37,7 +38,7 @@ function navActiveFor(pathname) {
 const NAV_TARGET = { home: '/', rounds: '/parties', courses: '/terrains', range: '/range', players: '/joueurs' };
 
 function Shell() {
-  const { user, loading, logout } = useAuth();
+  const { user, loading, logout, login } = useAuth();
   const { dataReady, dataError } = useData();
   const location = useLocation();
   const navigate = useNavigate();
@@ -46,11 +47,18 @@ function Shell() {
   if (!user) return <div className="gy-app-shell gy-phone-col"><Login /></div>;
 
   if (dataError) {
+    const switchAccount = async () => { await logout(); await login(); };
     return (
       <div className="gy-app-shell gy-phone-col">
         <div className="gy-viewport-h" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, padding: 32, textAlign: 'center' }}>
           <div style={{ font: 'var(--text-h3)' }}>Impossible de synchroniser</div>
+          {user.email && (
+            <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>
+              Connecté avec <strong>{user.email}</strong>
+            </div>
+          )}
           <div style={{ font: 'var(--text-body)', color: 'var(--text-muted)' }}>{dataError}</div>
+          <Button variant="primary" onClick={switchAccount} style={{ borderRadius: 999 }}>Essayer un autre compte Google</Button>
           <Button variant="secondary" onClick={logout} style={{ borderRadius: 999 }}>Se déconnecter</Button>
         </div>
       </div>
@@ -66,6 +74,7 @@ function Shell() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/nouvelle-partie" element={<NewRound />} />
+          <Route path="/nouvelle-partie/interieur-rapide" element={<IndoorQuickRound />} />
           <Route path="/partie/en-cours" element={<Live />} />
           <Route path="/partie/en-cours/tracker/:playerId" element={<GolfTracker />} />
           <Route path="/resume/:roundId" element={<Summary />} />

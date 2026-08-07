@@ -8,6 +8,7 @@ import { coursePar } from '../lib/scoring';
 export default function Courses() {
   const navigate = useNavigate();
   const { courses } = useData();
+  const pickableCourses = courses.filter((c) => !c.isQuickDraft);
 
   return (
     <div>
@@ -17,7 +18,7 @@ export default function Courses() {
         <Button variant="primary" onClick={() => navigate('/terrains/nouveau')} style={{ alignSelf: 'flex-start', borderRadius: 999, height: 46, padding: '0 22px', fontSize: 16 }}>
           + Ajouter un terrain
         </Button>
-        {courses.map((c) => (
+        {pickableCourses.map((c) => (
           <Card key={c.id}>
             <div style={{ font: 'var(--text-h3)', marginBottom: 2 }}>{c.name}</div>
             <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>
