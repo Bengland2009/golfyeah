@@ -2,6 +2,13 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.1.0 — 2026-08-07
+
+- Déploiement automatique sur Firebase Hosting à chaque push (GitHub Actions).
+- `firebase.json`/`.firebaserc` configurés pour l'hébergement, config web
+  publique commitée (`.env.production` — non sensible, voir commentaire
+  dans le fichier).
+
 ## v1.0.0 — 2026-08-07
 
 Première version fonctionnelle branchée sur un vrai projet Firebase partagé.
