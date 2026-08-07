@@ -7,7 +7,6 @@ import Button from './components/Button';
 import Login from './screens/Login';
 import Home from './screens/Home';
 import NewRound from './screens/NewRound';
-import IndoorQuickRound from './screens/IndoorQuickRound';
 import Live from './screens/Live';
 import GolfTracker from './screens/GolfTracker';
 import Summary from './screens/Summary';
@@ -74,7 +73,6 @@ function Shell() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/nouvelle-partie" element={<NewRound />} />
-          <Route path="/nouvelle-partie/interieur-rapide" element={<IndoorQuickRound />} />
           <Route path="/partie/en-cours" element={<Live />} />
           <Route path="/partie/en-cours/tracker/:playerId" element={<GolfTracker />} />
           <Route path="/resume/:roundId" element={<Summary />} />

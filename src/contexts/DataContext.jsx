@@ -155,10 +155,12 @@ export function DataProvider({ children }) {
       simulatedCourse: draft.simulatedCourse || '', holes: draft.holes, pars, yardages,
     };
     if (isFirebaseConfigured) {
-      await addDoc(collection(db, 'groups', GROUP_ID, 'courses'), course);
-    } else {
-      setLocal((s) => ({ ...s, courses: [...s.courses, { id: 'c' + Date.now(), ...course }] }));
+      const ref = await addDoc(collection(db, 'groups', GROUP_ID, 'courses'), course);
+      return ref.id;
     }
+    const id = 'c' + Date.now();
+    setLocal((s) => ({ ...s, courses: [...s.courses, { id, ...course }] }));
+    return id;
   }, []);
 
   const updateCourseHolePar = useCallback(async (courseId, holeIndex, par, yardage) => {
@@ -188,17 +190,36 @@ export function DataProvider({ children }) {
     }
   }, [season]);
 
-  // Partie intérieure rapide: creates a minimal draft course (no pars/
-  // yardages yet — filled in progressively, one hole at a time, as the
-  // round is played) instead of requiring the full course-setup form
-  // upfront. isQuickDraft keeps it out of the normal "pick a terrain"
-  // lists until the golfer explicitly chooses to save it after the round.
-  const startQuickIndoorRound = useCallback(async (venue, simulatedCourse, format, playerIds) => {
-    const course = {
-      name: venue, city: '', kind: 'interieur', simulatedCourse: simulatedCourse || '',
-      holes: format, pars: Array(format).fill(null), yardages: Array(format).fill(null),
-      isQuickDraft: true,
-    };
+  // Unified indoor-round entry point used by the "Golf intérieur /
+  // simulateur" branch of Nouvelle partie:
+  //  1. If venue+simulatedCourse matches an already-saved (non-draft)
+  //     indoor course, reuse it outright — this is the "reuse this course
+  //     automatically next time" behavior, no separate picker needed.
+  //  2. Otherwise, if holesConfig is given (golfer chose to configure the
+  //     course up front), create it as a normal fully-specified course.
+  //  3. Otherwise, create a draft (isQuickDraft: true, pars/yardages all
+  //     null) that gets filled in progressively, one hole at a time, as
+  //     HoleSetupPrompt is triggered during play.
+  const startIndoorRound = useCallback(async (venue, simulatedCourse, format, playerIds, holesConfig) => {
+    const venueNorm = venue.trim().toLowerCase();
+    const simNorm = (simulatedCourse || '').trim().toLowerCase();
+    const existing = courses.find((c) => c.kind === 'interieur' && !c.isQuickDraft &&
+      c.name.trim().toLowerCase() === venueNorm &&
+      (c.simulatedCourse || '').trim().toLowerCase() === simNorm);
+    if (existing) {
+      await startRound(existing.id, existing.holes, playerIds);
+      return;
+    }
+    const course = holesConfig
+      ? {
+          name: venue.trim(), city: '', kind: 'interieur', simulatedCourse: (simulatedCourse || '').trim(),
+          holes: format, pars: holesConfig.pars.slice(0, format), yardages: holesConfig.yardages.slice(0, format).map(Number),
+        }
+      : {
+          name: venue.trim(), city: '', kind: 'interieur', simulatedCourse: (simulatedCourse || '').trim(),
+          holes: format, pars: Array(format).fill(null), yardages: Array(format).fill(null),
+          isQuickDraft: true,
+        };
     let courseId;
     if (isFirebaseConfigured) {
       const ref = await addDoc(collection(db, 'groups', GROUP_ID, 'courses'), course);
@@ -208,7 +229,7 @@ export function DataProvider({ children }) {
       setLocal((s) => ({ ...s, courses: [...s.courses, { id: courseId, ...course }] }));
     }
     await startRound(courseId, format, playerIds);
-  }, [startRound]);
+  }, [courses, startRound]);
 
   const saveQuickCourseAsReusable = useCallback(async (courseId, { name, simulatedCourse }) => {
     const patch = { isQuickDraft: false };
@@ -369,7 +390,7 @@ export function DataProvider({ children }) {
     liveRound, currentLiveCourse, getHolePar, getHoleYardage,
     addPlayer, setPlayerPhoto,
     addCourse, updateCourseHolePar,
-    startRound, startQuickIndoorRound, saveQuickCourseAsReusable,
+    startRound, startIndoorRound, saveQuickCourseAsReusable,
     setStrokes, bumpHoleField, addBeer, removeBeer, changeHole,
     editHoleForRoundOnly, editHoleForCourse, finishRound, abandonRound,
     addRangeEntry, getMyClubs, addClub,

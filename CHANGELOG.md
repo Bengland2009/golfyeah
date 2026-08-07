@@ -2,6 +2,28 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.7.0 — 2026-08-07
+
+- **Nouvelle partie** est maintenant un seul écran adaptatif au lieu de
+  deux flux séparés. Un sélecteur "Type de partie" (Golf extérieur / Golf
+  intérieur simulateur) en haut de l'écran fait apparaître la bonne suite
+  automatiquement :
+  - **Extérieur** : inchangé (Terrain, Format, Joueurs).
+  - **Intérieur** : Lieu + Parcours simulé (optionnel), Format, puis une
+    case "Configurer les trous pendant la partie" (cochée par défaut).
+    Cochée → les pars/distances se demandent trou par trou en jouant,
+    comme avant. Décochée → la grille complète des trous (par/distance)
+    apparaît directement sur cet écran pour tout configurer maintenant.
+- **Réutilisation automatique** : si le lieu + parcours simulé saisis
+  correspondent (à la casse/espaces près) à un parcours déjà enregistré,
+  Golfyeah! le réutilise directement — pas de liste à parcourir, pas de
+  configuration à refaire.
+- Retire l'écran "Partie intérieure rapide" séparé (`/nouvelle-partie/
+  interieur-rapide`) — tout est maintenant dans l'écran Nouvelle partie.
+- La grille par/distance est maintenant un composant partagé
+  (`HolesGrid`) réutilisé par "Ajouter un terrain" et par le nouveau flux
+  intérieur "configurer maintenant", au lieu d'être dupliquée.
+
 ## v1.6.0 — 2026-08-07
 
 - Nouveau : **Partie intérieure rapide**. Depuis "Nouvelle partie", un

@@ -3,13 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Input from '../components/Input';
 import Button from '../components/Button';
+import HolesGrid from '../components/HolesGrid';
 import { useData } from '../contexts/DataContext';
 
 const PILL_SEG = { borderRadius: 999, flex: 1 };
-
-function smallBtn() {
-  return { width: 28, height: 28, borderRadius: '50%', border: '1px solid var(--border-default)', background: '#fff', cursor: 'pointer', fontSize: 16 };
-}
 
 export default function AddCourse() {
   const navigate = useNavigate();
@@ -62,34 +59,7 @@ export default function AddCourse() {
         </div>
         <div>
           <div style={{ font: 'var(--text-label)', marginBottom: 8 }}>Trous</div>
-          <div style={{ display: 'flex', alignItems: 'center', padding: '0 10px', marginBottom: 4 }}>
-            <span style={{ flex: '0 0 64px', font: 'var(--text-small)', color: 'var(--text-muted)' }}>Trou</span>
-            <span style={{ flex: '0 0 88px', font: 'var(--text-small)', color: 'var(--text-muted)', textAlign: 'center' }}>Par</span>
-            <span style={{ flex: 1, font: 'var(--text-small)', color: 'var(--text-muted)', textAlign: 'right' }}>Distance</span>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {Array.from({ length: d.holes }).map((_, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', padding: 10, border: '1px solid var(--border-default)', borderRadius: 'var(--radius-sm)' }}>
-                <span style={{ flex: '0 0 64px', font: 'var(--text-body)', fontWeight: 600 }}>Trou {i + 1}</span>
-                <div style={{ flex: '0 0 88px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-                  <button onClick={() => bumpPar(i, -1)} style={smallBtn()}>−</button>
-                  <span style={{ font: 'var(--text-label)', width: 18, textAlign: 'center' }}>{d.pars[i]}</span>
-                  <button onClick={() => bumpPar(i, 1)} style={smallBtn()}>+</button>
-                </div>
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 6 }}>
-                  <input
-                    type="number" inputMode="numeric" value={d.yardages[i]} placeholder="385"
-                    onChange={(e) => setYardage(i, e.target.value)}
-                    style={{ width: 72, font: 'var(--text-small)', border: '1px solid var(--border-default)', borderRadius: 6, padding: '6px 8px', textAlign: 'right' }}
-                  />
-                  <span style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>vg</span>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)', marginTop: 10 }}>
-            Par total : {d.pars.slice(0, d.holes).reduce((a, b) => a + b, 0)}
-          </div>
+          <HolesGrid holes={d.holes} pars={d.pars} yardages={d.yardages} onBumpPar={bumpPar} onYardageChange={setYardage} />
         </div>
         <Button variant="primary" onClick={save} style={{ height: 52, width: '100%' }}>Enregistrer le terrain</Button>
       </div>
