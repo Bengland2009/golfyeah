@@ -8,11 +8,14 @@ import { useData } from '../contexts/DataContext';
 import { avatarSrc } from '../lib/avatar';
 import { leaderboard, parLabel, scoreColor, bestRoundLabel, leaderStat } from '../lib/scoring';
 
-function HighlightCard({ label, value }) {
+function HighlightCard({ icon, label, value }) {
   return (
-    <div style={{ background: 'var(--surface-tint)', borderRadius: 12, padding: '10px 12px' }}>
-      <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)', marginBottom: 2 }}>{label}</div>
-      <div style={{ font: 'var(--text-label)', fontWeight: 700 }}>{value}</div>
+    <div style={{ background: 'var(--surface-tint)', borderRadius: 14, padding: '14px 14px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+        <span style={{ fontSize: 13, opacity: 0.8, lineHeight: 1 }}>{icon}</span>
+        <span style={{ font: 'var(--text-small)', fontSize: 12, color: 'var(--text-muted)' }}>{label}</span>
+      </div>
+      <div style={{ font: 'var(--text-label)', fontSize: 17, fontWeight: 700 }}>{value}</div>
     </div>
   );
 }
@@ -29,7 +32,7 @@ export default function Home() {
   return (
     <div>
       <TopBar />
-      <div style={{ padding: 'var(--page-padding-mobile)', display: 'flex', flexDirection: 'column', gap: 28 }}>
+      <div style={{ padding: 'var(--page-padding-mobile)', display: 'flex', flexDirection: 'column', gap: 32 }}>
         {liveRound && (
           <div
             onClick={() => navigate('/partie/en-cours')}
@@ -47,15 +50,10 @@ export default function Home() {
         )}
 
         <div>
-          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 10, position: 'relative' }}>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-              <span style={{ font: 'var(--text-eyebrow)', letterSpacing: 'var(--letter-spacing-eyebrow)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Classement</span>
-              <span onClick={() => setSeasonMenuOpen((v) => !v)} style={{ font: 'var(--text-small)', color: 'var(--text-muted)', cursor: 'pointer' }}>
-                · {season} ▾
-              </span>
-            </div>
-            <span onClick={() => navigate('/joueurs')} style={{ font: 'var(--text-small)', color: 'var(--brand-action)', fontWeight: 600, cursor: 'pointer' }}>
-              + Ajouter
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 14, position: 'relative' }}>
+            <span style={{ font: 'var(--text-eyebrow)', letterSpacing: 'var(--letter-spacing-eyebrow)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Classement</span>
+            <span onClick={() => setSeasonMenuOpen((v) => !v)} style={{ font: 'var(--text-small)', color: 'var(--text-muted)', cursor: 'pointer' }}>
+              · {season} ▾
             </span>
             {seasonMenuOpen && (
               <div style={{ position: 'absolute', top: '100%', left: 0, background: '#fff', border: '1px solid var(--border-default)', borderRadius: 10, marginTop: 6, overflow: 'hidden', boxShadow: 'var(--shadow-elevated)', zIndex: 10 }}>
@@ -67,26 +65,38 @@ export default function Home() {
               </div>
             )}
           </div>
-          <div style={{ display: 'flex', overflowX: 'auto' }}>
+          <div style={{ display: 'flex', overflowX: 'auto', paddingTop: 2, paddingBottom: 2 }}>
             {board.map((p, i) => (
-              <div
-                key={p.id}
-                onClick={() => navigate(`/joueurs/${p.id}`)}
-                style={{
-                  cursor: 'pointer', flex: board.length <= 4 ? '1 1 0' : '0 0 auto', minWidth: 78,
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
-                  padding: '4px 10px', borderRight: i < board.length - 1 ? '1px solid var(--border-default)' : 'none',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 2 }}>
-                  <span style={{ font: 'var(--text-small)', color: 'var(--text-muted)', fontWeight: 600 }}>{i + 1}</span>
-                  <Avatar src={avatarSrc(p)} name={p.name} size={42} />
+              <div key={p.id} style={{ display: 'contents' }}>
+                <div
+                  onClick={() => navigate(`/joueurs/${p.id}`)}
+                  style={{
+                    cursor: 'pointer', flex: board.length <= 4 ? '1 1 0' : '0 0 auto', minWidth: 88,
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                    padding: '14px 10px',
+                  }}
+                >
+                  <span style={{ font: 'var(--text-small)', fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.04em' }}>{i + 1}</span>
+                  <Avatar src={avatarSrc(p)} name={p.name} size={58} />
+                  {p.avg == null ? (
+                    <span style={{ font: 'var(--text-small)', fontSize: 13, color: 'var(--text-disabled)', fontStyle: 'italic', margin: '6px 0 2px' }}>
+                      Aucune ronde
+                    </span>
+                  ) : (
+                    <span style={{ font: 'var(--text-leaderboard-score)', fontSize: 36, fontWeight: 800, color: scoreColor(p.avg), lineHeight: 1, marginTop: 2 }}>
+                      {parLabel(p.avg)}
+                    </span>
+                  )}
+                  <span style={{ font: 'var(--text-small)', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', whiteSpace: 'nowrap', letterSpacing: '0.03em' }}>
+                    {p.name.toUpperCase()}
+                  </span>
+                  {p.avg != null && (
+                    <span style={{ font: 'var(--text-small)', fontSize: 11, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{p.rounds} rondes</span>
+                  )}
                 </div>
-                <span style={{ font: 'var(--text-leaderboard-score)', fontSize: 30, fontWeight: 700, color: scoreColor(p.avg), lineHeight: 1 }}>
-                  {p.avg == null ? '—' : parLabel(p.avg)}
-                </span>
-                <span style={{ font: 'var(--text-small)', fontWeight: 700, textTransform: 'uppercase', whiteSpace: 'nowrap', letterSpacing: '0.02em' }}>{p.name.toUpperCase()}</span>
-                <span style={{ font: 'var(--text-small)', fontSize: 12, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{p.rounds} rondes</span>
+                {i < board.length - 1 && (
+                  <div style={{ width: 1, alignSelf: 'center', height: 56, background: 'var(--border-default)', flexShrink: 0 }} />
+                )}
               </div>
             ))}
           </div>
@@ -103,9 +113,9 @@ export default function Home() {
             </div>
             <div onClick={() => navigate(`/resume/${latest.id}`)} style={{ cursor: 'pointer' }}>
               <Card>
-                <div style={{ font: 'var(--text-h3)', marginBottom: 4 }}>{latestCourse?.name}</div>
-                <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)', marginBottom: 12 }}>{latest.date} · {latest.holes} trous</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 12 }}>
+                <div style={{ font: 'var(--text-h3)', fontSize: 22, marginBottom: 4 }}>{latestCourse?.name}</div>
+                <div style={{ font: 'var(--text-small)', fontSize: 12, color: 'var(--text-muted)', marginBottom: 18 }}>{latest.date} · {latest.holes} trous</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
                   {latest.playerIds.map((pid) => {
                     const player = players.find((pp) => pp.id === pid);
                     const diff = latest.totals[pid] - (latestCourse?.pars?.reduce((a, b) => a + b, 0) || 72);
@@ -117,21 +127,23 @@ export default function Home() {
                     );
                   })}
                 </div>
-                <div style={{ font: 'var(--text-small)', color: 'var(--brand-action)', fontWeight: 600 }}>Voir la scorecard →</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, font: 'var(--text-label)', fontSize: 15, color: 'var(--brand-action)', fontWeight: 700 }}>
+                  Voir la scorecard <span style={{ fontSize: 17 }}>›</span>
+                </div>
               </Card>
             </div>
           </div>
         )}
 
         <div>
-          <div style={{ font: 'var(--text-eyebrow)', letterSpacing: 'var(--letter-spacing-eyebrow)', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 10 }}>
+          <div style={{ font: 'var(--text-eyebrow)', letterSpacing: 'var(--letter-spacing-eyebrow)', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 12 }}>
             Faits marquants
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-            <HighlightCard label="Meilleure ronde" value={bestRoundLabel(players, completedRounds, courses)} />
-            <HighlightCard label="Plus de mulligans" value={leaderStat('mulligans', players, completedRounds)} />
-            <HighlightCard label="Plus de balles perdues" value={leaderStat('lostBalls', players, completedRounds)} />
-            <HighlightCard label="Champion des bières" value={leaderStat('beers', players, completedRounds)} />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            <HighlightCard icon="🏆" label="Meilleure ronde" value={bestRoundLabel(players, completedRounds, courses)} />
+            <HighlightCard icon="🎯" label="Plus de mulligans" value={leaderStat('mulligans', players, completedRounds)} />
+            <HighlightCard icon="🌲" label="Plus de balles perdues" value={leaderStat('lostBalls', players, completedRounds)} />
+            <HighlightCard icon="🍺" label="Champion des bières" value={leaderStat('beers', players, completedRounds)} />
           </div>
         </div>
       </div>

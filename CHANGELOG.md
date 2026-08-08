@@ -2,6 +2,27 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.12.0 — 2026-08-08
+
+- Refonte visuelle de la page d'accueil pour un rendu plus premium,
+  sans ajouter de nouvelle fonctionnalité :
+  - **Classement** : photos des joueurs agrandies (58px), score
+    encore plus dominant, noms légèrement réduits, séparateurs
+    verticaux plus fins et détachés des bords, plus d'espace pour
+    respirer. Un joueur sans ronde affiche maintenant "Aucune ronde"
+    au lieu d'un simple tiret.
+  - Retrait du raccourci ambigu "+ Ajouter" à côté du classement —
+    l'ajout d'un joueur reste accessible depuis le menu ☰ et l'écran
+    Joueurs.
+  - **Dernière partie** : nom du terrain plus en évidence, date/trous
+    plus discrets, lien "Voir la scorecard" légèrement plus visible.
+  - **Faits marquants** : une petite icône sobre par statistique
+    (🏆 🎯 🌲 🍺) pour les reconnaître plus vite, avec un peu plus
+    d'espacement dans les cartes.
+  - Espacement général augmenté entre les sections pour un look moins
+    "formulaire", plus proche d'une application de golf haut de
+    gamme.
+
 ## v1.11.0 — 2026-08-08
 
 - Le formulaire **Nouveau commentaire** permet maintenant d'attacher des
