@@ -8,6 +8,7 @@ import Button from '../components/Button';
 import RadioRow from '../components/RadioRow';
 import Sheet from '../components/Sheet';
 import FeedbackDiscussion from '../components/FeedbackDiscussion';
+import PhotoLightbox from '../components/PhotoLightbox';
 import { useAuth } from '../contexts/AuthContext';
 import { useData } from '../contexts/DataContext';
 import { FEEDBACK_TYPES, FEEDBACK_STATUSES, FEEDBACK_PRIORITIES, typeLabel, statusLabel, priorityLabel, useIsAdmin, markFeedbackSeen } from '../lib/feedback';
@@ -38,6 +39,7 @@ export default function FeedbackDetail() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [resolveSheetOpen, setResolveSheetOpen] = useState(false);
   const [resolveDraft, setResolveDraft] = useState({ fixedInVersion: '', resolutionNotes: '' });
+  const [lightboxIndex, setLightboxIndex] = useState(null);
   const discussionRef = useRef(null);
 
   useEffect(() => {
@@ -214,6 +216,23 @@ export default function FeedbackDetail() {
         <Field label="Comportement attendu" value={f.expectedBehavior} />
         <Field label="Notes" value={f.notes} />
 
+        {f.photos?.length > 0 && (
+          <div>
+            <div style={{ font: 'var(--text-label)', marginBottom: 8 }}>Photo{f.photos.length > 1 ? 's' : ''}</div>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {f.photos.map((src, i) => (
+                <img
+                  key={i}
+                  src={src}
+                  alt=""
+                  onClick={() => setLightboxIndex(i)}
+                  style={{ width: 84, height: 84, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border-default)', cursor: 'pointer' }}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
         <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>
           v{f.appVersion || '—'} · {f.platform || '—'}
         </div>
@@ -257,6 +276,10 @@ export default function FeedbackDetail() {
         <Button variant="primary" onClick={confirmResolve} style={{ height: 52, width: '100%' }}>Enregistrer</Button>
         <span onClick={() => setResolveSheetOpen(false)} style={{ textAlign: 'center', font: 'var(--text-small)', color: 'var(--text-muted)', cursor: 'pointer' }}>Annuler</span>
       </Sheet>
+
+      {lightboxIndex != null && (
+        <PhotoLightbox photos={f.photos} index={lightboxIndex} onClose={() => setLightboxIndex(null)} />
+      )}
     </div>
   );
 }

@@ -2,6 +2,20 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.11.0 — 2026-08-08
+
+- Le formulaire **Nouveau commentaire** permet maintenant d'attacher des
+  photos :
+  - Nouvelle section optionnelle "Photo" avec deux façons d'ajouter une
+    image en un tap — **Prendre une photo** (ouvre directement
+    l'appareil photo) ou **Choisir des photos** (galerie, sélection
+    multiple) — jusqu'à 5 photos par commentaire.
+  - Miniatures affichées sous la zone d'ajout, chacune retirable avant
+    l'envoi.
+  - Les photos attachées apparaissent maintenant dans l'écran de
+    détail ; toucher une photo l'ouvre en plein écran, et on peut
+    glisser entre les photos si plusieurs sont attachées.
+
 ## v1.10.1 — 2026-08-07
 
 - La liste **Commentaires** met maintenant le travail actif en avant au
