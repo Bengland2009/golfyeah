@@ -46,3 +46,32 @@ export function UsersIcon(props) {
     </svg>
   );
 }
+export function TrophyIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" width={16} height={16} {...common} {...props}>
+      <path d="M7 4h10v5a5 5 0 0 1-10 0V4Z" />
+      <path d="M7 5H4.5A1.5 1.5 0 0 0 3 6.5a2.5 2.5 0 0 0 2.5 2.5H7" />
+      <path d="M17 5h2.5A1.5 1.5 0 0 1 21 6.5a2.5 2.5 0 0 1-2.5 2.5H17" />
+      <path d="M9 20h6" />
+      <path d="M12 15v5" />
+    </svg>
+  );
+}
+export function TreeIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" width={16} height={16} {...common} {...props}>
+      <path d="M12 3 6.5 11h3L5 18h5v3h4v-3h5l-4.5-7h3L12 3Z" />
+    </svg>
+  );
+}
+export function BeerIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" width={16} height={16} {...common} {...props}>
+      <rect x="5" y="8" width="10" height="12" rx="2" />
+      <path d="M15 11h1.5a2 2 0 1 1 0 4H15" />
+      <path d="M6.5 8c.6-1.4-.4-2.3.2-3.8" />
+      <path d="M9.5 8c.6-1.4-.4-2.3.2-3.8" />
+      <path d="M12.5 8c.6-1.4-.4-2.3.2-3.8" />
+    </svg>
+  );
+}

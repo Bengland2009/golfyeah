@@ -28,7 +28,6 @@ export default function TopBar() {
         >
           <HamburgerBtn onClick={() => setMenuOpen(true)} />
           <img src="/assets/icon-gy-cropped.png" alt="Golfyeah!" style={{ height: 38, objectFit: 'contain' }} />
-          <div style={{ width: 22 }} />
         </div>
       </div>
       <AppMenu open={menuOpen} onClose={() => setMenuOpen(false)} />

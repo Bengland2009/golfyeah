@@ -2,6 +2,23 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.12.1 — 2026-08-08
+
+- Retouches de finition sur la page d'accueil :
+  - Le logo GY! est déplacé complètement à droite du header, le menu
+    ☰ reste à gauche — header plus équilibré, toujours minimaliste.
+  - Resserré l'espace entre le titre "Classement" et les joueurs pour
+    remonter le bloc.
+  - "Aucune ronde" (joueur sans partie jouée) est maintenant beaucoup
+    plus discret — petit texte gris pâle qui n'attire plus l'œil
+    autant que le score des joueurs actifs.
+  - Les emojis des **Faits marquants** sont remplacés par des icônes
+    vectorielles monochromes (trophée, cible, sapin, chope) en vert
+    Golfyeah!, plus sobres et cohérentes avec le reste de l'app.
+  - Espacement augmenté entre les grandes sections (Classement,
+    Nouvelle partie, Dernière partie, Faits marquants) pour que la
+    page respire davantage.
+
 ## v1.12.0 — 2026-08-08
 
 - Refonte visuelle de la page d'accueil pour un rendu plus premium,

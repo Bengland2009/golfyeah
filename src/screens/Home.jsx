@@ -7,12 +7,13 @@ import Button from '../components/Button';
 import { useData } from '../contexts/DataContext';
 import { avatarSrc } from '../lib/avatar';
 import { leaderboard, parLabel, scoreColor, bestRoundLabel, leaderStat } from '../lib/scoring';
+import { TrophyIcon, TargetIcon, TreeIcon, BeerIcon } from '../components/icons';
 
-function HighlightCard({ icon, label, value }) {
+function HighlightCard({ Icon, label, value }) {
   return (
     <div style={{ background: 'var(--surface-tint)', borderRadius: 14, padding: '14px 14px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-        <span style={{ fontSize: 13, opacity: 0.8, lineHeight: 1 }}>{icon}</span>
+        <Icon width={15} height={15} strokeWidth={1.75} style={{ color: 'var(--brand-action)', flexShrink: 0 }} />
         <span style={{ font: 'var(--text-small)', fontSize: 12, color: 'var(--text-muted)' }}>{label}</span>
       </div>
       <div style={{ font: 'var(--text-label)', fontSize: 17, fontWeight: 700 }}>{value}</div>
@@ -32,7 +33,7 @@ export default function Home() {
   return (
     <div>
       <TopBar />
-      <div style={{ padding: 'var(--page-padding-mobile)', display: 'flex', flexDirection: 'column', gap: 32 }}>
+      <div style={{ padding: 'var(--page-padding-mobile)', display: 'flex', flexDirection: 'column', gap: 36 }}>
         {liveRound && (
           <div
             onClick={() => navigate('/partie/en-cours')}
@@ -50,7 +51,7 @@ export default function Home() {
         )}
 
         <div>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 14, position: 'relative' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 6, position: 'relative' }}>
             <span style={{ font: 'var(--text-eyebrow)', letterSpacing: 'var(--letter-spacing-eyebrow)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Classement</span>
             <span onClick={() => setSeasonMenuOpen((v) => !v)} style={{ font: 'var(--text-small)', color: 'var(--text-muted)', cursor: 'pointer' }}>
               · {season} ▾
@@ -65,7 +66,7 @@ export default function Home() {
               </div>
             )}
           </div>
-          <div style={{ display: 'flex', overflowX: 'auto', paddingTop: 2, paddingBottom: 2 }}>
+          <div style={{ display: 'flex', overflowX: 'auto' }}>
             {board.map((p, i) => (
               <div key={p.id} style={{ display: 'contents' }}>
                 <div
@@ -79,7 +80,7 @@ export default function Home() {
                   <span style={{ font: 'var(--text-small)', fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.04em' }}>{i + 1}</span>
                   <Avatar src={avatarSrc(p)} name={p.name} size={58} />
                   {p.avg == null ? (
-                    <span style={{ font: 'var(--text-small)', fontSize: 13, color: 'var(--text-disabled)', fontStyle: 'italic', margin: '6px 0 2px' }}>
+                    <span style={{ font: 'var(--text-small)', fontSize: 11, color: 'var(--text-disabled)', margin: '8px 0 4px' }}>
                       Aucune ronde
                     </span>
                   ) : (
@@ -140,10 +141,10 @@ export default function Home() {
             Faits marquants
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-            <HighlightCard icon="🏆" label="Meilleure ronde" value={bestRoundLabel(players, completedRounds, courses)} />
-            <HighlightCard icon="🎯" label="Plus de mulligans" value={leaderStat('mulligans', players, completedRounds)} />
-            <HighlightCard icon="🌲" label="Plus de balles perdues" value={leaderStat('lostBalls', players, completedRounds)} />
-            <HighlightCard icon="🍺" label="Champion des bières" value={leaderStat('beers', players, completedRounds)} />
+            <HighlightCard Icon={TrophyIcon} label="Meilleure ronde" value={bestRoundLabel(players, completedRounds, courses)} />
+            <HighlightCard Icon={TargetIcon} label="Plus de mulligans" value={leaderStat('mulligans', players, completedRounds)} />
+            <HighlightCard Icon={TreeIcon} label="Plus de balles perdues" value={leaderStat('lostBalls', players, completedRounds)} />
+            <HighlightCard Icon={BeerIcon} label="Champion des bières" value={leaderStat('beers', players, completedRounds)} />
           </div>
         </div>
       </div>
