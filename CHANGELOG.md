@@ -2,6 +2,24 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.13.0 — 2026-08-08
+
+- Nouvelle section **Caddie** (menu ☰), le carnet de distances de poche
+  du golfeur :
+  - Carte "Distances de référence" : distances de carry génériques pour
+    les 15 bâtons habituels (Driver à Lob Wedge), présentées dans une
+    grille à deux colonnes aérée plutôt qu'un tableau.
+  - Dès qu'une distance personnelle existe pour un bâton (calculée à
+    partir des séances déjà loggées dans Range), elle devient la valeur
+    principale — affichée en vert avec l'écart par rapport à la
+    référence ("+28 vg vs réf.") — et la référence générique passe au
+    second plan. Aucune nouvelle saisie requise : ça réutilise les
+    séances de pratique déjà enregistrées.
+  - Carte "À retenir" discrète expliquant que ces chiffres sont un
+    point de départ à remplacer par ses propres distances mesurées.
+  - Structure pensée pour accueillir facilement de futures cartes
+    Caddie (conseils, règles, conversions, notes) sans redesign.
+
 ## v1.12.1 — 2026-08-08
 
 - Retouches de finition sur la page d'accueil :
