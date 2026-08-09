@@ -2,6 +2,26 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.15.0 — 2026-08-09
+
+- **Ajouter un joueur** est maintenant un écran dédié avec validation
+  complète de l'adresse courriel avant l'envoi de l'invitation :
+  - Trois champs : Nom du joueur, Adresse courriel, Confirmer
+    l'adresse courriel.
+  - Le champ de confirmation bloque le copier-coller (glisser-déposer
+    inclus) — l'adresse doit être retapée manuellement.
+  - Validation en temps réel avec messages clairs : format d'adresse
+    invalide, adresses différentes, ou joueur déjà existant avec cette
+    adresse.
+  - Le bouton **Ajouter le joueur** reste désactivé tant que tous les
+    champs ne sont pas valides.
+  - Après l'ajout, un écran de confirmation indique qu'une invitation
+    a été envoyée à l'adresse fournie, et ouvre l'application courriel
+    avec un message d'invitation prérempli.
+  - L'adresse est enregistrée sur le profil du joueur : dès qu'il se
+    connectera avec ce compte Google, son profil sera automatiquement
+    relié (aucune étape manuelle de liaison requise).
+
 ## v1.14.0 — 2026-08-08
 
 - Réorganisation de la navigation : **« Range »** devient **« Pratique »**,

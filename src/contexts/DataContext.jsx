@@ -136,9 +136,12 @@ export function DataProvider({ children }) {
   );
 
   // ---------- players ----------
-  const addPlayer = useCallback(async (name) => {
+  // Storing the invited email as authEmail up front means matchPlayer finds
+  // this player on the very first Google sign-in with that address — no
+  // reliance on the fuzzy name-matching fallback.
+  const addPlayer = useCallback(async (name, email) => {
     const id = 'p' + Date.now();
-    const player = { name };
+    const player = { name, authEmail: email || null };
     if (isFirebaseConfigured) await setDoc(doc(db, 'groups', GROUP_ID, 'players', id), player);
     else setLocal((s) => ({ ...s, players: [...s.players, { id, ...player }] }));
   }, []);

@@ -91,6 +91,13 @@ export function TrendingUpIcon(props) {
     </svg>
   );
 }
+export function CheckIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" width={22} height={22} {...common} {...props}>
+      <path d="M4 12.5 9.5 18 20 6.5" />
+    </svg>
+  );
+}
 export function BeerIcon(props) {
   return (
     <svg viewBox="0 0 24 24" width={16} height={16} {...common} {...props}>

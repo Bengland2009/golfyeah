@@ -49,7 +49,7 @@ export default function AppMenu({ open, onClose }) {
       <div style={{ flex: 1, padding: '4px 24px', display: 'flex', flexDirection: 'column' }}>
         <MenuLink label="Saison" onClick={onClose} sub={season + ' ›'} />
         <MenuLink label="Mon profil" onClick={() => { navigate(`/joueurs/${me?.id}`); onClose(); }} />
-        <MenuLink label="Ajouter un joueur" onClick={() => { navigate('/joueurs'); onClose(); }} />
+        <MenuLink label="Ajouter un joueur" onClick={() => { navigate('/joueurs/nouveau'); onClose(); }} />
         <MenuLink label="Commentaires" onClick={() => { navigate('/commentaires'); onClose(); }} />
         <MenuLink label="Paramètres" onClick={onClose} />
         <MenuLink label="À propos" onClick={onClose} />

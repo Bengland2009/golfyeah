@@ -19,6 +19,7 @@ import AddRange from './screens/AddRange';
 import ClubDetail from './screens/ClubDetail';
 import SessionHistory from './screens/SessionHistory';
 import Players from './screens/Players';
+import AddPlayer from './screens/AddPlayer';
 import Profile from './screens/Profile';
 import FeedbackList from './screens/FeedbackList';
 import NewFeedback from './screens/NewFeedback';
@@ -92,6 +93,7 @@ function Shell() {
           <Route path="/pratique/historique" element={<SessionHistory />} />
           <Route path="/pratique/caddie" element={<Caddie />} />
           <Route path="/joueurs" element={<Players />} />
+          <Route path="/joueurs/nouveau" element={<AddPlayer />} />
           <Route path="/joueurs/:playerId" element={<Profile />} />
           <Route path="/commentaires" element={<FeedbackList />} />
           <Route path="/commentaires/nouveau" element={<NewFeedback />} />

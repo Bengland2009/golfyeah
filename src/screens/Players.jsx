@@ -1,35 +1,22 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TopBar from '../components/TopBar';
 import Avatar from '../components/Avatar';
-import Sheet from '../components/Sheet';
-import Input from '../components/Input';
-import Button from '../components/Button';
 import { useData } from '../contexts/DataContext';
 import { avatarSrc } from '../lib/avatar';
 import { leaderboard, parLabel, scoreColor } from '../lib/scoring';
 
 export default function Players() {
   const navigate = useNavigate();
-  const { players, courses, completedRounds, addPlayer } = useData();
-  const [addOpen, setAddOpen] = useState(false);
-  const [name, setName] = useState('');
+  const { players, courses, completedRounds } = useData();
 
   const board = leaderboard(players, completedRounds, courses);
-
-  const save = async () => {
-    if (!name.trim()) return;
-    await addPlayer(name.trim());
-    setName('');
-    setAddOpen(false);
-  };
 
   return (
     <div>
       <TopBar />
       <div style={{ padding: 'var(--page-padding-mobile)', display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div style={{ font: 'var(--text-h2)' }}>Joueurs</div>
-        <span onClick={() => setAddOpen(true)} style={{ alignSelf: 'flex-start', font: 'var(--text-small)', color: 'var(--brand-action)', fontWeight: 600, cursor: 'pointer' }}>
+        <span onClick={() => navigate('/joueurs/nouveau')} style={{ alignSelf: 'flex-start', font: 'var(--text-small)', color: 'var(--brand-action)', fontWeight: 600, cursor: 'pointer' }}>
           + Ajouter un joueur
         </span>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -52,12 +39,6 @@ export default function Players() {
           ))}
         </div>
       </div>
-
-      <Sheet open={addOpen} onClose={() => setAddOpen(false)}>
-        <div style={{ font: 'var(--text-h3)' }}>Ajouter un joueur</div>
-        <Input label="Nom" placeholder="Prénom" value={name} onChange={(e) => setName(e.target.value)} />
-        <Button variant="primary" onClick={save} style={{ height: 52, width: '100%' }}>Ajouter</Button>
-      </Sheet>
     </div>
   );
 }
