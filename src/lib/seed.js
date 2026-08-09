@@ -42,14 +42,16 @@ export function seedRounds() {
 }
 
 export function seedRange() {
+  const DAY = 86400000;
+  const now = Date.now();
   return [
-    { id: 'g1', playerId: 'benoit', club: 'Driver', date: '7 août 2026', avg: 238, balls: 10 },
-    { id: 'g2', playerId: 'benoit', club: 'Driver', date: '28 juillet 2026', avg: 232, balls: 12 },
-    { id: 'g3', playerId: 'benoit', club: 'Bois 3', date: '7 août 2026', avg: 215, balls: 10 },
-    { id: 'g4', playerId: 'benoit', club: 'Fer 5', date: '28 juillet 2026', avg: 185, balls: 10 },
-    { id: 'g5', playerId: 'benoit', club: 'Fer 7', date: '7 août 2026', avg: 154, balls: 10 },
-    { id: 'g6', playerId: 'benoit', club: 'Fer 7', date: '28 juillet 2026', avg: 162, balls: 12 },
-    { id: 'g7', playerId: 'benoit', club: 'Fer 9', date: '28 juillet 2026', avg: 135, balls: 10 },
-    { id: 'g8', playerId: 'benoit', club: 'PW', date: '28 juillet 2026', avg: 118, balls: 10 },
+    { id: 'g1', playerId: 'benoit', club: 'Driver', date: '7 août 2026', avg: 238, balls: 10, createdAt: now - 2 * DAY },
+    { id: 'g2', playerId: 'benoit', club: 'Driver', date: '28 juillet 2026', avg: 232, balls: 12, createdAt: now - 12 * DAY },
+    { id: 'g3', playerId: 'benoit', club: 'Bois 3', date: '7 août 2026', avg: 215, balls: 10, createdAt: now - 2 * DAY },
+    { id: 'g4', playerId: 'benoit', club: 'Fer 5', date: '28 juillet 2026', avg: 185, balls: 10, createdAt: now - 12 * DAY },
+    { id: 'g5', playerId: 'benoit', club: 'Fer 7', date: '7 août 2026', avg: 154, balls: 10, createdAt: now - 2 * DAY },
+    { id: 'g6', playerId: 'benoit', club: 'Fer 7', date: '28 juillet 2026', avg: 162, balls: 12, createdAt: now - 12 * DAY },
+    { id: 'g7', playerId: 'benoit', club: 'Fer 9', date: '28 juillet 2026', avg: 135, balls: 10, createdAt: now - 12 * DAY },
+    { id: 'g8', playerId: 'benoit', club: 'PW', date: '28 juillet 2026', avg: 118, balls: 10, createdAt: now - 12 * DAY },
   ];
 }

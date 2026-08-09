@@ -2,6 +2,25 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.14.0 — 2026-08-08
+
+- Réorganisation de la navigation : **« Range »** devient **« Pratique »**,
+  le centre d'entraînement de Golfyeah! (même icône dans la barre du bas).
+  - La page Pratique est maintenant un tableau de bord avec 4 cartes
+    élégantes (icône, titre, description) : **Mes distances**,
+    **Nouvelle séance**, **Caddie**, **Historique** — chacune
+    accessible en un seul tap.
+  - **Caddie** n'est plus dans le menu ☰ ; c'est maintenant une
+    sous-section de Pratique, toujours accessible en un clic.
+  - Nouvel écran **Historique** : toutes les séances de pratique
+    (tous bâtons confondus), triées de la plus récente à la plus
+    ancienne.
+  - Les anciens liens `/range` et `/caddie` redirigent automatiquement
+    vers leur nouvel emplacement.
+  - Architecture pensée pour accueillir facilement de futures cartes
+    (statistiques, dispersion des coups, exercices, défis, conseils)
+    sans redesign.
+
 ## v1.13.0 — 2026-08-08
 
 - Nouvelle section **Caddie** (menu ☰), le carnet de distances de poche

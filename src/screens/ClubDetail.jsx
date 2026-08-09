@@ -16,7 +16,7 @@ export default function ClubDetail() {
 
   return (
     <div>
-      <Header title={clubName} onBack={() => navigate('/range')} />
+      <Header title={clubName} onBack={() => navigate('/pratique/distances')} />
       <div style={{ padding: 'var(--page-padding-mobile)', display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ font: 'var(--text-stat-lg)', fontSize: 44 }}>{avg} vg</div>

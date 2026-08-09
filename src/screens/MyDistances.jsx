@@ -1,11 +1,11 @@
 import { useNavigate } from 'react-router-dom';
-import TopBar from '../components/TopBar';
+import Header from '../components/Header';
 import Button from '../components/Button';
 import { useData } from '../contexts/DataContext';
 import { useMe } from '../lib/useMe';
 import { clubAverage } from '../lib/scoring';
 
-export default function Range() {
+export default function MyDistances() {
   const navigate = useNavigate();
   const { range, CLUB_ORDER } = useData();
   const me = useMe();
@@ -15,10 +15,9 @@ export default function Range() {
 
   return (
     <div>
-      <TopBar />
+      <Header title="Mes distances" onBack={() => navigate('/pratique')} />
       <div style={{ padding: 'var(--page-padding-mobile)', display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <div style={{ font: 'var(--text-h2)' }}>Mes distances</div>
-        <Button variant="primary" onClick={() => navigate('/range/nouveau')} style={{ alignSelf: 'flex-start', borderRadius: 999, height: 46, padding: '0 22px', fontSize: 16 }}>
+        <Button variant="primary" onClick={() => navigate('/pratique/nouvelle-seance')} style={{ alignSelf: 'flex-start', borderRadius: 999, height: 46, padding: '0 22px', fontSize: 16 }}>
           + Ajouter une séance
         </Button>
 
@@ -35,7 +34,7 @@ export default function Range() {
             return (
               <div
                 key={club}
-                onClick={() => navigate(`/range/${encodeURIComponent(club)}`)}
+                onClick={() => navigate(`/pratique/distances/${encodeURIComponent(club)}`)}
                 style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', border: '1px solid var(--border-default)', borderRadius: 9 }}
               >
                 <div>

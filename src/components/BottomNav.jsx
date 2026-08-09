@@ -4,7 +4,7 @@ const ITEMS = [
   { key: 'home', label: 'Accueil', Icon: HomeIcon },
   { key: 'rounds', label: 'Parties', Icon: FlagIcon },
   { key: 'courses', label: 'Terrains', Icon: MapIcon },
-  { key: 'range', label: 'Range', Icon: TargetIcon },
+  { key: 'pratique', label: 'Pratique', Icon: TargetIcon },
   { key: 'players', label: 'Joueurs', Icon: UsersIcon },
 ];
 

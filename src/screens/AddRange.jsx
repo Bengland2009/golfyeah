@@ -33,12 +33,12 @@ export default function AddRange() {
 
   const save = async () => {
     await addRangeEntry(me.id, d);
-    navigate('/range');
+    navigate('/pratique/distances');
   };
 
   return (
     <div>
-      <Header title="Nouvelle séance" onBack={() => navigate('/range')} />
+      <Header title="Nouvelle séance" onBack={() => navigate('/pratique/distances')} />
       <div style={{ padding: 'var(--page-padding-mobile)', display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div>
           <div style={{ font: 'var(--text-label)', marginBottom: 8 }}>Mes bâtons</div>

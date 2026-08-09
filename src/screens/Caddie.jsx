@@ -40,7 +40,7 @@ export default function Caddie() {
 
   return (
     <div>
-      <Header title="Caddie" onBack={() => navigate('/')} />
+      <Header title="Caddie" onBack={() => navigate('/pratique')} />
       <div style={{ padding: 'var(--page-padding-mobile)', display: 'flex', flexDirection: 'column', gap: 20 }}>
         <CaddieCard Icon={TargetIcon} title="Distances de référence" subtitle="Distances de carry (dans les airs)">
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', rowGap: 22, columnGap: 16 }}>

@@ -13,9 +13,11 @@ import Summary from './screens/Summary';
 import Rounds from './screens/Rounds';
 import Courses from './screens/Courses';
 import AddCourse from './screens/AddCourse';
-import Range from './screens/Range';
+import Pratique from './screens/Pratique';
+import MyDistances from './screens/MyDistances';
 import AddRange from './screens/AddRange';
 import ClubDetail from './screens/ClubDetail';
+import SessionHistory from './screens/SessionHistory';
 import Players from './screens/Players';
 import Profile from './screens/Profile';
 import FeedbackList from './screens/FeedbackList';
@@ -28,7 +30,7 @@ const NAV_ACTIVE_BY_PREFIX = [
   ['/resume', 'rounds'],
   ['/parties', 'rounds'],
   ['/terrains', 'courses'],
-  ['/range', 'range'],
+  ['/pratique', 'pratique'],
   ['/joueurs', 'players'],
   ['/', 'home'],
 ];
@@ -38,7 +40,7 @@ function navActiveFor(pathname) {
   return hit ? hit[1] : 'home';
 }
 
-const NAV_TARGET = { home: '/', rounds: '/parties', courses: '/terrains', range: '/range', players: '/joueurs' };
+const NAV_TARGET = { home: '/', rounds: '/parties', courses: '/terrains', pratique: '/pratique', players: '/joueurs' };
 
 function Shell() {
   const { user, loading, logout, login } = useAuth();
@@ -83,15 +85,20 @@ function Shell() {
           <Route path="/parties" element={<Rounds />} />
           <Route path="/terrains" element={<Courses />} />
           <Route path="/terrains/nouveau" element={<AddCourse />} />
-          <Route path="/range" element={<Range />} />
-          <Route path="/range/nouveau" element={<AddRange />} />
-          <Route path="/range/:club" element={<ClubDetail />} />
+          <Route path="/pratique" element={<Pratique />} />
+          <Route path="/pratique/distances" element={<MyDistances />} />
+          <Route path="/pratique/distances/:club" element={<ClubDetail />} />
+          <Route path="/pratique/nouvelle-seance" element={<AddRange />} />
+          <Route path="/pratique/historique" element={<SessionHistory />} />
+          <Route path="/pratique/caddie" element={<Caddie />} />
           <Route path="/joueurs" element={<Players />} />
           <Route path="/joueurs/:playerId" element={<Profile />} />
           <Route path="/commentaires" element={<FeedbackList />} />
           <Route path="/commentaires/nouveau" element={<NewFeedback />} />
           <Route path="/commentaires/:id" element={<FeedbackDetail />} />
-          <Route path="/caddie" element={<Caddie />} />
+          {/* Legacy shortcuts, kept as redirects in case a device has an old link/shortcut. */}
+          <Route path="/range" element={<Navigate to="/pratique/distances" replace />} />
+          <Route path="/caddie" element={<Navigate to="/pratique/caddie" replace />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>

@@ -122,7 +122,7 @@ export default function Profile() {
                 </div>
               ))}
             </div>
-            <span onClick={() => navigate('/range')} style={{ font: 'var(--text-small)', color: 'var(--brand-action)', fontWeight: 600, cursor: 'pointer', display: 'inline-block', marginTop: 10 }}>
+            <span onClick={() => navigate('/pratique/distances')} style={{ font: 'var(--text-small)', color: 'var(--brand-action)', fontWeight: 600, cursor: 'pointer', display: 'inline-block', marginTop: 10 }}>
               Voir toutes les distances →
             </span>
           </div>

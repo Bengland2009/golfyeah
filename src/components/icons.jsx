@@ -64,6 +64,33 @@ export function TreeIcon(props) {
     </svg>
   );
 }
+export function RulerIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" width={22} height={22} {...common} {...props}>
+      <path d="M3 17 17 3l4 4L7 21Z" />
+      <path d="M7.5 12.5 10 15" />
+      <path d="M10.5 9.5 13 12" />
+      <path d="M13.5 6.5 16 9" />
+    </svg>
+  );
+}
+export function PlusCircleIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" width={22} height={22} {...common} {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 8v8" />
+      <path d="M8 12h8" />
+    </svg>
+  );
+}
+export function TrendingUpIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" width={22} height={22} {...common} {...props}>
+      <path d="M3 17 9 11l4 4 8-8" />
+      <path d="M15 7h6v6" />
+    </svg>
+  );
+}
 export function BeerIcon(props) {
   return (
     <svg viewBox="0 0 24 24" width={16} height={16} {...common} {...props}>

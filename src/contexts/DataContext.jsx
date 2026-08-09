@@ -481,7 +481,7 @@ export function DataProvider({ children }) {
 
   // ---------- range ----------
   const addRangeEntry = useCallback(async (playerId, entry) => {
-    const doc_ = { playerId, club: entry.club, avg: Number(entry.avg), balls: Number(entry.balls), date: entry.date, location: entry.location || '' };
+    const doc_ = { playerId, club: entry.club, avg: Number(entry.avg), balls: Number(entry.balls), date: entry.date, location: entry.location || '', createdAt: Date.now() };
     if (isFirebaseConfigured) {
       await addDoc(collection(db, 'groups', GROUP_ID, 'range'), doc_);
     } else {
