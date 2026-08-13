@@ -2,6 +2,23 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.17.0 — 2026-08-09
+
+- Réorganisation complète de la page **Nouvelle partie** pour suivre
+  l'ordre naturel de décision : Type de partie → Joueurs → Terrain →
+  Format → Mode de saisie → Commencer la partie.
+  - "Ajouter un joueur" est maintenant accessible directement depuis
+    la section Joueurs.
+  - Pour une partie intérieure, un choix "Partie rapide" (zéro saisie,
+    prête à jouer) ou "Parcours de simulateur" (nommer le lieu, avec
+    configuration progressive ou complète des trous) remplace
+    l'ancien formulaire toujours affiché.
+  - Type de partie, Terrain (intérieur), Format et Mode de saisie
+    utilisent maintenant des contrôles segmentés compacts au lieu de
+    grands blocs empilés — la page est nettement plus courte, plus
+    rapide à parcourir et tient presque entièrement à l'écran sans
+    défiler pour une partie extérieure typique.
+
 ## v1.16.0 — 2026-08-09
 
 - Nouveau mode **Entrée rapide** pour enregistrer une ronde déjà
