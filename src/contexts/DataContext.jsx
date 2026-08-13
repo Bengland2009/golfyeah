@@ -203,26 +203,22 @@ export function DataProvider({ children }) {
     }
   }, [season]);
 
-  // Unified indoor-round entry point used by the "Golf intérieur /
-  // simulateur" branch of Nouvelle partie:
+  // Resolves an indoor/simulator venue to a course id, used by both the
+  // live-mode and Quick Entry setup paths:
   //  1. If venue+simulatedCourse matches an already-saved (non-draft)
-  //     indoor course, reuse it outright — this is the "reuse this course
-  //     automatically next time" behavior, no separate picker needed.
+  //     indoor course, reuse it outright — "reuse this course automatically
+  //     next time", no separate picker needed.
   //  2. Otherwise, if holesConfig is given (golfer chose to configure the
   //     course up front), create it as a normal fully-specified course.
   //  3. Otherwise, create a draft (isQuickDraft: true, pars/yardages all
-  //     null) that gets filled in progressively, one hole at a time, as
-  //     HoleSetupPrompt is triggered during play.
-  const startIndoorRound = useCallback(async (venue, simulatedCourse, format, playerIds, holesConfig) => {
+  //     null) that gets filled in progressively, one hole at a time.
+  const resolveIndoorCourseId = useCallback(async (venue, simulatedCourse, format, holesConfig) => {
     const venueNorm = venue.trim().toLowerCase();
     const simNorm = (simulatedCourse || '').trim().toLowerCase();
     const existing = courses.find((c) => c.kind === 'interieur' && !c.isQuickDraft &&
       c.name.trim().toLowerCase() === venueNorm &&
       (c.simulatedCourse || '').trim().toLowerCase() === simNorm);
-    if (existing) {
-      await startRound(existing.id, existing.holes, playerIds);
-      return;
-    }
+    if (existing) return existing.id;
     const course = holesConfig
       ? {
           name: venue.trim(), city: '', kind: 'interieur', simulatedCourse: (simulatedCourse || '').trim(),
@@ -233,16 +229,50 @@ export function DataProvider({ children }) {
           holes: format, pars: Array(format).fill(null), yardages: Array(format).fill(null),
           isQuickDraft: true,
         };
-    let courseId;
     if (isFirebaseConfigured) {
       const ref = await addDoc(collection(db, 'groups', GROUP_ID, 'courses'), course);
-      courseId = ref.id;
-    } else {
-      courseId = 'c' + Date.now();
-      setLocal((s) => ({ ...s, courses: [...s.courses, { id: courseId, ...course }] }));
+      return ref.id;
     }
+    const courseId = 'c' + Date.now();
+    setLocal((s) => ({ ...s, courses: [...s.courses, { id: courseId, ...course }] }));
+    return courseId;
+  }, [courses]);
+
+  const startIndoorRound = useCallback(async (venue, simulatedCourse, format, playerIds, holesConfig) => {
+    const courseId = await resolveIndoorCourseId(venue, simulatedCourse, format, holesConfig);
     await startRound(courseId, format, playerIds);
-  }, [courses, startRound]);
+  }, [resolveIndoorCourseId, startRound]);
+
+  // Bulk-writes the discovered pars/yardages for a course (e.g. once a Quick
+  // Entry scorecard on a quick-draft simulator course is fully filled in).
+  // Deliberately leaves isQuickDraft untouched — Summary's "Enregistrer ce
+  // parcours ?" prompt is what offers to make it reusable, same as live play.
+  const updateCourseHoles = useCallback(async (courseId, pars, yardages) => {
+    if (isFirebaseConfigured) {
+      await updateDoc(doc(db, 'groups', GROUP_ID, 'courses', courseId), { pars, yardages });
+    } else {
+      setLocal((s) => ({ ...s, courses: s.courses.map((c) => (c.id === courseId ? { ...c, pars, yardages } : c)) }));
+    }
+  }, []);
+
+  // Quick Entry builds a round in its final shape directly (totals,
+  // mulligans, lostBalls, beers, holeScores) instead of going through the
+  // active/live per-hole machinery — same finished document shape as
+  // finishRound() produces, so every screen that reads a completed round
+  // (leaderboard, Profile stats, Summary) treats it identically either way.
+  const createCompletedRound = useCallback(async (data) => {
+    const round = {
+      ...data, status: 'completed', season,
+      date: new Date().toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' }),
+    };
+    if (isFirebaseConfigured) {
+      const ref = await addDoc(collection(db, 'groups', GROUP_ID, 'rounds'), round);
+      return ref.id;
+    }
+    const id = 'r' + Date.now();
+    setLocal((s) => ({ ...s, rounds: [{ id, ...round }, ...s.rounds] }));
+    return id;
+  }, [season]);
 
   const saveQuickCourseAsReusable = useCallback(async (courseId, { name, simulatedCourse }) => {
     const patch = { isQuickDraft: false };
@@ -514,8 +544,9 @@ export function DataProvider({ children }) {
     players, courses, range, expenses, feedback, feedbackComments, allRounds, completedRounds,
     liveRound, currentLiveCourse, getHolePar, getHoleYardage,
     addPlayer, setPlayerPhoto,
-    addCourse, updateCourseHolePar,
-    startRound, startIndoorRound, saveQuickCourseAsReusable,
+    addCourse, updateCourseHolePar, updateCourseHoles,
+    startRound, startIndoorRound, resolveIndoorCourseId, saveQuickCourseAsReusable,
+    createCompletedRound,
     setStrokes, bumpHoleField, addBeer, removeBeer, changeHole,
     editHoleForRoundOnly, editHoleForCourse, finishRound, abandonRound,
     addRangeEntry, getMyClubs, addClub,

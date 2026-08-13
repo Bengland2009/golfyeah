@@ -2,6 +2,27 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.16.0 — 2026-08-09
+
+- Nouveau mode **Entrée rapide** pour enregistrer une ronde déjà
+  jouée, en plus du mode En direct (inchangé) :
+  - Après avoir choisi le terrain, le format et les joueurs, un choix
+    "Mode de saisie" apparaît — En direct ou Entrée rapide.
+  - En Entrée rapide, toute la carte de pointage tient sur une seule
+    page (Aller/Retour séparés en 18 trous), avec le par de chaque
+    trou déjà affiché et non modifiable.
+  - Le score total et le +/- par joueur se calculent automatiquement
+    pendant la saisie, avec les statistiques facultatives Mulligans /
+    Balles perdues / Bières sous la carte.
+  - Pour un simulateur dont les pars ne sont pas encore connus, le par
+    est demandé une seule fois par trou (touche "?") et mémorisé pour
+    le reste de la saisie — mêmes trous progressifs qu'en mode En
+    direct.
+  - Produit exactement les mêmes statistiques et le même classement
+    que le mode En direct : la ronde est enregistrée dans le même
+    format que le mode En direct, donc leaderboard, profils et
+    résumé de partie fonctionnent de façon identique.
+
 ## v1.15.0 — 2026-08-09
 
 - **Ajouter un joueur** est maintenant un écran dédié avec validation

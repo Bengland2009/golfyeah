@@ -13,13 +13,14 @@ const PILL_SEG = { borderRadius: 999, flex: 1 };
 
 export default function NewRound() {
   const navigate = useNavigate();
-  const { courses, players, startRound, startIndoorRound } = useData();
+  const { courses, players, startRound, startIndoorRound, resolveIndoorCourseId } = useData();
   const outdoorCourses = courses.filter((c) => c.kind !== 'interieur' && !c.isQuickDraft);
 
   const [roundType, setRoundType] = useState('exterieur');
   const [courseId, setCourseId] = useState(outdoorCourses[0]?.id);
   const [format, setFormat] = useState(18);
   const [playerIds, setPlayerIds] = useState([]);
+  const [entryMode, setEntryMode] = useState('direct');
   const [starting, setStarting] = useState(false);
 
   // indoor-only
@@ -50,13 +51,25 @@ export default function NewRound() {
   const begin = async () => {
     if (!canStart || starting) return;
     setStarting(true);
-    if (roundType === 'exterieur') {
-      await startRound(courseId, format, playerIds);
-    } else {
-      const holesConfig = progressive ? null : { pars: indoorPars, yardages: indoorYardages };
-      await startIndoorRound(venue, simulatedCourse, format, playerIds, holesConfig);
+    const holesConfig = progressive ? null : { pars: indoorPars, yardages: indoorYardages };
+
+    if (entryMode === 'direct') {
+      if (roundType === 'exterieur') {
+        await startRound(courseId, format, playerIds);
+      } else {
+        await startIndoorRound(venue, simulatedCourse, format, playerIds, holesConfig);
+      }
+      navigate('/partie/en-cours');
+      return;
     }
-    navigate('/partie/en-cours');
+
+    // Entrée rapide never creates an "active" round — the scorecard is
+    // filled in on one page and saved as a completed round in one shot, so
+    // we only need to resolve which course it belongs to.
+    const resolvedCourseId = roundType === 'exterieur'
+      ? courseId
+      : await resolveIndoorCourseId(venue, simulatedCourse, format, holesConfig);
+    navigate('/partie/entree-rapide', { state: { courseId: resolvedCourseId, format, playerIds } });
   };
 
   return (
@@ -180,8 +193,26 @@ export default function NewRound() {
           </div>
         </div>
 
+        <div>
+          <div style={{ font: 'var(--text-label)', marginBottom: 8 }}>Mode de saisie</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <RadioRow
+              selected={entryMode === 'direct'}
+              label="En direct"
+              sub="Entrer les scores pendant la partie."
+              onClick={() => setEntryMode('direct')}
+            />
+            <RadioRow
+              selected={entryMode === 'rapide'}
+              label="Entrée rapide"
+              sub="Entrer la carte de pointage une fois la ronde terminée."
+              onClick={() => setEntryMode('rapide')}
+            />
+          </div>
+        </div>
+
         <Button variant="primary" onClick={begin} disabled={!canStart || starting} style={{ height: 52, width: '100%' }}>
-          Commencer la partie
+          {entryMode === 'direct' ? 'Commencer la partie' : 'Continuer vers la carte de pointage'}
         </Button>
       </div>
     </div>
