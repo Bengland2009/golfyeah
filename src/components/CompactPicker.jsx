@@ -1,3 +1,5 @@
+import { ChevronDownIcon } from './icons';
+
 export default function CompactPicker({ value, sublabel, placeholder, onClick }) {
   return (
     <div
@@ -13,7 +15,7 @@ export default function CompactPicker({ value, sublabel, placeholder, onClick })
         </div>
         {sublabel && <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>{sublabel}</div>}
       </div>
-      <span style={{ color: 'var(--text-muted)', fontSize: 13, flexShrink: 0 }}>▾</span>
+      <ChevronDownIcon width={20} height={20} strokeWidth={2.25} style={{ color: 'var(--text-body)', flexShrink: 0 }} />
     </div>
   );
 }

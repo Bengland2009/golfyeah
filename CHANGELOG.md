@@ -2,6 +2,25 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.17.2 — 2026-08-09
+
+- Finitions supplémentaires sur **Nouvelle partie** :
+  - Le résumé devient un véritable état de validation : "Prêt à
+    commencer" avec le terrain, le nombre de joueurs, le format et le
+    mode de saisie, chacun avec une icône, sur fond vert une fois la
+    configuration complète.
+  - Tant que la configuration est incomplète, un message guide
+    directement l'utilisateur ("Sélectionne au moins un joueur.",
+    "Choisis un terrain.", "Nomme ton parcours de simulateur.") à la
+    même place — le bouton "Commencer la partie" ne s'active qu'une
+    fois tout complété.
+  - La carte de chaque joueur est maintenant entièrement cliquable
+    (photo, nom ou espace autour) au lieu de seulement l'avatar.
+  - "+ Ajouter un joueur" / "+ Ajouter un terrain" légèrement agrandis
+    (40px) pour bien se distinguer comme actions secondaires.
+  - Le chevron du sélecteur de terrain est remplacé par une icône plus
+    visible indiquant clairement une liste déroulante.
+
 ## v1.17.1 — 2026-08-09
 
 - Raffinements UX sur **Nouvelle partie** :

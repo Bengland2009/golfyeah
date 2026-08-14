@@ -8,6 +8,7 @@ import HolesGrid from '../components/HolesGrid';
 import SegmentedControl from '../components/SegmentedControl';
 import CompactPicker from '../components/CompactPicker';
 import Sheet from '../components/Sheet';
+import { FlagIcon, UsersIcon, TargetIcon, EditIcon, CheckIcon } from '../components/icons';
 import { useData } from '../contexts/DataContext';
 import { avatarSrc } from '../lib/avatar';
 
@@ -16,7 +17,16 @@ const ENTRY_MODES = [
   { value: 'rapide', label: 'Entrée rapide', sub: 'Entrer la carte de pointage une fois la ronde terminée.' },
 ];
 
-const ADD_BUTTON_STYLE = { alignSelf: 'flex-start', height: 36, padding: '0 16px', fontSize: 13, borderRadius: 999, marginTop: 10 };
+const ADD_BUTTON_STYLE = { alignSelf: 'flex-start', height: 40, padding: '0 16px', fontSize: 13, borderRadius: 999, marginTop: 10 };
+
+function SummaryRow({ Icon, text }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <Icon width={16} height={16} strokeWidth={2} style={{ color: 'var(--brand-action)', flexShrink: 0 }} />
+      <span style={{ font: 'var(--text-body)', fontSize: 14 }}>{text}</span>
+    </div>
+  );
+}
 
 function SectionLabel({ children }) {
   return <div style={{ font: 'var(--text-label)', marginBottom: 6 }}>{children}</div>;
@@ -97,18 +107,15 @@ export default function NewRound() {
     ? selectedCourse?.name
     : (isQuickIndoor ? 'Partie rapide' : (venue.trim() || 'Simulateur'));
 
-  const summaryParts = [
-    roundType === 'exterieur' ? 'Extérieur' : 'Intérieur',
-    terrainLabel,
-    `${format} trous`,
-    playerIds.length > 0 ? `${playerIds.length} joueur${playerIds.length > 1 ? 's' : ''}` : null,
-    selectedEntryMode.label,
-  ].filter(Boolean);
+  let statusMessage = 'Prêt à commencer.';
+  if (playerIds.length === 0) statusMessage = 'Sélectionne au moins un joueur.';
+  else if (roundType === 'exterieur' && !courseId) statusMessage = 'Choisis un terrain.';
+  else if (roundType === 'interieur' && !isQuickIndoor && !venue.trim()) statusMessage = 'Nomme ton parcours de simulateur.';
 
   return (
     <div>
       <Header title="Nouvelle partie" onBack={() => navigate('/')} />
-      <div style={{ padding: 'var(--page-padding-mobile)', paddingBottom: 150, display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ padding: 'var(--page-padding-mobile)', paddingBottom: 280, display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div>
           <SectionLabel>Type de partie</SectionLabel>
           <SegmentedControl
@@ -123,19 +130,21 @@ export default function NewRound() {
 
         <div>
           <SectionLabel>Joueurs</SectionLabel>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'flex-start' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'flex-start' }}>
             {players.map((p) => {
               const selected = playerIds.includes(p.id);
               return (
-                <div key={p.id} onClick={() => togglePlayer(p.id)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
-                  <div
-                    style={{
-                      position: 'relative', padding: 3, borderRadius: '50%',
-                      border: selected ? '2.5px solid var(--brand-action)' : '2.5px solid transparent',
-                      background: selected ? 'var(--surface-tint)' : 'transparent',
-                      boxShadow: selected ? '0 3px 10px rgba(0,103,71,0.18)' : 'none',
-                    }}
-                  >
+                <div
+                  key={p.id}
+                  onClick={() => togglePlayer(p.id)}
+                  style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, cursor: 'pointer',
+                    padding: '8px 10px', borderRadius: 14, minWidth: 68,
+                    background: selected ? 'var(--surface-tint)' : 'transparent',
+                    boxShadow: selected ? '0 3px 10px rgba(0,103,71,0.15)' : 'none',
+                  }}
+                >
+                  <div style={{ position: 'relative', padding: 3, borderRadius: '50%', border: selected ? '2.5px solid var(--brand-action)' : '2.5px solid transparent' }}>
                     <Avatar src={avatarSrc(p)} name={p.name} size={52} />
                     {selected && (
                       <span style={{ position: 'absolute', bottom: -1, right: -1, width: 17, height: 17, borderRadius: '50%', background: 'var(--brand-action)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, border: '2px solid #fff' }}>✓</span>
@@ -236,14 +245,35 @@ export default function NewRound() {
         style={{
           position: 'fixed', left: 0, right: 0, bottom: 'calc(68px + env(safe-area-inset-bottom, 0px))', margin: '0 auto',
           background: '#fff', borderTop: '1px solid var(--border-default)',
-          padding: '10px var(--page-padding-mobile)', zIndex: 15,
+          padding: '12px var(--page-padding-mobile)', zIndex: 15,
         }}
       >
-        {summaryParts.length > 0 && (
-          <div style={{ font: 'var(--text-small)', fontSize: 12, color: 'var(--text-muted)', textAlign: 'center', marginBottom: 8 }}>
-            {summaryParts.join(' · ')}
+        <div
+          style={{
+            borderRadius: 12, padding: '12px 14px', marginBottom: 12,
+            background: canStart ? '#EAF5EF' : 'var(--surface-tint)',
+            border: canStart ? '1px solid rgba(0,103,71,0.15)' : '1px solid var(--border-default)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: canStart ? 10 : 0 }}>
+            {canStart ? (
+              <CheckIcon width={17} height={17} strokeWidth={2.5} style={{ color: 'var(--brand-action)', flexShrink: 0 }} />
+            ) : (
+              <span style={{ width: 15, height: 15, borderRadius: '50%', border: '2px solid var(--text-disabled)', flexShrink: 0 }} />
+            )}
+            <span style={{ font: 'var(--text-label)', fontWeight: 700, color: canStart ? 'var(--brand-action)' : 'var(--text-body)' }}>
+              {statusMessage}
+            </span>
           </div>
-        )}
+          {canStart && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <SummaryRow Icon={FlagIcon} text={terrainLabel} />
+              <SummaryRow Icon={UsersIcon} text={`${playerIds.length} joueur${playerIds.length > 1 ? 's' : ''}`} />
+              <SummaryRow Icon={TargetIcon} text={`${format} trous`} />
+              <SummaryRow Icon={EditIcon} text={selectedEntryMode.label} />
+            </div>
+          )}
+        </div>
         <Button variant="primary" onClick={begin} disabled={!canStart || starting} style={{ height: 50, width: '100%' }}>
           {entryMode === 'direct' ? 'Commencer la partie' : 'Continuer vers la carte de pointage'}
         </Button>
