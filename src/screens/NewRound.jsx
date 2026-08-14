@@ -6,16 +6,20 @@ import Input from '../components/Input';
 import Avatar from '../components/Avatar';
 import HolesGrid from '../components/HolesGrid';
 import SegmentedControl from '../components/SegmentedControl';
+import CompactPicker from '../components/CompactPicker';
+import Sheet from '../components/Sheet';
 import { useData } from '../contexts/DataContext';
 import { avatarSrc } from '../lib/avatar';
 
-const ENTRY_MODE_CAPTIONS = {
-  direct: 'Entrer les scores pendant la partie.',
-  rapide: 'Entrer la carte de pointage une fois la ronde terminée.',
-};
+const ENTRY_MODES = [
+  { value: 'direct', label: 'En direct', sub: 'Entrer les scores pendant la partie.' },
+  { value: 'rapide', label: 'Entrée rapide', sub: 'Entrer la carte de pointage une fois la ronde terminée.' },
+];
+
+const ADD_BUTTON_STYLE = { alignSelf: 'flex-start', height: 36, padding: '0 16px', fontSize: 13, borderRadius: 999, marginTop: 10 };
 
 function SectionLabel({ children }) {
-  return <div style={{ font: 'var(--text-label)', marginBottom: 8 }}>{children}</div>;
+  return <div style={{ font: 'var(--text-label)', marginBottom: 6 }}>{children}</div>;
 }
 
 export default function NewRound() {
@@ -30,6 +34,8 @@ export default function NewRound() {
   const [playerIds, setPlayerIds] = useState([]);
   const [entryMode, setEntryMode] = useState('direct');
   const [starting, setStarting] = useState(false);
+  const [coursePickerOpen, setCoursePickerOpen] = useState(false);
+  const [entryModePickerOpen, setEntryModePickerOpen] = useState(false);
 
   // indoor-only
   const [venue, setVenue] = useState('');
@@ -53,6 +59,8 @@ export default function NewRound() {
   });
 
   const isQuickIndoor = roundType === 'interieur' && indoorMode === 'rapide';
+  const selectedCourse = outdoorCourses.find((c) => c.id === courseId);
+  const selectedEntryMode = ENTRY_MODES.find((m) => m.value === entryMode);
 
   const canStart = roundType === 'exterieur'
     ? Boolean(courseId) && playerIds.length > 0
@@ -85,10 +93,22 @@ export default function NewRound() {
     navigate('/partie/entree-rapide', { state: { courseId: resolvedCourseId, format, playerIds } });
   };
 
+  const terrainLabel = roundType === 'exterieur'
+    ? selectedCourse?.name
+    : (isQuickIndoor ? 'Partie rapide' : (venue.trim() || 'Simulateur'));
+
+  const summaryParts = [
+    roundType === 'exterieur' ? 'Extérieur' : 'Intérieur',
+    terrainLabel,
+    `${format} trous`,
+    playerIds.length > 0 ? `${playerIds.length} joueur${playerIds.length > 1 ? 's' : ''}` : null,
+    selectedEntryMode.label,
+  ].filter(Boolean);
+
   return (
     <div>
       <Header title="Nouvelle partie" onBack={() => navigate('/')} />
-      <div style={{ padding: 'var(--page-padding-mobile)', display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div style={{ padding: 'var(--page-padding-mobile)', paddingBottom: 150, display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div>
           <SectionLabel>Type de partie</SectionLabel>
           <SegmentedControl
@@ -108,10 +128,17 @@ export default function NewRound() {
               const selected = playerIds.includes(p.id);
               return (
                 <div key={p.id} onClick={() => togglePlayer(p.id)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
-                  <div style={{ position: 'relative', padding: 3, borderRadius: '50%', border: selected ? '3px solid var(--brand-action)' : '3px solid transparent' }}>
+                  <div
+                    style={{
+                      position: 'relative', padding: 3, borderRadius: '50%',
+                      border: selected ? '2.5px solid var(--brand-action)' : '2.5px solid transparent',
+                      background: selected ? 'var(--surface-tint)' : 'transparent',
+                      boxShadow: selected ? '0 3px 10px rgba(0,103,71,0.18)' : 'none',
+                    }}
+                  >
                     <Avatar src={avatarSrc(p)} name={p.name} size={52} />
                     {selected && (
-                      <span style={{ position: 'absolute', bottom: -2, right: -2, width: 20, height: 20, borderRadius: '50%', background: 'var(--brand-action)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, border: '2px solid #fff' }}>✓</span>
+                      <span style={{ position: 'absolute', bottom: -1, right: -1, width: 17, height: 17, borderRadius: '50%', background: 'var(--brand-action)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, border: '2px solid #fff' }}>✓</span>
                     )}
                   </div>
                   <span style={{ font: 'var(--text-small)', fontWeight: selected ? 700 : 400, color: selected ? 'var(--text-body)' : 'var(--text-muted)' }}>{p.name}</span>
@@ -119,38 +146,23 @@ export default function NewRound() {
               );
             })}
           </div>
-          <span onClick={() => navigate('/joueurs/nouveau')} style={{ display: 'inline-block', marginTop: 10, font: 'var(--text-small)', color: 'var(--brand-action)', fontWeight: 600, cursor: 'pointer' }}>
+          <Button variant="secondary" onClick={() => navigate('/joueurs/nouveau')} style={ADD_BUTTON_STYLE}>
             + Ajouter un joueur
-          </span>
+          </Button>
         </div>
 
         {roundType === 'exterieur' ? (
           <div>
             <SectionLabel>Terrain</SectionLabel>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {outdoorCourses.map((c) => (
-                <div
-                  key={c.id}
-                  onClick={() => setCourseId(c.id)}
-                  style={{
-                    padding: '10px 12px', borderRadius: 10,
-                    border: c.id === courseId ? '2px solid var(--brand-action)' : '1px solid var(--border-default)',
-                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  }}
-                >
-                  <div>
-                    <div style={{ font: 'var(--text-body)', fontWeight: 600 }}>{c.name}</div>
-                    <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>{c.city}</div>
-                  </div>
-                  {c.id === courseId && (
-                    <span style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--brand-action)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, flexShrink: 0 }}>✓</span>
-                  )}
-                </div>
-              ))}
-            </div>
-            <span onClick={() => navigate('/terrains/nouveau')} style={{ display: 'inline-block', marginTop: 10, font: 'var(--text-small)', color: 'var(--brand-action)', fontWeight: 600, cursor: 'pointer' }}>
+            <CompactPicker
+              value={selectedCourse?.name}
+              sublabel={selectedCourse?.city}
+              placeholder="Choisir un terrain"
+              onClick={() => setCoursePickerOpen(true)}
+            />
+            <Button variant="secondary" onClick={() => navigate('/terrains/nouveau')} style={ADD_BUTTON_STYLE}>
               + Ajouter un terrain
-            </span>
+            </Button>
           </div>
         ) : (
           <div>
@@ -212,20 +224,78 @@ export default function NewRound() {
 
         <div>
           <SectionLabel>Mode de saisie</SectionLabel>
-          <SegmentedControl
-            value={entryMode}
-            onChange={setEntryMode}
-            options={[{ value: 'direct', label: 'En direct' }, { value: 'rapide', label: 'Entrée rapide' }]}
+          <CompactPicker
+            value={selectedEntryMode.label}
+            onClick={() => setEntryModePickerOpen(true)}
           />
-          <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)', marginTop: 8 }}>
-            {ENTRY_MODE_CAPTIONS[entryMode]}
-          </div>
         </div>
+      </div>
 
-        <Button variant="primary" onClick={begin} disabled={!canStart || starting} style={{ height: 52, width: '100%' }}>
+      <div
+        className="gy-phone-col"
+        style={{
+          position: 'fixed', left: 0, right: 0, bottom: 'calc(68px + env(safe-area-inset-bottom, 0px))', margin: '0 auto',
+          background: '#fff', borderTop: '1px solid var(--border-default)',
+          padding: '10px var(--page-padding-mobile)', zIndex: 15,
+        }}
+      >
+        {summaryParts.length > 0 && (
+          <div style={{ font: 'var(--text-small)', fontSize: 12, color: 'var(--text-muted)', textAlign: 'center', marginBottom: 8 }}>
+            {summaryParts.join(' · ')}
+          </div>
+        )}
+        <Button variant="primary" onClick={begin} disabled={!canStart || starting} style={{ height: 50, width: '100%' }}>
           {entryMode === 'direct' ? 'Commencer la partie' : 'Continuer vers la carte de pointage'}
         </Button>
       </div>
+
+      <Sheet open={coursePickerOpen} onClose={() => setCoursePickerOpen(false)}>
+        <div style={{ font: 'var(--text-h3)' }}>Choisir un terrain</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {outdoorCourses.map((c) => (
+            <div
+              key={c.id}
+              onClick={() => { setCourseId(c.id); setCoursePickerOpen(false); }}
+              style={{
+                cursor: 'pointer', padding: '12px 4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                borderBottom: '1px solid var(--border-default)',
+              }}
+            >
+              <div>
+                <div style={{ font: 'var(--text-body)', fontWeight: c.id === courseId ? 700 : 400 }}>{c.name}</div>
+                <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>{c.city}</div>
+              </div>
+              {c.id === courseId && (
+                <span style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--brand-action)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, flexShrink: 0 }}>✓</span>
+              )}
+            </div>
+          ))}
+        </div>
+      </Sheet>
+
+      <Sheet open={entryModePickerOpen} onClose={() => setEntryModePickerOpen(false)}>
+        <div style={{ font: 'var(--text-h3)' }}>Mode de saisie</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {ENTRY_MODES.map((m) => (
+            <div
+              key={m.value}
+              onClick={() => { setEntryMode(m.value); setEntryModePickerOpen(false); }}
+              style={{
+                cursor: 'pointer', padding: '12px 4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                borderBottom: '1px solid var(--border-default)', gap: 12,
+              }}
+            >
+              <div>
+                <div style={{ font: 'var(--text-body)', fontWeight: m.value === entryMode ? 700 : 400 }}>{m.label}</div>
+                <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>{m.sub}</div>
+              </div>
+              {m.value === entryMode && (
+                <span style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--brand-action)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, flexShrink: 0 }}>✓</span>
+              )}
+            </div>
+          ))}
+        </div>
+      </Sheet>
     </div>
   );
 }

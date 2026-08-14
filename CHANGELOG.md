@@ -2,6 +2,29 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.17.1 — 2026-08-09
+
+- Raffinements UX sur **Nouvelle partie** :
+  - Sélection des joueurs plus lisible : contour vert, fond subtil,
+    légère ombre et petite coche discrète sur les joueurs sélectionnés.
+  - **Terrain** (extérieur) devient un sélecteur compact ("Golf de la
+    Vallée / Saint-Sauveur, QC ▾") au lieu d'une grande carte —
+    touche pour choisir parmi les terrains dans une feuille.
+  - **Mode de saisie** devient aussi un sélecteur compact ("En direct
+    ▾") plutôt que deux gros boutons toujours visibles — réduit le
+    nombre de décisions affichées d'emblée, "Entrée rapide" reste à
+    un tap.
+  - "+ Ajouter un joueur" et "+ Ajouter un terrain" sont maintenant de
+    petits boutons secondaires cohérents avec le reste de l'app.
+  - Le bouton **Commencer la partie** est maintenant sticky au bas de
+    l'écran (au-dessus de la barre de navigation), toujours visible
+    sans avoir à défiler.
+  - Résumé compact juste au-dessus du bouton ("Extérieur · Golf de la
+    Vallée · 18 trous · 2 joueurs · En direct") pour confirmer d'un
+    coup d'œil avant de lancer la partie.
+  - Espacement resserré entre les sections — la configuration complète
+    d'une partie extérieure tient maintenant sur un seul écran.
+
 ## v1.17.0 — 2026-08-09
 
 - Réorganisation complète de la page **Nouvelle partie** pour suivre
