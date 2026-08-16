@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Card from '../components/Card';
@@ -44,7 +44,7 @@ export default function QuickEntry() {
 
   const [pars, setPars] = useState(() => Array.from({ length: format }, (_, i) => course?.pars?.[i] ?? null));
   const [scores, setScores] = useState(() => Object.fromEntries(playerIds.map((pid) => [pid, Array(format).fill('')])));
-  const [putts, setPutts] = useState(() => Object.fromEntries(playerIds.map((pid) => [pid, 0])));
+  const [holePutts, setHolePutts] = useState(() => Object.fromEntries(playerIds.map((pid) => [pid, Array(format).fill('')])));
   const [mulligans, setMulligans] = useState(() => Object.fromEntries(playerIds.map((pid) => [pid, 0])));
   const [lostBalls, setLostBalls] = useState(() => Object.fromEntries(playerIds.map((pid) => [pid, 0])));
   const [beers, setBeers] = useState(() => Object.fromEntries(playerIds.map((pid) => [pid, 0])));
@@ -60,6 +60,10 @@ export default function QuickEntry() {
     if (v !== '' && !/^\d{1,2}$/.test(v)) return;
     setScores((s) => ({ ...s, [pid]: s[pid].map((x, i) => (i === holeIdx ? v : x)) }));
   };
+  const setPuttHole = (pid, holeIdx, v) => {
+    if (v !== '' && !/^\d{1,2}$/.test(v)) return;
+    setHolePutts((s) => ({ ...s, [pid]: s[pid].map((x, i) => (i === holeIdx ? v : x)) }));
+  };
   const setPar = (holeIdx, val) => {
     setPars((arr) => arr.map((p, i) => (i === holeIdx ? val : p)));
     setParPickerHole(null);
@@ -67,6 +71,7 @@ export default function QuickEntry() {
   const bump = (setter, pid, delta) => setter((s) => ({ ...s, [pid]: Math.max(0, (s[pid] || 0) + delta) }));
 
   const totalFor = (pid) => scores[pid].reduce((a, v) => a + (Number(v) || 0), 0);
+  const puttsTotalFor = (pid) => holePutts[pid].reduce((a, v) => a + (Number(v) || 0), 0);
   const roundPar = pars.reduce((a, p) => a + (p || 0), 0);
 
   const allParsKnown = pars.every((p) => p != null);
@@ -80,18 +85,20 @@ export default function QuickEntry() {
       const yardages = Array.from({ length: format }, (_, i) => course.yardages?.[i] ?? null);
       await updateCourseHoles(course.id, pars, yardages);
     }
-    const totals = {}, mull = {}, lost = {}, beersOut = {}, puttsOut = {}, holeScores = {};
+    const totals = {}, mull = {}, lost = {}, beersOut = {}, puttsOut = {}, holeScores = {}, holePuttsOut = {};
     playerIds.forEach((pid) => {
       totals[pid] = totalFor(pid);
       mull[pid] = mulligans[pid] || 0;
       lost[pid] = lostBalls[pid] || 0;
       beersOut[pid] = beers[pid] || 0;
-      puttsOut[pid] = putts[pid] || 0;
+      puttsOut[pid] = puttsTotalFor(pid);
       holeScores[pid] = scores[pid].map((v) => Number(v));
+      holePuttsOut[pid] = holePutts[pid].map((v) => Number(v) || 0);
     });
     const roundId = await createCompletedRound({
       courseId: course.id, holes: format, playerIds,
-      totals, mulligans: mull, lostBalls: lost, beers: beersOut, putts: puttsOut, holeScores, par: roundPar,
+      totals, mulligans: mull, lostBalls: lost, beers: beersOut, putts: puttsOut,
+      holeScores, holePutts: holePuttsOut, par: roundPar,
     });
     navigate(`/resume/${roundId}`);
   };
@@ -148,21 +155,41 @@ export default function QuickEntry() {
                       {playerIds.map((pid) => {
                         const player = players.find((p) => p.id === pid);
                         return (
-                          <tr key={pid}>
-                            <td style={tdHead()}>{player?.name}</td>
-                            {range.map((h) => (
-                              <td key={h} style={td()}>
-                                <input
-                                  type="text"
-                                  inputMode="numeric"
-                                  pattern="[0-9]*"
-                                  value={scores[pid][h]}
-                                  onChange={(e) => setScore(pid, h, e.target.value)}
-                                  style={{ width: 30, height: 30, textAlign: 'center', border: '1px solid var(--border-default)', borderRadius: 6, font: 'var(--text-small)', padding: 0, outline: 'none' }}
-                                />
-                              </td>
-                            ))}
-                          </tr>
+                          <Fragment key={pid}>
+                            <tr>
+                              <td style={{ ...tdHead(), borderBottom: 'none' }}>{player?.name}</td>
+                              {range.map((h) => (
+                                <td key={h} style={{ ...td(), borderBottom: 'none', paddingBottom: 2 }}>
+                                  <input
+                                    type="text"
+                                    inputMode="numeric"
+                                    pattern="[0-9]*"
+                                    value={scores[pid][h]}
+                                    onChange={(e) => setScore(pid, h, e.target.value)}
+                                    style={{ width: 30, height: 30, textAlign: 'center', border: '1px solid var(--border-default)', borderRadius: 6, font: 'var(--text-small)', padding: 0, outline: 'none' }}
+                                  />
+                                </td>
+                              ))}
+                            </tr>
+                            <tr>
+                              <td style={{ ...tdHead(), color: 'var(--text-muted)', fontWeight: 400, fontSize: 12, paddingTop: 0 }}>Putts</td>
+                              {range.map((h) => (
+                                <td key={h} style={{ ...td(), paddingTop: 0 }}>
+                                  <input
+                                    type="text"
+                                    inputMode="numeric"
+                                    pattern="[0-9]*"
+                                    value={holePutts[pid][h]}
+                                    onChange={(e) => setPuttHole(pid, h, e.target.value)}
+                                    style={{
+                                      width: 22, height: 18, textAlign: 'center', border: 'none',
+                                      background: 'transparent', color: 'var(--text-muted)', font: 'var(--text-small)', fontSize: 12, padding: 0, outline: 'none',
+                                    }}
+                                  />
+                                </td>
+                              ))}
+                            </tr>
+                          </Fragment>
                         );
                       })}
                     </tbody>
@@ -205,7 +232,10 @@ export default function QuickEntry() {
                   )}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  <MiniStepper label="Putts" value={putts[pid]} onDec={() => bump(setPutts, pid, -1)} onInc={() => bump(setPutts, pid, 1)} />
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>Putts</span>
+                    <span style={{ font: 'var(--text-label)' }}>{puttsTotalFor(pid)}</span>
+                  </div>
                   <MiniStepper label="Mulligans" value={mulligans[pid]} onDec={() => bump(setMulligans, pid, -1)} onInc={() => bump(setMulligans, pid, 1)} />
                   <MiniStepper label="Balles perdues" value={lostBalls[pid]} onDec={() => bump(setLostBalls, pid, -1)} onInc={() => bump(setLostBalls, pid, 1)} />
                   <MiniStepper label="Bières" value={beers[pid]} onDec={() => bump(setBeers, pid, -1)} onInc={() => bump(setBeers, pid, 1)} />

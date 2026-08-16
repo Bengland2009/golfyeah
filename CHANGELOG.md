@@ -2,6 +2,16 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.21.0 — 2026-08-16
+
+- **Putts par trou dans Entrée rapide.** Une rangée compacte « Putts »
+  apparaît maintenant directement sous le score de chaque joueur, dans
+  le même tableau que Trou/Par/Score — les colonnes restent parfaitement
+  alignées, sans effet feuille de calcul (pas de bordures, texte plus
+  petit et discret). Le total de putts se calcule automatiquement dans
+  la carte Résultats et alimente les statistiques du joueur comme les
+  scorecards, exactement comme les rondes jouées En direct.
+
 ## v1.20.1 — 2026-08-16
 
 - La bande de progression des trous est maintenant aussi visible en
