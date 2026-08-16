@@ -2,6 +2,16 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.21.1 — 2026-08-16
+
+- **Saisie des putts par sélecteur dans Entrée rapide.** La rangée
+  Putts n'est plus un champ de texte ambigu : chaque case se touche et
+  ouvre une petite feuille avec les choix 0 / 1 / 2 / 3 / 4+. Un tap
+  sélectionne et referme automatiquement — aucun clavier numérique ne
+  s'ouvre. La case prend un fond vert pâle une fois renseignée, pour
+  voir en un coup d'œil quels trous restent à compléter. Même
+  mécanique que le sélecteur de par déjà présent sur cet écran.
+
 ## v1.21.0 — 2026-08-16
 
 - **Putts par trou dans Entrée rapide.** Une rangée compacte « Putts »

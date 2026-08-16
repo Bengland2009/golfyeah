@@ -11,6 +11,13 @@ import { avatarSrc } from '../lib/avatar';
 import { parLabel, toneFor } from '../lib/scoring';
 
 const PAR_OPTIONS = [3, 4, 5];
+const PUTT_OPTIONS = [
+  { value: 0, label: '0' },
+  { value: 1, label: '1' },
+  { value: 2, label: '2' },
+  { value: 3, label: '3' },
+  { value: 4, label: '4+' },
+];
 
 function tdHead() {
   return { padding: '6px 10px', textAlign: 'left', fontWeight: 600, borderBottom: '1px solid var(--border-default)', position: 'sticky', left: 0, background: '#fff', whiteSpace: 'nowrap' };
@@ -49,6 +56,7 @@ export default function QuickEntry() {
   const [lostBalls, setLostBalls] = useState(() => Object.fromEntries(playerIds.map((pid) => [pid, 0])));
   const [beers, setBeers] = useState(() => Object.fromEntries(playerIds.map((pid) => [pid, 0])));
   const [parPickerHole, setParPickerHole] = useState(null);
+  const [puttPickerCell, setPuttPickerCell] = useState(null); // { pid, holeIdx } | null
   const [saving, setSaving] = useState(false);
 
   if (!setup || !course || !playerIds.length) {
@@ -61,8 +69,8 @@ export default function QuickEntry() {
     setScores((s) => ({ ...s, [pid]: s[pid].map((x, i) => (i === holeIdx ? v : x)) }));
   };
   const setPuttHole = (pid, holeIdx, v) => {
-    if (v !== '' && !/^\d{1,2}$/.test(v)) return;
     setHolePutts((s) => ({ ...s, [pid]: s[pid].map((x, i) => (i === holeIdx ? v : x)) }));
+    setPuttPickerCell(null);
   };
   const setPar = (holeIdx, val) => {
     setPars((arr) => arr.map((p, i) => (i === holeIdx ? val : p)));
@@ -173,21 +181,27 @@ export default function QuickEntry() {
                             </tr>
                             <tr>
                               <td style={{ ...tdHead(), color: 'var(--text-muted)', fontWeight: 400, fontSize: 12, paddingTop: 0 }}>Putts</td>
-                              {range.map((h) => (
-                                <td key={h} style={{ ...td(), paddingTop: 0 }}>
-                                  <input
-                                    type="text"
-                                    inputMode="numeric"
-                                    pattern="[0-9]*"
-                                    value={holePutts[pid][h]}
-                                    onChange={(e) => setPuttHole(pid, h, e.target.value)}
-                                    style={{
-                                      width: 22, height: 18, textAlign: 'center', border: 'none',
-                                      background: 'transparent', color: 'var(--text-muted)', font: 'var(--text-small)', fontSize: 12, padding: 0, outline: 'none',
-                                    }}
-                                  />
-                                </td>
-                              ))}
+                              {range.map((h) => {
+                                const v = holePutts[pid][h];
+                                const isSet = v !== '';
+                                return (
+                                  <td key={h} style={{ ...td(), paddingTop: 0 }}>
+                                    <span
+                                      onClick={() => setPuttPickerCell({ pid, holeIdx: h })}
+                                      style={{
+                                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                                        width: 22, height: 20, borderRadius: 6, cursor: 'pointer',
+                                        background: isSet ? '#EAF5EF' : 'transparent',
+                                        border: isSet ? '1px solid rgba(0,103,71,0.2)' : '1px dashed var(--border-default)',
+                                        color: isSet ? 'var(--brand-action)' : 'var(--text-disabled)',
+                                        font: 'var(--text-small)', fontSize: 12, fontWeight: isSet ? 700 : 400,
+                                      }}
+                                    >
+                                      {isSet ? (Number(v) >= 4 ? '4+' : v) : '·'}
+                                    </span>
+                                  </td>
+                                );
+                              })}
                             </tr>
                           </Fragment>
                         );
@@ -255,6 +269,22 @@ export default function QuickEntry() {
         <div style={{ display: 'flex', gap: 8 }}>
           {PAR_OPTIONS.map((p) => (
             <Button key={p} variant="secondary" onClick={() => setPar(parPickerHole, p)} style={{ flex: 1, borderRadius: 999 }}>{p}</Button>
+          ))}
+        </div>
+      </Sheet>
+
+      <Sheet open={puttPickerCell != null} onClose={() => setPuttPickerCell(null)}>
+        <div style={{ font: 'var(--text-h3)' }}>Putts — trou {puttPickerCell != null ? puttPickerCell.holeIdx + 1 : ''}</div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          {PUTT_OPTIONS.map((opt) => (
+            <Button
+              key={opt.value}
+              variant="secondary"
+              onClick={() => setPuttHole(puttPickerCell.pid, puttPickerCell.holeIdx, opt.value)}
+              style={{ flex: 1, borderRadius: 999 }}
+            >
+              {opt.label}
+            </Button>
           ))}
         </div>
       </Sheet>
