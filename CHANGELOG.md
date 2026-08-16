@@ -2,6 +2,20 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.18.1 — 2026-08-16
+
+- **Refonte premium du Golf Tracker.** Hiérarchie visuelle repensée de
+  fond en comble, dans l'esprit d'une application haut de gamme (Apple,
+  WHOOP, Oura) : une seule information dominante (le score, très grand),
+  un indicateur de putts discret mais toujours visible juste en dessous,
+  un unique bouton principal **+1 Coup** en cercle plein, et **+1 Putt**
+  en pilule contour nettement plus léger. L'en-tête de trou est
+  raccourci. Annuler, Modifier le score et Terminer le trou deviennent
+  des actions secondaires en texte simple (plus de gros bouton vert pour
+  terminer le trou), avec beaucoup plus d'espace blanc partout. Le
+  comportement (tap, annulation, édition, feuille de fin de trou) reste
+  identique — seule la mise en page change.
+
 ## v1.18.0 — 2026-08-16
 
 - **Suivi des putts** ajouté partout où les coups sont enregistrés :

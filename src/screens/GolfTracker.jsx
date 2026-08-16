@@ -6,6 +6,7 @@ import Button from '../components/Button';
 import SegmentedControl from '../components/SegmentedControl';
 import BeerCounter from '../components/BeerCounter';
 import HoleSetupPrompt from '../components/HoleSetupPrompt';
+import { TargetIcon, ChevronRightIcon } from '../components/icons';
 import { useData } from '../contexts/DataContext';
 
 // Golf Tracker is an alternate, optional UI for the same live-round data
@@ -19,6 +20,12 @@ import { useData } from '../contexts/DataContext';
 // "mode": both buttons are always on screen. Mulligans, lost balls and
 // putt confirmation are deferred to the end-of-hole sheet so the in-play
 // surface stays down to those two taps.
+//
+// Visual hierarchy is deliberately single-threaded, top to bottom: hole
+// context (quiet) -> score (dominant) -> putts (quiet, always rendered so
+// nothing jumps) -> +1 Coup (the one bold action) -> +1 Putt (a lighter
+// echo of it) -> undo/edit/finish, all pushed down to plain text rows so
+// they never compete with the tap target.
 
 function vibrate(ms) {
   if (navigator.vibrate) {
@@ -125,19 +132,20 @@ export default function GolfTracker() {
   return (
     <div className="gy-viewport-h" style={{ display: 'flex', flexDirection: 'column', background: '#fff' }}>
       <div style={{ background: 'var(--brand-primary)', color: '#fff', paddingTop: 'var(--safe-top)' }}>
-        <div style={{ position: 'relative', textAlign: 'center', padding: '16px var(--page-padding-mobile) 20px' }}>
+        <div style={{ position: 'relative', textAlign: 'center', padding: '10px var(--page-padding-mobile) 12px' }}>
           <button
             onClick={() => navigate('/partie/en-cours')}
             aria-label="Retour à la scorecard"
-            style={{ position: 'absolute', left: 'var(--page-padding-mobile)', top: 14, background: 'none', border: 'none', color: 'rgba(255,255,255,0.8)', fontSize: 24, padding: 4, cursor: 'pointer', lineHeight: 1 }}
+            style={{ position: 'absolute', left: 4, top: 4, background: 'none', border: 'none', color: 'rgba(255,255,255,0.75)', fontSize: 22, padding: 8, cursor: 'pointer', lineHeight: 1 }}
           >
             ‹
           </button>
-          <div style={{ font: 'var(--text-small)', color: 'rgba(255,255,255,0.7)', marginBottom: 6 }}>{course.name}</div>
-          <div style={{ font: 'var(--font-serif)', fontWeight: 700, fontSize: 28, color: '#fff' }}>Trou {i + 1}</div>
+          <div style={{ font: 'var(--text-eyebrow)', letterSpacing: 'var(--letter-spacing-eyebrow)', textTransform: 'uppercase', color: '#fff' }}>
+            Trou {i + 1}
+          </div>
           {!needsSetup && (
-            <div style={{ font: 'var(--text-small)', color: 'rgba(255,255,255,0.85)', marginTop: 2 }}>
-              Par {par} · {yard ? `${yard} vg` : 'Distance non indiquée'}
+            <div style={{ font: 'var(--text-small)', fontSize: 12, color: 'rgba(255,255,255,0.65)', marginTop: 2 }}>
+              Par {par}{yard ? ` · ${yard} vg` : ''}
             </div>
           )}
         </div>
@@ -149,83 +157,104 @@ export default function GolfTracker() {
 
       {!needsSetup && (
       <>
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20, padding: '20px var(--page-padding-mobile)' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 0, padding: '16px var(--page-padding-mobile)' }}>
         {player && (
-          <div style={{ font: 'var(--text-label)', color: 'var(--text-muted)' }}>{player.name}</div>
+          <div style={{ font: 'var(--text-eyebrow)', letterSpacing: 'var(--letter-spacing-eyebrow)', textTransform: 'uppercase', color: 'var(--text-disabled)' }}>
+            {player.name}
+          </div>
         )}
 
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ font: 'var(--text-eyebrow)', letterSpacing: 'var(--letter-spacing-eyebrow)', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 4 }}>
-            Coup actuel
-          </div>
-          <div style={{ font: 'var(--font-sans)', fontWeight: 700, fontSize: 80, lineHeight: 1, color: 'var(--text-body)', fontVariantNumeric: 'tabular-nums' }}>
-            {strokes}
-          </div>
-          {putts > 0 && (
-            <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)', marginTop: 4 }}>
-              dont {putts} putt{putts > 1 ? 's' : ''}
-            </div>
-          )}
+        <div style={{ font: 'var(--font-sans)', fontWeight: 800, fontSize: 116, lineHeight: 1, color: 'var(--text-body)', fontVariantNumeric: 'tabular-nums', marginTop: 6 }}>
+          {strokes}
+        </div>
+
+        <div
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 14,
+            padding: '5px 14px', borderRadius: 999, background: 'var(--surface-tint)',
+            color: 'var(--text-muted)', font: 'var(--text-small)', fontSize: 13,
+          }}
+        >
+          <TargetIcon width={14} height={14} strokeWidth={2} />
+          {putts} putt{putts > 1 ? 's' : ''}
         </div>
 
         <button
           onClick={tapStroke}
           aria-label="+1 coup"
           style={{
-            width: 200,
-            height: 200,
+            width: 208,
+            height: 208,
+            marginTop: 40,
             borderRadius: '50%',
-            border: '1px solid var(--border-default)',
-            background: 'radial-gradient(circle at 35% 30%, #ffffff 0%, #f3f5f3 60%, #e6e9e6 100%)',
-            boxShadow: pressed === 'stroke' ? 'inset 0 4px 10px rgba(0,0,0,0.15)' : 'var(--shadow-elevated), 0 10px 24px rgba(0,82,57,0.18)',
+            border: 'none',
+            background: 'var(--brand-action)',
+            boxShadow: pressed === 'stroke' ? '0 4px 14px rgba(0,82,57,0.25)' : '0 14px 30px rgba(0,82,57,0.28)',
             cursor: 'pointer',
-            transform: pressed === 'stroke' ? 'scale(0.94)' : 'scale(1)',
-            transition: 'transform 90ms ease, box-shadow 90ms ease',
+            transform: pressed === 'stroke' ? 'scale(0.95)' : 'scale(1)',
+            transition: 'transform 110ms ease, box-shadow 110ms ease',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             padding: 0,
           }}
         >
-          <span style={{ font: 'var(--text-label)', fontWeight: 700, fontSize: 18, color: 'var(--brand-action)' }}>+1 Coup</span>
+          <span style={{ font: 'var(--font-sans)', fontWeight: 700, fontSize: 19, color: '#fff' }}>+1 Coup</span>
         </button>
 
         <button
           onClick={tapPutt}
           aria-label="+1 putt"
           style={{
-            width: 128,
-            height: 64,
+            marginTop: 16,
+            height: 44,
+            padding: '0 24px',
             borderRadius: 999,
-            border: '1px solid var(--border-default)',
-            background: pressed === 'putt' ? 'var(--surface-tint)' : '#fff',
-            boxShadow: pressed === 'putt' ? 'inset 0 3px 8px rgba(0,0,0,0.1)' : 'var(--shadow-card)',
+            border: '1.5px solid var(--brand-action)',
+            background: pressed === 'putt' ? 'var(--surface-tint)' : 'transparent',
             cursor: 'pointer',
             transform: pressed === 'putt' ? 'scale(0.96)' : 'scale(1)',
-            transition: 'transform 90ms ease, box-shadow 90ms ease, background 90ms ease',
+            transition: 'transform 110ms ease, background 110ms ease',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: 0,
           }}
         >
-          <span style={{ font: 'var(--text-label)', fontWeight: 700, fontSize: 15, color: 'var(--text-body)' }}>+1 Putt</span>
+          <span style={{ font: 'var(--font-sans)', fontWeight: 700, fontSize: 14, color: 'var(--brand-action)' }}>+1 Putt</span>
         </button>
-
-        {strokes > 0 && (
-          <span onClick={undo} style={{ font: 'var(--text-small)', color: 'var(--text-muted)', cursor: 'pointer' }}>
-            Annuler le dernier coup
-          </span>
-        )}
       </div>
 
-      <div style={{ padding: 'var(--page-padding-mobile)', display: 'flex', flexDirection: 'column', gap: 10, paddingBottom: 'calc(var(--page-padding-mobile) + var(--safe-bottom))' }}>
-        <Button variant="primary" onClick={openFinish} style={{ height: 52, width: '100%' }}>
-          {isLastHole ? 'Terminer la partie' : 'Terminer le trou'}
-        </Button>
-        <span onClick={openEdit} style={{ textAlign: 'center', font: 'var(--text-small)', color: 'var(--text-muted)', cursor: 'pointer' }}>
-          Modifier le score manuellement
-        </span>
+      <div style={{ borderTop: '1px solid var(--border-default)', paddingBottom: 'var(--safe-bottom)' }}>
+        {strokes > 0 && (
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 28, padding: '14px var(--page-padding-mobile) 4px' }}>
+            <span onClick={undo} style={{ font: 'var(--text-small)', color: 'var(--text-muted)', cursor: 'pointer' }}>
+              Annuler
+            </span>
+            <span onClick={openEdit} style={{ font: 'var(--text-small)', color: 'var(--text-muted)', cursor: 'pointer' }}>
+              Modifier le score
+            </span>
+          </div>
+        )}
+        {strokes === 0 && (
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '14px var(--page-padding-mobile) 4px' }}>
+            <span onClick={openEdit} style={{ font: 'var(--text-small)', color: 'var(--text-muted)', cursor: 'pointer' }}>
+              Modifier le score
+            </span>
+          </div>
+        )}
+        <button
+          onClick={openFinish}
+          style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            width: '100%', height: 56, padding: '0 var(--page-padding-mobile)',
+            background: 'none', border: 'none', cursor: 'pointer',
+          }}
+        >
+          <span style={{ font: 'var(--text-label)', fontWeight: 700, fontSize: 16, color: 'var(--brand-action)' }}>
+            {isLastHole ? 'Terminer la partie' : 'Terminer le trou'}
+          </span>
+          <ChevronRightIcon width={20} height={20} strokeWidth={2.25} style={{ color: 'var(--brand-action)' }} />
+        </button>
       </div>
       </>
       )}
