@@ -2,6 +2,17 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.18.3 — 2026-08-16
+
+- **Fenêtre de fin de trou repensée en écran de confirmation.** Elle
+  n'affiche plus un formulaire à remplir : les putts, mulligans, balles
+  perdues et bières déjà enregistrés pendant le jeu sont simplement
+  résumés en lecture seule. Le bouton **Trou suivant** est immédiatement
+  disponible — le cas normal ne demande plus aucune saisie. Un lien
+  discret **Modifier les statistiques** ouvre les compteurs (putts en
+  choix rapide, mulligans/balles perdues avec +/−, bières) uniquement
+  quand une correction est nécessaire.
+
 ## v1.18.2 — 2026-08-16
 
 - **Golf Tracker, second passage de raffinement** :

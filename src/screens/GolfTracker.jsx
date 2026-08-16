@@ -43,6 +43,35 @@ function puttOptions(strokes) {
   return opts;
 }
 
+// Read-only line in the end-of-hole summary — no controls, just the
+// number already recorded during play.
+function SummaryRow({ label, value }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <span style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>{label}</span>
+      <span style={{ font: 'var(--text-label)' }}>{value}</span>
+    </div>
+  );
+}
+
+// Editable line shown only once "Modifier les statistiques" is tapped —
+// unlike the plain "+"-only rows used during play, this allows both
+// directions since its whole purpose is correcting a mistake.
+function EditableStatRow({ label, value, onDec, onInc }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <span style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>{label}</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        {value > 0 && (
+          <button type="button" onClick={onDec} style={{ width: 32, height: 32, borderRadius: '50%', border: '1px solid var(--border-default)', background: '#fff', color: 'var(--text-muted)', fontSize: 16, cursor: 'pointer' }}>−</button>
+        )}
+        <span style={{ font: 'var(--text-label)', minWidth: 16, textAlign: 'center' }}>{value}</span>
+        <button type="button" onClick={onInc} style={{ width: 32, height: 32, borderRadius: '50%', border: 'none', background: 'var(--brand-action)', color: '#fff', fontSize: 16, cursor: 'pointer' }}>+</button>
+      </div>
+    </div>
+  );
+}
+
 export default function GolfTracker() {
   const { playerId } = useParams();
   const navigate = useNavigate();
@@ -57,9 +86,11 @@ export default function GolfTracker() {
   const [editOpen, setEditOpen] = useState(false);
   const [editValue, setEditValue] = useState('');
   const [finishOpen, setFinishOpen] = useState(false);
+  const [editingStats, setEditingStats] = useState(false);
 
   useEffect(() => {
     setLastActionWasPutt(false);
+    setEditingStats(false);
   }, [liveRound?.holeIndex]);
 
   if (!liveRound) {
@@ -119,7 +150,7 @@ export default function GolfTracker() {
     setEditOpen(false);
   };
 
-  const openFinish = () => setFinishOpen(true);
+  const openFinish = () => { setEditingStats(false); setFinishOpen(true); };
 
   const confirmFinish = async () => {
     setFinishOpen(false);
@@ -286,44 +317,62 @@ export default function GolfTracker() {
         <div style={{ font: 'var(--text-h3)' }}>Trou {i + 1} terminé</div>
 
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-          <div>
-            <div style={{ font: 'var(--text-eyebrow)', letterSpacing: 'var(--letter-spacing-eyebrow)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Score</div>
-            <div style={{ font: 'var(--font-sans)', fontWeight: 700, fontSize: 44, lineHeight: 1.1, color: 'var(--text-body)' }}>{strokes}</div>
+          <span style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>Score</span>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+            <span style={{ font: 'var(--font-sans)', fontWeight: 800, fontSize: 26, color: 'var(--text-body)' }}>{strokes}</span>
+            <span
+              onClick={() => { setFinishOpen(false); openEdit(); }}
+              style={{ font: 'var(--text-small)', color: 'var(--brand-action)', cursor: 'pointer' }}
+            >
+              Modifier
+            </span>
           </div>
-          <span
-            onClick={() => { setFinishOpen(false); openEdit(); }}
-            style={{ font: 'var(--text-small)', color: 'var(--brand-action)', cursor: 'pointer' }}
-          >
-            Modifier le score
-          </span>
         </div>
 
-        <div>
-          <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)', marginBottom: 8 }}>Nombre de putts</div>
-          <SegmentedControl options={puttOptions(strokes)} value={Math.min(putts, strokes)} onChange={(v) => setPutts(playerId, v)} />
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>Mulligan</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ font: 'var(--text-label)' }}>{rawEntry?.mulligans || 0}</span>
-              <button type="button" onClick={() => bumpHoleField(playerId, 'mulligans', 1)} style={{ width: 32, height: 32, borderRadius: '50%', border: 'none', background: 'var(--brand-action)', color: '#fff', fontSize: 16, cursor: 'pointer' }}>+</button>
+        {editingStats ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div>
+              <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)', marginBottom: 8 }}>Putts</div>
+              <SegmentedControl options={puttOptions(strokes)} value={Math.min(putts, strokes)} onChange={(v) => setPutts(playerId, v)} />
+            </div>
+            <EditableStatRow
+              label="Mulligans" value={rawEntry?.mulligans || 0}
+              onDec={() => bumpHoleField(playerId, 'mulligans', -1)}
+              onInc={() => bumpHoleField(playerId, 'mulligans', 1)}
+            />
+            <EditableStatRow
+              label="Balles perdues" value={rawEntry?.lostBalls || 0}
+              onDec={() => bumpHoleField(playerId, 'lostBalls', -1)}
+              onInc={() => bumpHoleField(playerId, 'lostBalls', 1)}
+            />
+            <BeerCounter value={liveRound.beers[playerId] || 0} onAdd={() => addBeer(playerId)} onRemove={() => removeBeer(playerId)} />
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <SummaryRow label="Putts" value={`${putts} putt${putts > 1 ? 's' : ''}`} />
+            <SummaryRow label="Mulligans" value={rawEntry?.mulligans || 0} />
+            <SummaryRow label="Balles perdues" value={rawEntry?.lostBalls || 0} />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ font: 'var(--text-small)', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: 16 }}>🍺</span> Bières
+              </span>
+              <span style={{ font: 'var(--text-label)' }}>{liveRound.beers[playerId] || 0}</span>
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>Balle perdue</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ font: 'var(--text-label)' }}>{rawEntry?.lostBalls || 0}</span>
-              <button type="button" onClick={() => bumpHoleField(playerId, 'lostBalls', 1)} style={{ width: 32, height: 32, borderRadius: '50%', border: 'none', background: 'var(--brand-action)', color: '#fff', fontSize: 16, cursor: 'pointer' }}>+</button>
-            </div>
-          </div>
-          <BeerCounter value={liveRound.beers[playerId] || 0} onAdd={() => addBeer(playerId)} onRemove={() => removeBeer(playerId)} />
-        </div>
+        )}
 
         <Button variant="primary" onClick={confirmFinish} style={{ height: 52, width: '100%' }}>
           {isLastHole ? 'Terminer la partie' : 'Trou suivant'}
         </Button>
+
+        {!editingStats && (
+          <span
+            onClick={() => setEditingStats(true)}
+            style={{ textAlign: 'center', font: 'var(--text-small)', color: 'var(--text-muted)', cursor: 'pointer' }}
+          >
+            Modifier les statistiques
+          </span>
+        )}
       </Sheet>
     </div>
   );
