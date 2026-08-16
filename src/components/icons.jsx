@@ -113,6 +113,25 @@ export function ChevronDownIcon(props) {
     </svg>
   );
 }
+export function GolfBallIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" width={22} height={22} {...common} {...props}>
+      <circle cx="12" cy="12" r="8" />
+      <circle cx="9" cy="9" r="0.6" fill="currentColor" stroke="none" />
+      <circle cx="13.5" cy="8" r="0.6" fill="currentColor" stroke="none" />
+      <circle cx="15.5" cy="12" r="0.6" fill="currentColor" stroke="none" />
+      <circle cx="10" cy="14.5" r="0.6" fill="currentColor" stroke="none" />
+      <circle cx="14" cy="15.5" r="0.6" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+export function ChevronRightIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" width={20} height={20} {...common} {...props}>
+      <path d="m9 6 6 6-6 6" />
+    </svg>
+  );
+}
 export function BeerIcon(props) {
   return (
     <svg viewBox="0 0 24 24" width={16} height={16} {...common} {...props}>

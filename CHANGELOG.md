@@ -2,6 +2,15 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.17.3 — 2026-08-09
+
+- Le point d'entrée vers le **Golf Tracker** (écran En direct) devient
+  un vrai bouton d'action au lieu d'un simple texte vert : pilule avec
+  icône de balle de golf, libellé "Compter les coups" en texte foncé,
+  et un chevron pour indiquer clairement la navigation vers un écran
+  dédié. Reste discret par rapport au score et au bouton "Trou
+  suivant".
+
 ## v1.17.2 — 2026-08-09
 
 - Finitions supplémentaires sur **Nouvelle partie** :

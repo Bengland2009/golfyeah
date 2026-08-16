@@ -9,6 +9,7 @@ import BeerCounter from '../components/BeerCounter';
 import Sheet from '../components/Sheet';
 import HoleSetupPrompt from '../components/HoleSetupPrompt';
 import RoundExpenses from '../components/RoundExpenses';
+import { GolfBallIcon, ChevronRightIcon } from '../components/icons';
 import { useData } from '../contexts/DataContext';
 import { avatarSrc } from '../lib/avatar';
 import { parLabel, toneFor, playerRunningTotal } from '../lib/scoring';
@@ -132,13 +133,17 @@ export default function Live() {
                 <Badge tone={toneFor(running)}>{parLabel(running)}</Badge>
               </div>
               <ScoreStepper value={entry.strokes} size="large" onChange={(v) => setStrokes(pid, v)} />
-              <div style={{ textAlign: 'center', marginTop: 6 }}>
-                <span
-                  onClick={() => navigate(`/partie/en-cours/tracker/${pid}`)}
-                  style={{ font: 'var(--text-small)', color: 'var(--brand-action)', fontWeight: 600, cursor: 'pointer' }}
-                >
-                  Golf Tracker
-                </span>
+              <div
+                onClick={() => navigate(`/partie/en-cours/tracker/${pid}`)}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                  height: 40, marginTop: 10, borderRadius: 999,
+                  border: '1px solid var(--border-default)', background: 'var(--surface-tint)', cursor: 'pointer',
+                }}
+              >
+                <GolfBallIcon width={16} height={16} strokeWidth={2} style={{ color: 'var(--brand-action)', flexShrink: 0 }} />
+                <span style={{ font: 'var(--text-small)', fontWeight: 700, color: 'var(--text-body)' }}>Compter les coups</span>
+                <ChevronRightIcon width={15} height={15} strokeWidth={2.5} style={{ color: 'var(--brand-action)', flexShrink: 0 }} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12 }}>
                 <StatRow label="Mulligan" value={entry.mulligans} onAdd={() => bumpHoleField(pid, 'mulligans', 1)} />
