@@ -2,6 +2,15 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.20.1 — 2026-08-16
+
+- La bande de progression des trous est maintenant aussi visible en
+  haut de l'écran **En direct** (la scorecard trou par trou), pas
+  seulement dans le Golf Tracker — même comportement : recentrage
+  automatique sur le trou courant, tap pour sauter à un trou. Sur une
+  partie à plusieurs joueurs, elle reflète la progression du joueur
+  connecté.
+
 ## v1.20.0 — 2026-08-16
 
 - **Mini scorecard de progression dans le Golf Tracker.** Une bande

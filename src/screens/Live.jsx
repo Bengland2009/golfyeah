@@ -9,8 +9,10 @@ import BeerCounter from '../components/BeerCounter';
 import Sheet from '../components/Sheet';
 import HoleSetupPrompt from '../components/HoleSetupPrompt';
 import RoundExpenses from '../components/RoundExpenses';
+import HoleStrip from '../components/HoleStrip';
 import { GolfBallIcon, ChevronRightIcon } from '../components/icons';
 import { useData } from '../contexts/DataContext';
+import { useMe } from '../lib/useMe';
 import { avatarSrc } from '../lib/avatar';
 import { parLabel, toneFor, playerRunningTotal } from '../lib/scoring';
 
@@ -36,9 +38,10 @@ export default function Live() {
   const navigate = useNavigate();
   const {
     players, liveRound, currentLiveCourse, getHolePar, getHoleYardage,
-    setStrokes, bumpHoleField, bumpPutts, addBeer, removeBeer, changeHole,
+    setStrokes, bumpHoleField, bumpPutts, addBeer, removeBeer, changeHole, goToHole,
     editHoleForRoundOnly, editHoleForCourse, finishRound, abandonRound,
   } = useData();
+  const me = useMe();
 
   const [exitConfirmOpen, setExitConfirmOpen] = useState(false);
   const [abandonConfirmOpen, setAbandonConfirmOpen] = useState(false);
@@ -55,6 +58,16 @@ export default function Live() {
   const par = getHolePar(i);
   const yard = getHoleYardage(i);
   const needsSetup = par == null;
+
+  // The strip shows one perspective — the signed-in player's, falling back
+  // to the round's first player if they aren't part of it.
+  const stripPlayerId = liveRound.playerIds.includes(me?.id) ? me.id : liveRound.playerIds[0];
+  const getDiff = (idx) => {
+    const entry = liveRound.scores[stripPlayerId]?.[idx];
+    const holePar = getHolePar(idx);
+    if (!entry || !entry.strokes || holePar == null) return null;
+    return entry.strokes - holePar;
+  };
 
   const openEditHole = () => {
     setEditDraft({ par: getHolePar(i) || 4, yardage: getHoleYardage(i) || '' });
@@ -105,6 +118,8 @@ export default function Live() {
           </div>
         )}
       </div>
+
+      <HoleStrip format={liveRound.format} currentIndex={i} getDiff={getDiff} onSelect={goToHole} />
 
       {needsSetup && (
         <>
