@@ -2,6 +2,23 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.18.2 — 2026-08-16
+
+- **Golf Tracker, second passage de raffinement** :
+  - Le score affiche maintenant son unité ("coups"/"coup") directement
+    sous le chiffre, pour un contexte immédiat.
+  - Le bouton "+1 Putt" disparaît en tant que bouton séparé : la
+    pastille de putts elle-même devient l'action (un petit "+" l'indique
+    clairement). Il ne reste donc qu'une seule action principale à
+    l'écran — le gros bouton "+1 Coup" — au lieu de deux boutons qui se
+    faisaient compétition.
+  - "Terminer le trou" est maintenant clairement séparé du reste :
+    davantage d'espace au-dessus et un bouton contenu à part entière,
+    plutôt qu'une simple rangée dans le bas de l'écran.
+  - L'en-tête affiche désormais "Trou X de 18" et une fine barre de
+    progression sous le bandeau, pour situer où on en est dans la
+    ronde sans surcharger l'écran.
+
 ## v1.18.1 — 2026-08-16
 
 - **Refonte premium du Golf Tracker.** Hiérarchie visuelle repensée de

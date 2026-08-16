@@ -6,7 +6,7 @@ import Button from '../components/Button';
 import SegmentedControl from '../components/SegmentedControl';
 import BeerCounter from '../components/BeerCounter';
 import HoleSetupPrompt from '../components/HoleSetupPrompt';
-import { TargetIcon, ChevronRightIcon } from '../components/icons';
+import { FlagIcon, ChevronRightIcon } from '../components/icons';
 import { useData } from '../contexts/DataContext';
 
 // Golf Tracker is an alternate, optional UI for the same live-round data
@@ -15,17 +15,19 @@ import { useData } from '../contexts/DataContext';
 // editing either one always keeps the other in sync, and autosave/resume
 // falls out for free from the existing live-round persistence.
 //
-// During play there is only ever "+1 Coup" and "+1 Putt" — a putt IS a
-// stroke, so +1 Putt bumps both counters together. There is no putting
-// "mode": both buttons are always on screen. Mulligans, lost balls and
-// putt confirmation are deferred to the end-of-hole sheet so the in-play
-// surface stays down to those two taps.
+// During play there is exactly one primary action: the big "+1 Coup"
+// circle. Putts (a subset of strokes — bumpPuttStroke increments both
+// counters together) are logged by tapping the putts pill itself, which
+// doubles as the readout and the input — so there is never a second
+// button competing with the circle, and no putting "mode" to remember to
+// switch into. Mulligans, lost balls and putt confirmation are deferred
+// to the end-of-hole sheet so the in-play surface stays minimal.
 //
-// Visual hierarchy is deliberately single-threaded, top to bottom: hole
-// context (quiet) -> score (dominant) -> putts (quiet, always rendered so
-// nothing jumps) -> +1 Coup (the one bold action) -> +1 Putt (a lighter
-// echo of it) -> undo/edit/finish, all pushed down to plain text rows so
-// they never compete with the tap target.
+// Visual hierarchy is single-threaded, top to bottom: hole context (quiet,
+// with a hairline progress bar) -> score + unit label (dominant) -> putts
+// pill (quiet, always rendered, tap to +1) -> +1 Coup (the one bold
+// action) -> undo/edit -> Terminer le trou, set apart as its own
+// end-of-flow block so it never reads as just another row.
 
 function vibrate(ms) {
   if (navigator.vibrate) {
@@ -141,13 +143,16 @@ export default function GolfTracker() {
             ‹
           </button>
           <div style={{ font: 'var(--text-eyebrow)', letterSpacing: 'var(--letter-spacing-eyebrow)', textTransform: 'uppercase', color: '#fff' }}>
-            Trou {i + 1}
+            Trou {i + 1} <span style={{ opacity: 0.55, fontWeight: 500 }}>de {liveRound.format}</span>
           </div>
           {!needsSetup && (
             <div style={{ font: 'var(--text-small)', fontSize: 12, color: 'rgba(255,255,255,0.65)', marginTop: 2 }}>
               Par {par}{yard ? ` · ${yard} vg` : ''}
             </div>
           )}
+        </div>
+        <div style={{ height: 2, background: 'rgba(255,255,255,0.16)' }}>
+          <div style={{ height: '100%', width: `${((i + 1) / liveRound.format) * 100}%`, background: 'rgba(255,255,255,0.9)', transition: 'width 200ms ease' }} />
         </div>
       </div>
 
@@ -167,17 +172,38 @@ export default function GolfTracker() {
         <div style={{ font: 'var(--font-sans)', fontWeight: 800, fontSize: 116, lineHeight: 1, color: 'var(--text-body)', fontVariantNumeric: 'tabular-nums', marginTop: 6 }}>
           {strokes}
         </div>
+        <div style={{ font: 'var(--text-eyebrow)', letterSpacing: 'var(--letter-spacing-eyebrow)', textTransform: 'uppercase', color: 'var(--text-muted)', marginTop: 4 }}>
+          {strokes === 1 ? 'coup' : 'coups'}
+        </div>
 
-        <div
+        <button
+          onClick={tapPutt}
+          aria-label="+1 putt"
           style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 14,
-            padding: '5px 14px', borderRadius: 999, background: 'var(--surface-tint)',
-            color: 'var(--text-muted)', font: 'var(--text-small)', fontSize: 13,
+            marginTop: 22,
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            height: 40, padding: '0 8px 0 14px',
+            borderRadius: 999, border: 'none',
+            background: pressed === 'putt' ? 'var(--border-default)' : 'var(--surface-tint)',
+            cursor: 'pointer',
+            transform: pressed === 'putt' ? 'scale(0.96)' : 'scale(1)',
+            transition: 'transform 110ms ease, background 110ms ease',
           }}
         >
-          <TargetIcon width={14} height={14} strokeWidth={2} />
-          {putts} putt{putts > 1 ? 's' : ''}
-        </div>
+          <FlagIcon width={15} height={15} strokeWidth={2} style={{ color: 'var(--text-muted)' }} />
+          <span style={{ font: 'var(--text-small)', fontSize: 14, color: 'var(--text-muted)' }}>
+            {putts} putt{putts > 1 ? 's' : ''}
+          </span>
+          <span
+            style={{
+              width: 22, height: 22, borderRadius: '50%', background: 'var(--brand-action)',
+              color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 14, fontWeight: 700, lineHeight: 1,
+            }}
+          >
+            +
+          </span>
+        </button>
 
         <button
           onClick={tapStroke}
@@ -185,7 +211,7 @@ export default function GolfTracker() {
           style={{
             width: 208,
             height: 208,
-            marginTop: 40,
+            marginTop: 36,
             borderRadius: '50%',
             border: 'none',
             background: 'var(--brand-action)',
@@ -201,32 +227,11 @@ export default function GolfTracker() {
         >
           <span style={{ font: 'var(--font-sans)', fontWeight: 700, fontSize: 19, color: '#fff' }}>+1 Coup</span>
         </button>
-
-        <button
-          onClick={tapPutt}
-          aria-label="+1 putt"
-          style={{
-            marginTop: 16,
-            height: 44,
-            padding: '0 24px',
-            borderRadius: 999,
-            border: '1.5px solid var(--brand-action)',
-            background: pressed === 'putt' ? 'var(--surface-tint)' : 'transparent',
-            cursor: 'pointer',
-            transform: pressed === 'putt' ? 'scale(0.96)' : 'scale(1)',
-            transition: 'transform 110ms ease, background 110ms ease',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <span style={{ font: 'var(--font-sans)', fontWeight: 700, fontSize: 14, color: 'var(--brand-action)' }}>+1 Putt</span>
-        </button>
       </div>
 
       <div style={{ borderTop: '1px solid var(--border-default)', paddingBottom: 'var(--safe-bottom)' }}>
         {strokes > 0 && (
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 28, padding: '14px var(--page-padding-mobile) 4px' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 28, padding: '14px var(--page-padding-mobile) 0' }}>
             <span onClick={undo} style={{ font: 'var(--text-small)', color: 'var(--text-muted)', cursor: 'pointer' }}>
               Annuler
             </span>
@@ -236,25 +241,28 @@ export default function GolfTracker() {
           </div>
         )}
         {strokes === 0 && (
-          <div style={{ display: 'flex', justifyContent: 'center', padding: '14px var(--page-padding-mobile) 4px' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '14px var(--page-padding-mobile) 0' }}>
             <span onClick={openEdit} style={{ font: 'var(--text-small)', color: 'var(--text-muted)', cursor: 'pointer' }}>
               Modifier le score
             </span>
           </div>
         )}
-        <button
-          onClick={openFinish}
-          style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            width: '100%', height: 56, padding: '0 var(--page-padding-mobile)',
-            background: 'none', border: 'none', cursor: 'pointer',
-          }}
-        >
-          <span style={{ font: 'var(--text-label)', fontWeight: 700, fontSize: 16, color: 'var(--brand-action)' }}>
-            {isLastHole ? 'Terminer la partie' : 'Terminer le trou'}
-          </span>
-          <ChevronRightIcon width={20} height={20} strokeWidth={2.25} style={{ color: 'var(--brand-action)' }} />
-        </button>
+
+        <div style={{ padding: '20px var(--page-padding-mobile) 18px' }}>
+          <button
+            onClick={openFinish}
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              width: '100%', height: 56, borderRadius: 14,
+              background: 'var(--surface-tint)', border: 'none', cursor: 'pointer',
+            }}
+          >
+            <span style={{ font: 'var(--text-label)', fontWeight: 700, fontSize: 16, color: 'var(--brand-action)' }}>
+              {isLastHole ? 'Terminer la partie' : 'Terminer le trou'}
+            </span>
+            <ChevronRightIcon width={20} height={20} strokeWidth={2.25} style={{ color: 'var(--brand-action)' }} />
+          </button>
+        </div>
       </div>
       </>
       )}
