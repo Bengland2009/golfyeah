@@ -445,6 +445,26 @@ export function DataProvider({ children }) {
     }
   }, [liveRound, expenses]);
 
+  // Deletes a completed round (e.g. from a player's profile). Every derived
+  // stat — playerStats, leaderboard, bestRoundLabel — is computed live from
+  // the `rounds` array on each render, so removing the doc here is the only
+  // work needed; nothing downstream is cached and needs a manual refresh.
+  const deleteRound = useCallback(async (roundId) => {
+    const toDelete = expenses.filter((e) => e.roundId === roundId);
+    if (isFirebaseConfigured) {
+      await Promise.all([
+        deleteDoc(doc(db, 'groups', GROUP_ID, 'rounds', roundId)),
+        ...toDelete.map((e) => deleteDoc(doc(db, 'groups', GROUP_ID, 'expenses', e.id))),
+      ]);
+    } else {
+      setLocal((s) => ({
+        ...s,
+        rounds: s.rounds.filter((r) => r.id !== roundId),
+        expenses: s.expenses.filter((e) => e.roundId !== roundId),
+      }));
+    }
+  }, [expenses]);
+
   // ---------- expenses ----------
   const addExpense = useCallback(async (roundId, { description, amountInCents, paidByPlayerId, participantPlayerIds }) => {
     const now = Date.now();
@@ -583,7 +603,7 @@ export function DataProvider({ children }) {
     startRound, startIndoorRound, resolveIndoorCourseId, saveQuickCourseAsReusable,
     createCompletedRound,
     setStrokes, bumpHoleField, bumpPutts, bumpPuttStroke, setPutts, addBeer, removeBeer, changeHole,
-    editHoleForRoundOnly, editHoleForCourse, finishRound, abandonRound,
+    editHoleForRoundOnly, editHoleForCourse, finishRound, abandonRound, deleteRound,
     addRangeEntry, getMyClubs, addClub,
     addExpense, updateExpense, deleteExpense,
     addFeedback, updateFeedback, deleteFeedback, toggleConfirmFeedback, addFeedbackComment,

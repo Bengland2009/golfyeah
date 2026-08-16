@@ -2,6 +2,18 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.19.0 — 2026-08-16
+
+- **Suppression d'une ronde depuis le profil.** Dans « Parties
+  récentes », chaque ronde a maintenant un bouton ⋮ qui ouvre une
+  confirmation claire (« Supprimer cette ronde ? ») avec Annuler et
+  Supprimer la ronde (rouge, destructif). Une fois confirmée, la
+  suppression est irréversible et met à jour automatiquement — sans
+  action supplémentaire — la moyenne vs par, le score moyen, la
+  meilleure ronde, le nombre de rondes, les putts, mulligans, balles
+  perdues et bières, ainsi que le classement général, pour tous les
+  joueurs ayant participé à cette ronde.
+
 ## v1.18.3 — 2026-08-16
 
 - **Fenêtre de fin de trou repensée en écran de confirmation.** Elle

@@ -3,6 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Avatar from '../components/Avatar';
 import Card from '../components/Card';
+import Sheet from '../components/Sheet';
+import Button from '../components/Button';
+import { MoreVerticalIcon } from '../components/icons';
 import { useData } from '../contexts/DataContext';
 import { avatarSrc } from '../lib/avatar';
 import { resizeImageFile } from '../lib/image';
@@ -28,10 +31,12 @@ function SmallStat({ label, value }) {
 export default function Profile() {
   const { playerId } = useParams();
   const navigate = useNavigate();
-  const { players, courses, completedRounds, range, season, setSeason, setPlayerPhoto, CLUB_ORDER } = useData();
+  const { players, courses, completedRounds, range, season, setSeason, setPlayerPhoto, deleteRound, CLUB_ORDER } = useData();
   const player = players.find((p) => p.id === playerId);
   const [photoMenuOpen, setPhotoMenuOpen] = useState(false);
   const [seasonMenuOpen, setSeasonMenuOpen] = useState(false);
+  const [deleteRoundId, setDeleteRoundId] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   const fileInputRef = useRef(null);
 
   if (!player) {
@@ -57,6 +62,13 @@ export default function Profile() {
     setPlayerPhoto(playerId, dataUrl);
   };
   const clearPhoto = () => { setPlayerPhoto(playerId, null); setPhotoMenuOpen(false); };
+
+  const confirmDeleteRound = async () => {
+    setDeleting(true);
+    await deleteRound(deleteRoundId);
+    setDeleting(false);
+    setDeleteRoundId(null);
+  };
 
   return (
     <div>
@@ -138,12 +150,25 @@ export default function Profile() {
                 const par = course ? coursePar(course) : r.par || 72;
                 const diff = r.totals[playerId] - par;
                 return (
-                  <div key={r.id} onClick={() => navigate(`/resume/${r.id}`)} style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid var(--border-default)' }}>
-                    <div>
-                      <div style={{ font: 'var(--text-body)', fontWeight: 600 }}>{course?.name}</div>
-                      <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>{r.date} · {r.holes} trous</div>
+                  <div key={r.id} style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid var(--border-default)' }}>
+                    <div
+                      onClick={() => navigate(`/resume/${r.id}`)}
+                      style={{ flex: 1, minWidth: 0, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0' }}
+                    >
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ font: 'var(--text-body)', fontWeight: 600 }}>{course?.name}</div>
+                        <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>{r.date} · {r.holes} trous</div>
+                      </div>
+                      <span style={{ font: 'var(--text-label)', fontWeight: 700, color: scoreColor(diff) }}>{parLabel(diff)}</span>
                     </div>
-                    <span style={{ font: 'var(--text-label)', fontWeight: 700, color: scoreColor(diff) }}>{parLabel(diff)}</span>
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); setDeleteRoundId(r.id); }}
+                      aria-label="Options de la ronde"
+                      style={{ background: 'none', border: 'none', padding: 8, marginLeft: 4, cursor: 'pointer', color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}
+                    >
+                      <MoreVerticalIcon width={18} height={18} />
+                    </button>
                   </div>
                 );
               })}
@@ -151,6 +176,24 @@ export default function Profile() {
           </div>
         )}
       </div>
+
+      <Sheet open={deleteRoundId != null} onClose={() => setDeleteRoundId(null)} zIndex={70} dim={0.45}>
+        <div style={{ font: 'var(--text-h3)' }}>Supprimer cette ronde ?</div>
+        <div style={{ font: 'var(--text-body)', color: 'var(--text-muted)' }}>
+          Cette action est irréversible et mettra à jour automatiquement toutes vos statistiques et le classement de la saison.
+        </div>
+        <Button variant="secondary" onClick={() => setDeleteRoundId(null)} disabled={deleting} style={{ height: 52, width: '100%' }}>
+          Annuler
+        </Button>
+        <Button
+          variant="primary"
+          onClick={confirmDeleteRound}
+          disabled={deleting}
+          style={deleting ? { height: 52, width: '100%' } : { height: 52, width: '100%', background: 'var(--color-score-under)' }}
+        >
+          {deleting ? 'Suppression…' : 'Supprimer la ronde'}
+        </Button>
+      </Sheet>
     </div>
   );
 }
