@@ -2,6 +2,18 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.20.0 — 2026-08-16
+
+- **Mini scorecard de progression dans le Golf Tracker.** Une bande
+  discrète et défilable apparaît maintenant juste sous l'en-tête,
+  montrant tous les trous de la ronde d'un coup d'œil : résultat vs par
+  pour les trous terminés (coloré selon la convention habituelle), un
+  point ● pour le trou en cours (mis en évidence), un tiret pour les
+  trous à venir. La bande se recentre automatiquement sur le trou
+  courant, et chaque case est tapable pour sauter directement à ce
+  trou — pratique pour corriger un trou précédent sans repasser par
+  tous les trous intermédiaires.
+
 ## v1.19.0 — 2026-08-16
 
 - **Suppression d'une ronde depuis le profil.** Dans « Parties

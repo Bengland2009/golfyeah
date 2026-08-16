@@ -7,6 +7,7 @@ import SegmentedControl from '../components/SegmentedControl';
 import BeerCounter from '../components/BeerCounter';
 import HoleSetupPrompt from '../components/HoleSetupPrompt';
 import { FlagIcon, ChevronRightIcon } from '../components/icons';
+import HoleStrip from '../components/HoleStrip';
 import { useData } from '../contexts/DataContext';
 
 // Golf Tracker is an alternate, optional UI for the same live-round data
@@ -78,7 +79,7 @@ export default function GolfTracker() {
   const {
     players, liveRound, currentLiveCourse, getHolePar, getHoleYardage,
     setStrokes, bumpPuttStroke, setPutts, bumpHoleField, addBeer, removeBeer,
-    changeHole, finishRound, editHoleForCourse,
+    changeHole, goToHole, finishRound, editHoleForCourse,
   } = useData();
 
   const [pressed, setPressed] = useState(null); // 'stroke' | 'putt' | null
@@ -112,6 +113,15 @@ export default function GolfTracker() {
   const rawEntry = liveRound.scores[playerId]?.[i];
   const strokes = rawEntry ? rawEntry.strokes : 0;
   const putts = rawEntry ? (rawEntry.putts || 0) : 0;
+
+  // For the hole strip: null means "no final score yet" (upcoming, or the
+  // hole currently being played — its strokes are still moving).
+  const getDiff = (idx) => {
+    const entry = liveRound.scores[playerId]?.[idx];
+    const holePar = getHolePar(idx);
+    if (!entry || !entry.strokes || holePar == null) return null;
+    return entry.strokes - holePar;
+  };
 
   const flash = (which) => {
     setPressed(which);
@@ -186,6 +196,8 @@ export default function GolfTracker() {
           <div style={{ height: '100%', width: `${((i + 1) / liveRound.format) * 100}%`, background: 'rgba(255,255,255,0.9)', transition: 'width 200ms ease' }} />
         </div>
       </div>
+
+      <HoleStrip format={liveRound.format} currentIndex={i} getDiff={getDiff} onSelect={goToHole} />
 
       {needsSetup && (
         <HoleSetupPrompt holeNumber={i + 1} onSave={(p, y) => editHoleForCourse(p, y)} />

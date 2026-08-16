@@ -398,6 +398,14 @@ export function DataProvider({ children }) {
     patchLiveRound({ holeIndex: idx });
   }, [liveRound, patchLiveRound]);
 
+  // Absolute counterpart to changeHole, for the hole strip's tap-to-jump —
+  // same clamping, same no-prewrite behavior.
+  const goToHole = useCallback((idx) => {
+    if (!liveRound) return;
+    const clamped = Math.max(0, Math.min(liveRound.format - 1, idx));
+    patchLiveRound({ holeIndex: clamped });
+  }, [liveRound, patchLiveRound]);
+
   const editHoleForRoundOnly = useCallback((par, yardage) => {
     if (!liveRound) return;
     const holeOverrides = { ...(liveRound.holeOverrides || {}), [liveRound.holeIndex]: { par, yardage: Number(yardage) || 0 } };
@@ -602,7 +610,7 @@ export function DataProvider({ children }) {
     addCourse, updateCourseHolePar, updateCourseHoles,
     startRound, startIndoorRound, resolveIndoorCourseId, saveQuickCourseAsReusable,
     createCompletedRound,
-    setStrokes, bumpHoleField, bumpPutts, bumpPuttStroke, setPutts, addBeer, removeBeer, changeHole,
+    setStrokes, bumpHoleField, bumpPutts, bumpPuttStroke, setPutts, addBeer, removeBeer, changeHole, goToHole,
     editHoleForRoundOnly, editHoleForCourse, finishRound, abandonRound, deleteRound,
     addRangeEntry, getMyClubs, addClub,
     addExpense, updateExpense, deleteExpense,
