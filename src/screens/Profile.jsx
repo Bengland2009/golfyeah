@@ -102,7 +102,8 @@ export default function Profile() {
           <StatCard label="Score moyen" value={stats.scoreAvg ?? '—'} />
         </div>
 
-        <div style={{ display: 'flex', gap: 24, justifyContent: 'space-around' }}>
+        <div style={{ display: 'flex', gap: 24, justifyContent: 'space-around', flexWrap: 'wrap', rowGap: 16 }}>
+          <SmallStat label="Putts" value={stats.putts} />
           <SmallStat label="Mulligans" value={stats.mulligans} />
           <SmallStat label="Balles perdues" value={stats.lostBalls} />
           <SmallStat label="Bières" value={stats.beers} />

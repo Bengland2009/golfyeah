@@ -47,7 +47,8 @@ export function playerStats(playerId, rounds, courses) {
   const mulligans = prounds.reduce((a, r) => a + (r.mulligans[playerId] || 0), 0);
   const lostBalls = prounds.reduce((a, r) => a + (r.lostBalls[playerId] || 0), 0);
   const beers = prounds.reduce((a, r) => a + (r.beers[playerId] || 0), 0);
-  return { rounds: prounds.length, avg, best, scoreAvg, mulligans, lostBalls, beers, roundsList: prounds };
+  const putts = prounds.reduce((a, r) => a + (r.putts?.[playerId] || 0), 0);
+  return { rounds: prounds.length, avg, best, scoreAvg, mulligans, lostBalls, beers, putts, roundsList: prounds };
 }
 
 export function bestRoundLabel(players, rounds, courses) {
@@ -78,23 +79,28 @@ export function clubAverage(rangeEntries) {
   return Math.round(rangeEntries.reduce((a, e) => a + e.avg, 0) / rangeEntries.length);
 }
 
-// Builds the final `rounds` document fields from a live round.
+// Builds the final `rounds` document fields from a live round. holePutts
+// mirrors holeScores (same per-player, per-hole array shape) so per-hole
+// detail — "9 coups dont 4 putts" — survives past the round's active life,
+// not just the summed total.
 export function finalizeRound(live, course) {
-  const totals = {}, mulligans = {}, lostBalls = {}, beers = {}, holeScores = {};
+  const totals = {}, mulligans = {}, lostBalls = {}, beers = {}, putts = {}, holeScores = {}, holePutts = {};
   live.playerIds.forEach((id) => {
-    let strokes = 0, mull = 0, lost = 0;
-    (live.scores[id] || []).forEach((h) => { if (h) { strokes += h.strokes; mull += h.mulligans; lost += h.lostBalls; } });
+    let strokes = 0, mull = 0, lost = 0, puttSum = 0;
+    (live.scores[id] || []).forEach((h) => { if (h) { strokes += h.strokes; mull += h.mulligans; lost += h.lostBalls; puttSum += h.putts || 0; } });
     totals[id] = strokes;
     mulligans[id] = mull;
     lostBalls[id] = lost;
+    putts[id] = puttSum;
     beers[id] = live.beers[id] || 0;
     holeScores[id] = (live.scores[id] || []).map((h) => (h ? h.strokes : null));
+    holePutts[id] = (live.scores[id] || []).map((h) => (h ? (h.putts || 0) : null));
   });
   return {
     courseId: course.id,
     holes: live.format,
     playerIds: live.playerIds,
-    totals, mulligans, lostBalls, beers, holeScores,
+    totals, mulligans, lostBalls, putts, beers, holeScores, holePutts,
     par: coursePar(course),
     status: 'completed',
   };

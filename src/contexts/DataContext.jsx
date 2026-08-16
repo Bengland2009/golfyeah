@@ -321,7 +321,7 @@ export function DataProvider({ children }) {
     const next = JSON.parse(JSON.stringify(scores));
     playerIds.forEach((id) => {
       if (!next[id]) next[id] = [];
-      if (!next[id][holeIndex]) next[id][holeIndex] = { strokes: par || 4, mulligans: 0, lostBalls: 0 };
+      if (!next[id][holeIndex]) next[id][holeIndex] = { strokes: par || 4, mulligans: 0, lostBalls: 0, putts: 0 };
     });
     return next;
   }
@@ -340,6 +340,41 @@ export function DataProvider({ children }) {
     const scores = ensureHole(liveRound.scores, liveRound.playerIds, liveRound.holeIndex, par);
     const entry = scores[playerId][liveRound.holeIndex];
     entry[field] = Math.max(0, (entry[field] || 0) + delta);
+    patchLiveRound({ scores });
+  }, [liveRound, getHolePar, patchLiveRound]);
+
+  // Putts are a subset of the hole's strokes, never more — used by the
+  // scorecard's independent "+" (strokes already set via the stepper, so
+  // this just nudges the putt count, clamped to what's possible).
+  const bumpPutts = useCallback((playerId, delta) => {
+    if (!liveRound) return;
+    const par = getHolePar(liveRound.holeIndex);
+    const scores = ensureHole(liveRound.scores, liveRound.playerIds, liveRound.holeIndex, par);
+    const entry = scores[playerId][liveRound.holeIndex];
+    entry.putts = Math.max(0, Math.min(entry.strokes, (entry.putts || 0) + delta));
+    patchLiveRound({ scores });
+  }, [liveRound, getHolePar, patchLiveRound]);
+
+  // Golf Tracker's "+1 Putt": a putt IS a stroke, so this bumps both
+  // fields together in one write — no separate "putting mode" needed, the
+  // player just taps the matching button per shot.
+  const bumpPuttStroke = useCallback((playerId, delta) => {
+    if (!liveRound) return;
+    const par = getHolePar(liveRound.holeIndex);
+    const scores = ensureHole(liveRound.scores, liveRound.playerIds, liveRound.holeIndex, par);
+    const entry = scores[playerId][liveRound.holeIndex];
+    entry.strokes = Math.max(0, entry.strokes + delta);
+    entry.putts = Math.max(0, Math.min(entry.strokes, (entry.putts || 0) + delta));
+    patchLiveRound({ scores });
+  }, [liveRound, getHolePar, patchLiveRound]);
+
+  // Direct-set version used by the end-of-hole sheet's quick-pick chips.
+  const setPutts = useCallback((playerId, value) => {
+    if (!liveRound) return;
+    const par = getHolePar(liveRound.holeIndex);
+    const scores = ensureHole(liveRound.scores, liveRound.playerIds, liveRound.holeIndex, par);
+    const entry = scores[playerId][liveRound.holeIndex];
+    entry.putts = Math.max(0, Math.min(entry.strokes, value));
     patchLiveRound({ scores });
   }, [liveRound, getHolePar, patchLiveRound]);
 
@@ -547,7 +582,7 @@ export function DataProvider({ children }) {
     addCourse, updateCourseHolePar, updateCourseHoles,
     startRound, startIndoorRound, resolveIndoorCourseId, saveQuickCourseAsReusable,
     createCompletedRound,
-    setStrokes, bumpHoleField, addBeer, removeBeer, changeHole,
+    setStrokes, bumpHoleField, bumpPutts, bumpPuttStroke, setPutts, addBeer, removeBeer, changeHole,
     editHoleForRoundOnly, editHoleForCourse, finishRound, abandonRound,
     addRangeEntry, getMyClubs, addClub,
     addExpense, updateExpense, deleteExpense,

@@ -36,7 +36,7 @@ export default function Live() {
   const navigate = useNavigate();
   const {
     players, liveRound, currentLiveCourse, getHolePar, getHoleYardage,
-    setStrokes, bumpHoleField, addBeer, removeBeer, changeHole,
+    setStrokes, bumpHoleField, bumpPutts, addBeer, removeBeer, changeHole,
     editHoleForRoundOnly, editHoleForCourse, finishRound, abandonRound,
   } = useData();
 
@@ -121,7 +121,7 @@ export default function Live() {
       <div style={{ padding: 'var(--page-padding-mobile)', display: 'flex', flexDirection: 'column', gap: 16 }}>
         {liveRound.playerIds.map((pid) => {
           const player = players.find((p) => p.id === pid);
-          const entry = (liveRound.scores[pid] && liveRound.scores[pid][i]) || { strokes: par || 4, mulligans: 0, lostBalls: 0 };
+          const entry = (liveRound.scores[pid] && liveRound.scores[pid][i]) || { strokes: par || 4, mulligans: 0, lostBalls: 0, putts: 0 };
           const running = playerRunningTotal(liveRound, pid, getHolePar);
           return (
             <Card key={pid} elevated>
@@ -146,6 +146,7 @@ export default function Live() {
                 <ChevronRightIcon width={15} height={15} strokeWidth={2.5} style={{ color: 'var(--brand-action)', flexShrink: 0 }} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12 }}>
+                <StatRow label="Putts" value={entry.putts || 0} onAdd={() => bumpPutts(pid, 1)} />
                 <StatRow label="Mulligan" value={entry.mulligans} onAdd={() => bumpHoleField(pid, 'mulligans', 1)} />
                 <StatRow label="Balle perdue" value={entry.lostBalls} onAdd={() => bumpHoleField(pid, 'lostBalls', 1)} />
                 <BeerCounter value={liveRound.beers[pid] || 0} onAdd={() => addBeer(pid)} onRemove={() => removeBeer(pid)} />

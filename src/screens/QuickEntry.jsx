@@ -44,6 +44,7 @@ export default function QuickEntry() {
 
   const [pars, setPars] = useState(() => Array.from({ length: format }, (_, i) => course?.pars?.[i] ?? null));
   const [scores, setScores] = useState(() => Object.fromEntries(playerIds.map((pid) => [pid, Array(format).fill('')])));
+  const [putts, setPutts] = useState(() => Object.fromEntries(playerIds.map((pid) => [pid, 0])));
   const [mulligans, setMulligans] = useState(() => Object.fromEntries(playerIds.map((pid) => [pid, 0])));
   const [lostBalls, setLostBalls] = useState(() => Object.fromEntries(playerIds.map((pid) => [pid, 0])));
   const [beers, setBeers] = useState(() => Object.fromEntries(playerIds.map((pid) => [pid, 0])));
@@ -79,17 +80,18 @@ export default function QuickEntry() {
       const yardages = Array.from({ length: format }, (_, i) => course.yardages?.[i] ?? null);
       await updateCourseHoles(course.id, pars, yardages);
     }
-    const totals = {}, mull = {}, lost = {}, beersOut = {}, holeScores = {};
+    const totals = {}, mull = {}, lost = {}, beersOut = {}, puttsOut = {}, holeScores = {};
     playerIds.forEach((pid) => {
       totals[pid] = totalFor(pid);
       mull[pid] = mulligans[pid] || 0;
       lost[pid] = lostBalls[pid] || 0;
       beersOut[pid] = beers[pid] || 0;
+      puttsOut[pid] = putts[pid] || 0;
       holeScores[pid] = scores[pid].map((v) => Number(v));
     });
     const roundId = await createCompletedRound({
       courseId: course.id, holes: format, playerIds,
-      totals, mulligans: mull, lostBalls: lost, beers: beersOut, holeScores, par: roundPar,
+      totals, mulligans: mull, lostBalls: lost, beers: beersOut, putts: puttsOut, holeScores, par: roundPar,
     });
     navigate(`/resume/${roundId}`);
   };
@@ -203,6 +205,7 @@ export default function QuickEntry() {
                   )}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <MiniStepper label="Putts" value={putts[pid]} onDec={() => bump(setPutts, pid, -1)} onInc={() => bump(setPutts, pid, 1)} />
                   <MiniStepper label="Mulligans" value={mulligans[pid]} onDec={() => bump(setMulligans, pid, -1)} onInc={() => bump(setMulligans, pid, 1)} />
                   <MiniStepper label="Balles perdues" value={lostBalls[pid]} onDec={() => bump(setLostBalls, pid, -1)} onInc={() => bump(setLostBalls, pid, 1)} />
                   <MiniStepper label="Bières" value={beers[pid]} onDec={() => bump(setBeers, pid, -1)} onInc={() => bump(setBeers, pid, 1)} />

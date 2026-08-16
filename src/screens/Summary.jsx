@@ -70,7 +70,8 @@ export default function Summary() {
                   <Badge tone={toneFor(diff)}>{parLabel(diff)}</Badge>
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: 16, font: 'var(--text-small)', color: 'var(--text-muted)' }}>
+              <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', rowGap: 4, font: 'var(--text-small)', color: 'var(--text-muted)' }}>
+                <span>{round.putts?.[pid] || 0} putts</span>
                 <span>{round.mulligans[pid] || 0} mulligans</span>
                 <span>{round.lostBalls[pid] || 0} balle(s) perdue(s)</span>
                 <span>{round.beers[pid] || 0} bières</span>

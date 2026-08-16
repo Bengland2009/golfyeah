@@ -2,6 +2,26 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.18.0 — 2026-08-16
+
+- **Suivi des putts** ajouté partout où les coups sont enregistrés :
+  - Golf Tracker garde un seul écran pendant le jeu, avec deux boutons
+    toujours visibles : **+1 Coup** (n'importe quel coup) et **+1 Putt**
+    (un putt est aussi un coup, donc il incrémente les deux à la fois).
+    Aucun changement de mode requis.
+  - En appuyant sur **Terminer le trou**, une feuille de confirmation
+    s'ouvre avant de passer au trou suivant : score du trou, choix
+    rapide du nombre de putts (0/1/2/3/4+, plafonné au score du trou),
+    mulligan, balle perdue et bières — le tout saisi après coup plutôt
+    que pendant le jeu.
+  - La scorecard **En direct** garde son propre compteur de putts,
+    synchronisé avec le Golf Tracker puisque les deux s'appuient sur la
+    même donnée de trou.
+  - Les putts sont maintenant enregistrés trou par trou et disponibles
+    partout : sommaire de partie, historique, profil des joueurs
+    (nouvelle statistique "Putts") et Entrée rapide (total de putts par
+    joueur).
+
 ## v1.17.3 — 2026-08-09
 
 - Le point d'entrée vers le **Golf Tracker** (écran En direct) devient
