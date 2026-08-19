@@ -4,10 +4,27 @@ import TopBar from '../components/TopBar';
 import Avatar from '../components/Avatar';
 import Card from '../components/Card';
 import Button from '../components/Button';
+import SegmentedControl from '../components/SegmentedControl';
 import { useData } from '../contexts/DataContext';
 import { avatarSrc } from '../lib/avatar';
 import { leaderboard, parLabel, scoreColor, bestRoundLabel, leaderStat } from '../lib/scoring';
 import { TrophyIcon, TargetIcon, TreeIcon, BeerIcon } from '../components/icons';
+
+const KIND_OPTIONS = [
+  { value: 'exterieur', label: 'Extérieur' },
+  { value: 'interieur', label: 'Simulateur' },
+  { value: 'tous', label: 'Tous' },
+];
+
+// Extérieur = anything not explicitly marked indoor, so a course record
+// missing `kind` (shouldn't happen, but cheap to guard) still counts as
+// outdoor instead of silently vanishing from both filters — same
+// convention NewRound.jsx already uses for its own outdoor course list.
+function matchesKind(round, courses, kindFilter) {
+  if (kindFilter === 'tous') return true;
+  const course = courses.find((c) => c.id === round.courseId);
+  return kindFilter === 'interieur' ? course?.kind === 'interieur' : course?.kind !== 'interieur';
+}
 
 function HighlightCard({ Icon, label, value }) {
   return (
@@ -25,9 +42,11 @@ export default function Home() {
   const navigate = useNavigate();
   const { players, courses, completedRounds, allRounds, liveRound, currentLiveCourse, season, setSeason } = useData();
   const [seasonMenuOpen, setSeasonMenuOpen] = useState(false);
+  const [kindFilter, setKindFilter] = useState('exterieur');
 
-  const board = leaderboard(players, completedRounds, courses);
-  const latest = completedRounds[0];
+  const filteredRounds = completedRounds.filter((r) => matchesKind(r, courses, kindFilter));
+  const board = leaderboard(players, filteredRounds, courses);
+  const latest = filteredRounds[0];
   const latestCourse = latest ? courses.find((c) => c.id === latest.courseId) : null;
 
   return (
@@ -66,7 +85,8 @@ export default function Home() {
               </div>
             )}
           </div>
-          <div style={{ display: 'flex', overflowX: 'auto' }}>
+          <SegmentedControl options={KIND_OPTIONS} value={kindFilter} onChange={setKindFilter} />
+          <div style={{ display: 'flex', overflowX: 'auto', marginTop: 6 }}>
             {board.map((p, i) => (
               <div key={p.id} style={{ display: 'contents' }}>
                 <div
@@ -141,10 +161,10 @@ export default function Home() {
             Faits marquants
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-            <HighlightCard Icon={TrophyIcon} label="Meilleure ronde" value={bestRoundLabel(players, completedRounds, courses)} />
-            <HighlightCard Icon={TargetIcon} label="Plus de mulligans" value={leaderStat('mulligans', players, completedRounds)} />
-            <HighlightCard Icon={TreeIcon} label="Plus de balles perdues" value={leaderStat('lostBalls', players, completedRounds)} />
-            <HighlightCard Icon={BeerIcon} label="Champion des bières" value={leaderStat('beers', players, completedRounds)} />
+            <HighlightCard Icon={TrophyIcon} label="Meilleure ronde" value={bestRoundLabel(players, filteredRounds, courses)} />
+            <HighlightCard Icon={TargetIcon} label="Plus de mulligans" value={leaderStat('mulligans', players, filteredRounds)} />
+            <HighlightCard Icon={TreeIcon} label="Plus de balles perdues" value={leaderStat('lostBalls', players, filteredRounds)} />
+            <HighlightCard Icon={BeerIcon} label="Champion des bières" value={leaderStat('beers', players, filteredRounds)} />
           </div>
         </div>
       </div>

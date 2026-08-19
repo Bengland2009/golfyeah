@@ -2,6 +2,17 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.22.0 — 2026-08-16
+
+- **Filtre Extérieur / Simulateur / Tous sur l'accueil.** Un sélecteur
+  apparaît juste sous « Classement · saison » pour ne plus mélanger les
+  statistiques de terrain et de simulateur : classement, moyenne,
+  nombre de rondes, dernière partie et faits marquants se recalculent
+  instantanément selon le filtre choisi, sans quitter la page. « Extérieur »
+  est la vue par défaut à l'ouverture (le classement officiel de
+  Golfyeah!), « Simulateur » sert à consulter ses performances
+  hivernales, et « Tous » combine les deux.
+
 ## v1.21.1 — 2026-08-16
 
 - **Saisie des putts par sélecteur dans Entrée rapide.** La rangée
