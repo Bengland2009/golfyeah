@@ -2,6 +2,19 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.24.1 — 2026-08-16
+
+- **Raffinement de la fiche Golf, style Apple Plans / Airbnb.** Bannière
+  photo 16:9 plein cadre entre le titre et le bandeau (un dégradé vert
+  de marque s'affiche tant qu'aucune vraie photo n'existe — chaque
+  fiche a toujours une bannière). Sous-titre compact sous le nom
+  (« Montréal • Simulateur intérieur • 5 baies »). Les caractéristiques
+  passent d'une liste à puces à une grille 2×2 avec petites icônes. Le
+  bandeau « apportez votre bière » devient « BYOB — Apportez votre
+  propre bière », plus convivial qu'un avertissement. Les heures
+  tiennent maintenant sur une ligne compacte par plage (« 12 h – 21 h
+  (dim-jeu) »). Boutons Réserver/Itinéraire légèrement plus fins.
+
 ## v1.24.0 — 2026-08-16
 
 - **Nouvelle section « Golf » dans le menu.** Regroupe les fiches des
