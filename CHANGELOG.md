@@ -2,6 +2,20 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.23.1 — 2026-08-16
+
+- **Raffinement premium de l'accueil.** Les cartes « En vedette » sont
+  plus compactes (près de 3 visibles à l'écran, pour inviter au
+  défilement) et leur hiérarchie s'inverse : le record — le chiffre —
+  devient la vedette, en grand et coloré, avec le nom du joueur en
+  dessous. Les 8 trophées ont des noms plus variés et moins répétitifs
+  (Précision au putting, Chasseur de birdies, 19e trou, Toujours
+  partant, En pleine ascension, Roi du mulligan…). Le sous-titre devient
+  « Saison complète ». La carte « Dernière partie » affiche maintenant
+  un petit repère sobre (Extérieur/Simulateur · nombre de trous), et les
+  espacements verticaux de la page sont resserrés pour une meilleure
+  densité sans surcharger l'écran.
+
 ## v1.23.0 — 2026-08-16
 
 - **« En vedette » remplace « Faits marquants ».** Un carrousel

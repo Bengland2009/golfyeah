@@ -23,7 +23,7 @@ export default function Home() {
   return (
     <div>
       <TopBar />
-      <div style={{ padding: 'var(--page-padding-mobile)', display: 'flex', flexDirection: 'column', gap: 36 }}>
+      <div style={{ padding: 'var(--page-padding-mobile)', display: 'flex', flexDirection: 'column', gap: 30 }}>
         {liveRound && (
           <div
             onClick={() => navigate('/partie/en-cours')}
@@ -100,14 +100,19 @@ export default function Home() {
 
         {latest && (
           <div>
-            <div style={{ font: 'var(--text-eyebrow)', letterSpacing: 'var(--letter-spacing-eyebrow)', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 12 }}>
+            <div style={{ font: 'var(--text-eyebrow)', letterSpacing: 'var(--letter-spacing-eyebrow)', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 10 }}>
               Dernière partie
             </div>
             <div onClick={() => navigate(`/resume/${latest.id}`)} style={{ cursor: 'pointer' }}>
               <Card>
-                <div style={{ font: 'var(--text-h3)', fontSize: 22, marginBottom: 4 }}>{latestCourse?.name}</div>
-                <div style={{ font: 'var(--text-small)', fontSize: 12, color: 'var(--text-muted)', marginBottom: 18 }}>{latest.date} · {latest.holes} trous</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
+                <div style={{ font: 'var(--text-h3)', fontSize: 22, marginBottom: 6 }}>{latestCourse?.name}</div>
+                <div style={{ display: 'inline-flex', padding: '3px 9px', borderRadius: 999, border: '1px solid var(--border-default)', marginBottom: 10 }}>
+                  <span style={{ font: 'var(--text-small)', fontSize: 11, color: 'var(--text-muted)', fontWeight: 600 }}>
+                    {latestCourse?.kind === 'interieur' ? 'Simulateur' : 'Extérieur'} · {latest.holes} trous
+                  </span>
+                </div>
+                <div style={{ font: 'var(--text-small)', fontSize: 12, color: 'var(--text-muted)', marginBottom: 14 }}>{latest.date}</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
                   {latest.playerIds.map((pid) => {
                     const player = players.find((pp) => pp.id === pid);
                     const diff = latest.totals[pid] - (latestCourse?.pars?.reduce((a, b) => a + b, 0) || 72);
