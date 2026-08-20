@@ -152,3 +152,20 @@ export function MoreVerticalIcon(props) {
     </svg>
   );
 }
+export function MonitorIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" width={22} height={22} {...common} {...props}>
+      <rect x="3" y="4" width="18" height="12" rx="2" />
+      <path d="M8 20h8" />
+      <path d="M12 16v4" />
+    </svg>
+  );
+}
+export function RedoIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" width={22} height={22} {...common} {...props}>
+      <path d="M3.5 12a8.5 8.5 0 1 0 2.9-6.4" />
+      <path d="M3.5 3.5v5h5" />
+    </svg>
+  );
+}

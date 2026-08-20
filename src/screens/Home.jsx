@@ -5,44 +5,15 @@ import Avatar from '../components/Avatar';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import SegmentedControl from '../components/SegmentedControl';
+import TrophyCarousel from '../components/TrophyCarousel';
 import { useData } from '../contexts/DataContext';
 import { avatarSrc } from '../lib/avatar';
-import { leaderboard, parLabel, scoreColor, bestRoundLabel, leaderStat } from '../lib/scoring';
-import { TrophyIcon, TargetIcon, TreeIcon, BeerIcon } from '../components/icons';
-
-const KIND_OPTIONS = [
-  { value: 'exterieur', label: 'Extérieur' },
-  { value: 'interieur', label: 'Simulateur' },
-  { value: 'tous', label: 'Tous' },
-];
-
-// Extérieur = anything not explicitly marked indoor, so a course record
-// missing `kind` (shouldn't happen, but cheap to guard) still counts as
-// outdoor instead of silently vanishing from both filters — same
-// convention NewRound.jsx already uses for its own outdoor course list.
-function matchesKind(round, courses, kindFilter) {
-  if (kindFilter === 'tous') return true;
-  const course = courses.find((c) => c.id === round.courseId);
-  return kindFilter === 'interieur' ? course?.kind === 'interieur' : course?.kind !== 'interieur';
-}
-
-function HighlightCard({ Icon, label, value }) {
-  return (
-    <div style={{ background: 'var(--surface-tint)', borderRadius: 14, padding: '14px 14px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-        <Icon width={15} height={15} strokeWidth={1.75} style={{ color: 'var(--brand-action)', flexShrink: 0 }} />
-        <span style={{ font: 'var(--text-small)', fontSize: 12, color: 'var(--text-muted)' }}>{label}</span>
-      </div>
-      <div style={{ font: 'var(--text-label)', fontSize: 17, fontWeight: 700 }}>{value}</div>
-    </div>
-  );
-}
+import { leaderboard, parLabel, scoreColor, matchesKind, KIND_OPTIONS } from '../lib/scoring';
 
 export default function Home() {
   const navigate = useNavigate();
-  const { players, courses, completedRounds, allRounds, liveRound, currentLiveCourse, season, setSeason } = useData();
+  const { players, courses, completedRounds, allRounds, liveRound, currentLiveCourse, season, setSeason, kindFilter, setKindFilter } = useData();
   const [seasonMenuOpen, setSeasonMenuOpen] = useState(false);
-  const [kindFilter, setKindFilter] = useState('exterieur');
 
   const filteredRounds = completedRounds.filter((r) => matchesKind(r, courses, kindFilter));
   const board = leaderboard(players, filteredRounds, courses);
@@ -156,17 +127,7 @@ export default function Home() {
           </div>
         )}
 
-        <div>
-          <div style={{ font: 'var(--text-eyebrow)', letterSpacing: 'var(--letter-spacing-eyebrow)', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 12 }}>
-            Faits marquants
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-            <HighlightCard Icon={TrophyIcon} label="Meilleure ronde" value={bestRoundLabel(players, filteredRounds, courses)} />
-            <HighlightCard Icon={TargetIcon} label="Plus de mulligans" value={leaderStat('mulligans', players, filteredRounds)} />
-            <HighlightCard Icon={TreeIcon} label="Plus de balles perdues" value={leaderStat('lostBalls', players, filteredRounds)} />
-            <HighlightCard Icon={BeerIcon} label="Champion des bières" value={leaderStat('beers', players, filteredRounds)} />
-          </div>
-        </div>
+        <TrophyCarousel players={players} rounds={completedRounds} courses={courses} />
       </div>
     </div>
   );

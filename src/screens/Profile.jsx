@@ -5,11 +5,12 @@ import Avatar from '../components/Avatar';
 import Card from '../components/Card';
 import Sheet from '../components/Sheet';
 import Button from '../components/Button';
+import SegmentedControl from '../components/SegmentedControl';
 import { MoreVerticalIcon } from '../components/icons';
 import { useData } from '../contexts/DataContext';
 import { avatarSrc } from '../lib/avatar';
 import { resizeImageFile } from '../lib/image';
-import { playerStats, parLabel, scoreColor, coursePar, clubAverage } from '../lib/scoring';
+import { playerStats, parLabel, scoreColor, coursePar, clubAverage, matchesKind, KIND_OPTIONS } from '../lib/scoring';
 
 function StatCard({ label, value }) {
   return (
@@ -31,7 +32,7 @@ function SmallStat({ label, value }) {
 export default function Profile() {
   const { playerId } = useParams();
   const navigate = useNavigate();
-  const { players, courses, completedRounds, range, season, setSeason, setPlayerPhoto, deleteRound, CLUB_ORDER } = useData();
+  const { players, courses, completedRounds, range, season, setSeason, kindFilter, setKindFilter, setPlayerPhoto, deleteRound, CLUB_ORDER } = useData();
   const player = players.find((p) => p.id === playerId);
   const [photoMenuOpen, setPhotoMenuOpen] = useState(false);
   const [seasonMenuOpen, setSeasonMenuOpen] = useState(false);
@@ -48,7 +49,8 @@ export default function Profile() {
     );
   }
 
-  const stats = playerStats(playerId, completedRounds, courses);
+  const filteredRounds = completedRounds.filter((r) => matchesKind(r, courses, kindFilter));
+  const stats = playerStats(playerId, filteredRounds, courses);
   const myEntries = range.filter((e) => e.playerId === playerId);
   const clubsPresent = [...new Set(myEntries.map((e) => e.club))];
   const orderedClubs = CLUB_ORDER.filter((c) => clubsPresent.includes(c));
@@ -95,6 +97,8 @@ export default function Profile() {
             )}
           </div>
         </div>
+
+        <SegmentedControl options={KIND_OPTIONS} value={kindFilter} onChange={setKindFilter} />
 
         {photoMenuOpen && (
           <div style={{ position: 'fixed', inset: 0, zIndex: 60, display: 'flex', alignItems: 'flex-end' }}>

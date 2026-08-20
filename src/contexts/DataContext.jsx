@@ -41,6 +41,11 @@ function saveLocal(state) {
 export function DataProvider({ children }) {
   const { user } = useAuth();
   const [season, setSeason] = useState(2026);
+  // Shared between Home and Profile so switching context on one screen
+  // carries over to the other — official ranking stays 'exterieur' by
+  // default (see Home.jsx), never influencing the trophy carousel, which
+  // deliberately ignores this filter and always spans both worlds.
+  const [kindFilter, setKindFilter] = useState('exterieur');
 
   // ---- local (no-Firebase) backend ----
   const [local, setLocal] = useState(loadLocal);
@@ -602,7 +607,7 @@ export function DataProvider({ children }) {
   }, [getMyClubs]);
 
   const value = {
-    season, setSeason,
+    season, setSeason, kindFilter, setKindFilter,
     dataReady, dataError,
     players, courses, range, expenses, feedback, feedbackComments, allRounds, completedRounds,
     liveRound, currentLiveCourse, getHolePar, getHoleYardage,

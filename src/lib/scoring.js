@@ -74,6 +74,128 @@ export function leaderStat(field, players, rounds) {
   return leader ? `${leader.name} · ${max}` : '—';
 }
 
+export const KIND_OPTIONS = [
+  { value: 'exterieur', label: 'Extérieur' },
+  { value: 'interieur', label: 'Simulateur' },
+  { value: 'tous', label: 'Tous' },
+];
+
+// Extérieur = anything not explicitly marked indoor, so a course record
+// missing `kind` still counts as outdoor instead of silently vanishing
+// from both filters — same convention NewRound.jsx uses for its own
+// outdoor course list.
+export function matchesKind(round, courses, kindFilter) {
+  if (kindFilter === 'tous') return true;
+  const course = courses.find((c) => c.id === round.courseId);
+  return kindFilter === 'interieur' ? course?.kind === 'interieur' : course?.kind !== 'interieur';
+}
+
+// Structured counterpart to bestRoundLabel — returns the winning player and
+// raw diff separately (rather than a pre-joined label string) so a trophy
+// card can lay out the name and the value as distinct visual elements.
+export function bestRound(players, rounds, courses) {
+  let bestDiff = Infinity, bestPlayerId = null;
+  rounds.forEach((r) => {
+    const course = courses.find((c) => c.id === r.courseId);
+    const par = course ? coursePar(course) : r.par || 72;
+    r.playerIds.forEach((pid) => {
+      const diff = r.totals[pid] - par;
+      if (diff < bestDiff) { bestDiff = diff; bestPlayerId = pid; }
+    });
+  });
+  const player = players.find((p) => p.id === bestPlayerId);
+  return player ? { player, diff: bestDiff } : null;
+}
+
+// Structured counterpart to leaderStat — same "highest total wins" logic,
+// but returns { player, value } instead of a formatted string, and null
+// (rather than an arbitrary player at 0) when nobody has any of this
+// stat at all, so the caller can hide a trophy with no real data instead
+// of crowning a false champion at zero.
+export function topByField(field, players, rounds) {
+  const totals = {};
+  players.forEach((p) => { totals[p.id] = 0; });
+  rounds.forEach((r) => players.forEach((p) => { totals[p.id] += r[field]?.[p.id] || 0; }));
+  let best = null;
+  players.forEach((p) => { if (totals[p.id] > 0 && (best == null || totals[p.id] > best.value)) best = { player: p, value: totals[p.id] }; });
+  return best;
+}
+
+// Lower putts-per-hole is better. Only rounds with a `putts` field are
+// counted — older rounds recorded before putts tracking existed have no
+// such field at all, and would otherwise silently count as "0 putts over
+// a full round" and drag the average toward an implausible number.
+export function bestPuttsPerHole(players, rounds) {
+  let best = null;
+  let anyPutts = false;
+  players.forEach((p) => {
+    const prounds = rounds.filter((r) => r.playerIds.includes(p.id) && r.putts?.[p.id] != null);
+    const holes = prounds.reduce((a, r) => a + (r.holes || 0), 0);
+    const putts = prounds.reduce((a, r) => a + r.putts[p.id], 0);
+    if (putts > 0) anyPutts = true;
+    if (!holes) return;
+    const perHole = putts / holes;
+    if (best == null || perHole < best.value) best = { player: p, value: perHole };
+  });
+  return anyPutts ? best : null;
+}
+
+// Counts holes played at least one under par (birdie or better) using the
+// per-hole detail already stored on each round (holeScores vs the course's
+// pars, matched by index).
+export function mostBirdies(players, rounds, courses) {
+  let best = null;
+  players.forEach((p) => {
+    let count = 0;
+    rounds.filter((r) => r.playerIds.includes(p.id)).forEach((r) => {
+      const course = courses.find((c) => c.id === r.courseId);
+      const pars = course?.pars;
+      const holeScores = r.holeScores?.[p.id];
+      if (!pars || !holeScores) return;
+      holeScores.forEach((strokes, i) => {
+        if (strokes != null && pars[i] != null && strokes - pars[i] <= -1) count += 1;
+      });
+    });
+    if (count > 0 && (best == null || count > best.value)) best = { player: p, value: count };
+  });
+  return best;
+}
+
+export function mostRoundsPlayed(players, rounds) {
+  let best = null;
+  players.forEach((p) => {
+    const count = rounds.filter((r) => r.playerIds.includes(p.id)).length;
+    if (count > 0 && (best == null || count > best.value)) best = { player: p, value: count };
+  });
+  return best;
+}
+
+// "Progression" compares a player's average score-vs-par in the first
+// half of their rounds this season against the second half — chronological
+// order relies on the existing app-wide convention that rounds arrays are
+// newest-first (same assumption Home.jsx's "dernière partie" already
+// makes via rounds[0]). Requires at least 4 rounds so each half has a
+// couple of data points, and only returns a winner who actually improved
+// (a shrinking average), never someone who got worse.
+export function bestProgression(players, rounds, courses) {
+  let best = null;
+  players.forEach((p) => {
+    const prounds = rounds.filter((r) => r.playerIds.includes(p.id));
+    if (prounds.length < 4) return;
+    const chronological = [...prounds].reverse();
+    const diffFor = (r) => {
+      const course = courses.find((c) => c.id === r.courseId);
+      const par = course ? coursePar(course) : r.par || 72;
+      return r.totals[p.id] - par;
+    };
+    const mid = Math.floor(chronological.length / 2);
+    const avg = (arr) => arr.reduce((a, r) => a + diffFor(r), 0) / arr.length;
+    const improvement = avg(chronological.slice(0, mid)) - avg(chronological.slice(mid));
+    if (improvement > 0 && (best == null || improvement > best.value)) best = { player: p, value: improvement };
+  });
+  return best;
+}
+
 export function clubAverage(rangeEntries) {
   if (!rangeEntries || !rangeEntries.length) return null;
   return Math.round(rangeEntries.reduce((a, e) => a + e.avg, 0) / rangeEntries.length);

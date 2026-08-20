@@ -2,6 +2,24 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.23.0 — 2026-08-16
+
+- **« En vedette » remplace « Faits marquants ».** Un carrousel
+  horizontal de 8 trophées (Meilleure ronde extérieure, Champion
+  intérieur, Meilleure moyenne de putts, Plus de birdies, Plus de
+  bières, Plus de rondes jouées, Plus grande progression, Plus de
+  mulligans) raconte l'histoire de la saison. Contrairement au
+  classement, cette section combine toujours l'extérieur et le
+  simulateur — elle ne suit pas le filtre Extérieur/Simulateur/Tous, qui
+  reste réservé au classement officiel. Un trophée ne s'affiche que s'il
+  y a une vraie donnée derrière (jamais un « champion » à zéro par
+  défaut).
+- **Le filtre de l'accueil suit maintenant le joueur jusqu'à son
+  profil.** Extérieur/Simulateur/Tous est partagé entre l'accueil et
+  les profils de joueurs — un sélecteur identique apparaît aussi sur le
+  profil, et ses statistiques (moyenne, rondes, parties récentes, etc.)
+  se recalculent selon le filtre actif.
+
 ## v1.22.0 — 2026-08-16
 
 - **Filtre Extérieur / Simulateur / Tous sur l'accueil.** Un sélecteur
