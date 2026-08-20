@@ -2,6 +2,17 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.24.0 — 2026-08-16
+
+- **Nouvelle section « Golf » dans le menu.** Regroupe les fiches des
+  terrains et simulateurs que le groupe visite régulièrement, au format
+  carte de visite : toutes les infos utiles en un coup d'œil (ville,
+  type, aspects pratiques, adresse, heures), sans texte marketing.
+  Premier établissement ajouté : **Golf en Ville Montréal**, avec sa
+  mention « Apportez votre propre bière » mise en évidence. Le bouton
+  Itinéraire ouvre l'adresse dans Google Maps ; le bouton Réserver est
+  prêt visuellement, en attente d'un lien de réservation.
+
 ## v1.23.1 — 2026-08-16
 
 - **Raffinement premium de l'accueil.** Les cartes « En vedette » sont

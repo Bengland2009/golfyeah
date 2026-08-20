@@ -26,6 +26,8 @@ import FeedbackList from './screens/FeedbackList';
 import NewFeedback from './screens/NewFeedback';
 import FeedbackDetail from './screens/FeedbackDetail';
 import Caddie from './screens/Caddie';
+import Venues from './screens/Venues';
+import VenueDetail from './screens/VenueDetail';
 
 const NAV_ACTIVE_BY_PREFIX = [
   ['/nouvelle-partie', 'rounds'],
@@ -100,6 +102,8 @@ function Shell() {
           <Route path="/commentaires" element={<FeedbackList />} />
           <Route path="/commentaires/nouveau" element={<NewFeedback />} />
           <Route path="/commentaires/:id" element={<FeedbackDetail />} />
+          <Route path="/golf" element={<Venues />} />
+          <Route path="/golf/:venueId" element={<VenueDetail />} />
           {/* Legacy shortcuts, kept as redirects in case a device has an old link/shortcut. */}
           <Route path="/range" element={<Navigate to="/pratique/distances" replace />} />
           <Route path="/caddie" element={<Navigate to="/pratique/caddie" replace />} />
