@@ -151,7 +151,7 @@ export default function Profile() {
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {stats.roundsList.map((r) => {
                 const course = courses.find((c) => c.id === r.courseId);
-                const par = course ? coursePar(course) : r.par || 72;
+                const par = course ? coursePar(course, r.holes) : r.par || 72;
                 const diff = r.totals[playerId] - par;
                 return (
                   <div key={r.id} style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid var(--border-default)' }}>

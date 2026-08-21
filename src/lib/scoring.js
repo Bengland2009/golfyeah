@@ -14,8 +14,16 @@ export function scoreColor(diff) {
   return diff < 0 ? 'var(--color-score-under)' : diff === 0 ? 'var(--color-score-even)' : 'var(--color-score-over)';
 }
 
-export function coursePar(course) {
-  return (course.pars || []).reduce((a, b) => a + b, 0);
+// `holes` scopes the sum to the holes actually played — a round's format
+// can differ from the course's own stored hole count (a 9-hole round on an
+// 18-hole course, or a round converted mid-play via changeRoundFormat), so
+// callers computing a specific round's par must pass its `holes`/`format`.
+// Omitting it (e.g. Courses.jsx showing a course's own definition) sums
+// every stored hole, which is the right behavior there.
+export function coursePar(course, holes) {
+  const pars = course.pars || [];
+  const scoped = holes != null ? pars.slice(0, holes) : pars;
+  return scoped.reduce((a, b) => a + (b || 0), 0);
 }
 
 // Rounds passed in must already be completed (status === 'completed').
@@ -25,7 +33,7 @@ export function leaderboard(players, rounds, courses) {
       const prounds = rounds.filter((r) => r.playerIds.includes(p.id));
       const diffs = prounds.map((r) => {
         const course = courses.find((c) => c.id === r.courseId);
-        const par = course ? coursePar(course) : r.par || 72;
+        const par = course ? coursePar(course, r.holes) : r.par || 72;
         return r.totals[p.id] - par;
       });
       const avg = diffs.length ? Math.round(diffs.reduce((a, b) => a + b, 0) / diffs.length) : null;
@@ -38,7 +46,7 @@ export function playerStats(playerId, rounds, courses) {
   const prounds = rounds.filter((r) => r.playerIds.includes(playerId));
   const diffs = prounds.map((r) => {
     const course = courses.find((c) => c.id === r.courseId);
-    const par = course ? coursePar(course) : r.par || 72;
+    const par = course ? coursePar(course, r.holes) : r.par || 72;
     return r.totals[playerId] - par;
   });
   const avg = diffs.length ? Math.round(diffs.reduce((a, b) => a + b, 0) / diffs.length) : null;
@@ -55,7 +63,7 @@ export function bestRoundLabel(players, rounds, courses) {
   let bestDiff = Infinity, bestPlayerId = null;
   rounds.forEach((r) => {
     const course = courses.find((c) => c.id === r.courseId);
-    const par = course ? coursePar(course) : r.par || 72;
+    const par = course ? coursePar(course, r.holes) : r.par || 72;
     r.playerIds.forEach((pid) => {
       const diff = r.totals[pid] - par;
       if (diff < bestDiff) { bestDiff = diff; bestPlayerId = pid; }
@@ -97,7 +105,7 @@ export function bestRound(players, rounds, courses) {
   let bestDiff = Infinity, bestPlayerId = null;
   rounds.forEach((r) => {
     const course = courses.find((c) => c.id === r.courseId);
-    const par = course ? coursePar(course) : r.par || 72;
+    const par = course ? coursePar(course, r.holes) : r.par || 72;
     r.playerIds.forEach((pid) => {
       const diff = r.totals[pid] - par;
       if (diff < bestDiff) { bestDiff = diff; bestPlayerId = pid; }
@@ -185,7 +193,7 @@ export function bestProgression(players, rounds, courses) {
     const chronological = [...prounds].reverse();
     const diffFor = (r) => {
       const course = courses.find((c) => c.id === r.courseId);
-      const par = course ? coursePar(course) : r.par || 72;
+      const par = course ? coursePar(course, r.holes) : r.par || 72;
       return r.totals[p.id] - par;
     };
     const mid = Math.floor(chronological.length / 2);
@@ -223,7 +231,7 @@ export function finalizeRound(live, course) {
     holes: live.format,
     playerIds: live.playerIds,
     totals, mulligans, lostBalls, putts, beers, holeScores, holePutts,
-    par: coursePar(course),
+    par: coursePar(course, live.format),
     status: 'completed',
   };
 }

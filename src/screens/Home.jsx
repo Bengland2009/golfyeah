@@ -8,7 +8,7 @@ import SegmentedControl from '../components/SegmentedControl';
 import TrophyCarousel from '../components/TrophyCarousel';
 import { useData } from '../contexts/DataContext';
 import { avatarSrc } from '../lib/avatar';
-import { leaderboard, parLabel, scoreColor, matchesKind, KIND_OPTIONS } from '../lib/scoring';
+import { leaderboard, parLabel, scoreColor, matchesKind, KIND_OPTIONS, coursePar } from '../lib/scoring';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -115,7 +115,7 @@ export default function Home() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
                   {latest.playerIds.map((pid) => {
                     const player = players.find((pp) => pp.id === pid);
-                    const diff = latest.totals[pid] - (latestCourse?.pars?.reduce((a, b) => a + b, 0) || 72);
+                    const diff = latest.totals[pid] - (latestCourse ? coursePar(latestCourse, latest.holes) : 72);
                     return (
                       <div key={pid} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                         <span style={{ font: 'var(--text-body)' }}>{player?.name}</span>

@@ -2,6 +2,20 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.25.1 — 2026-08-21
+
+- **Correctif : score relatif au par incorrect sur les rondes de 9 trous.**
+  Le calcul du +/- par rapport au par sommait à tort les pars de *tous*
+  les trous enregistrés pour un terrain, même quand seuls les 9 premiers
+  avaient été joués — un terrain à 18 trous jouée en 9 trous affichait
+  donc un score relatif basé sur un par 72 (ou une valeur incohérente)
+  au lieu du vrai par des trous 1 à 9. Le calcul utilise maintenant
+  systématiquement la somme des pars des trous réellement joués sur
+  cette ronde précise, tirée des données du terrain enregistré (aucune
+  valeur fixe comme 36 ou 72 n'est présumée). Corrigé partout où ce
+  calcul apparaît : résumé de ronde, liste des parties, classement,
+  dernière partie, profils des joueurs et faits marquants.
+
 ## v1.25.0 — 2026-08-21
 
 - **Modifier une partie en cours.** Un nouveau lien « Modifier la partie »,

@@ -28,7 +28,7 @@ export default function Rounds() {
 
         {completedRounds.map((r) => {
           const course = courses.find((c) => c.id === r.courseId);
-          const par = course ? coursePar(course) : r.par || 72;
+          const par = course ? coursePar(course, r.holes) : r.par || 72;
           return (
             <div key={r.id} onClick={() => navigate(`/resume/${r.id}`)} style={{ cursor: 'pointer' }}>
               <Card>

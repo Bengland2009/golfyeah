@@ -8,7 +8,7 @@ import Input from '../components/Input';
 import Button from '../components/Button';
 import RoundExpenses from '../components/RoundExpenses';
 import { useData } from '../contexts/DataContext';
-import { parLabel, toneFor } from '../lib/scoring';
+import { parLabel, toneFor, coursePar } from '../lib/scoring';
 
 function tdHead() { return { padding: '6px 10px', textAlign: 'left', fontWeight: 600, borderBottom: '1px solid var(--border-default)', position: 'sticky', left: 0, background: '#fff' }; }
 function td() { return { padding: '6px 10px', textAlign: 'center', borderBottom: '1px solid var(--border-default)' }; }
@@ -41,7 +41,7 @@ export default function Summary() {
     );
   }
 
-  const par = course ? course.pars.reduce((a, b) => a + (b || 0), 0) : (round.par || 72);
+  const par = course ? coursePar(course, round.holes) : (round.par || 72);
 
   const saveCourse = async () => {
     if (!saveName.trim()) return;
