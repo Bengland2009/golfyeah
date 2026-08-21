@@ -2,6 +2,24 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.26.0 — 2026-08-21
+
+- **Modifier une partie déjà terminée.** Un lien « Modifier la partie »
+  sur l'écran Résumé ouvre maintenant une scorecard éditable : scores et
+  putts par trou (dans une grille identique à la saisie manuelle), pars,
+  mulligans, balles perdues et bières par joueur, ainsi que le terrain et
+  le nombre de trous. Une erreur de saisie après coup — un coup mal
+  entré, une bière oubliée — ne demande plus de supprimer la partie et
+  de la recréer. Le format ne peut être agrandi (9→18) que si les
+  nouveaux trous sont complétés (mêmes pars/scores requis qu'à la
+  création) ; le rétrécir (18→9) est toujours possible. Avant
+  d'enregistrer, un message rappelle que les statistiques et le
+  classement seront recalculés automatiquement — et c'est le cas partout
+  (classement, faits marquants, profils, moyennes de saison, filtres
+  extérieur/simulateur) puisque tout se calcule à la volée à partir des
+  données de la ronde, sans étape manuelle. Les dépenses restent
+  modifiables directement sur le Résumé, comme avant.
+
 ## v1.25.1 — 2026-08-21
 
 - **Correctif : score relatif au par incorrect sur les rondes de 9 trous.**

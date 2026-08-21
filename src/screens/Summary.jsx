@@ -53,9 +53,17 @@ export default function Summary() {
     <div>
       <Header title="Résumé" onBack={() => navigate('/parties')} />
       <div style={{ padding: 'var(--page-padding-mobile)', display: 'flex', flexDirection: 'column', gap: 20 }}>
-        <div>
-          <div style={{ font: 'var(--text-h3)' }}>{course?.name}</div>
-          <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>{round.date} · {round.holes} trous</div>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+          <div>
+            <div style={{ font: 'var(--text-h3)' }}>{course?.name}</div>
+            <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>{round.date} · {round.holes} trous</div>
+          </div>
+          <span
+            onClick={() => navigate(`/resume/${round.id}/modifier`)}
+            style={{ font: 'var(--text-small)', color: 'var(--brand-action)', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', marginTop: 2 }}
+          >
+            Modifier la partie
+          </span>
         </div>
 
         {round.playerIds.map((pid) => {

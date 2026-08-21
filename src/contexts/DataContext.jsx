@@ -289,6 +289,20 @@ export function DataProvider({ children }) {
     return id;
   }, [season]);
 
+  // Corrects a round after the fact (wrong stroke, putt count, mulligan,
+  // course...). Just a patch on the same completed-round doc createCompletedRound/
+  // finishRound produce — every stat that reads it (leaderboard, playerStats,
+  // trophies, profiles) is computed live from `rounds` on each render, so
+  // patching here is the only work needed; nothing downstream needs a
+  // manual recalculation pass.
+  const updateCompletedRound = useCallback(async (roundId, patch) => {
+    if (isFirebaseConfigured) {
+      await updateDoc(doc(db, 'groups', GROUP_ID, 'rounds', roundId), patch);
+    } else {
+      setLocal((s) => ({ ...s, rounds: s.rounds.map((r) => (r.id === roundId ? { ...r, ...patch } : r)) }));
+    }
+  }, []);
+
   const saveQuickCourseAsReusable = useCallback(async (courseId, { name, simulatedCourse }) => {
     const patch = { isQuickDraft: false };
     if (name) patch.name = name;
@@ -662,7 +676,7 @@ export function DataProvider({ children }) {
     addPlayer, setPlayerPhoto,
     addCourse, updateCourseHolePar, updateCourseName, updateCourseHoles,
     startRound, startIndoorRound, resolveIndoorCourseId, saveQuickCourseAsReusable,
-    createCompletedRound,
+    createCompletedRound, updateCompletedRound,
     setStrokes, bumpHoleField, bumpPutts, bumpPuttStroke, setPutts, addBeer, removeBeer, changeHole, goToHole,
     editHoleForRoundOnly, editHoleForCourse, changeRoundFormat, changeRoundCourse, finishRound, abandonRound, deleteRound,
     addRangeEntry, getMyClubs, addClub,
