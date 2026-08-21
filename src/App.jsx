@@ -27,6 +27,9 @@ import FeedbackList from './screens/FeedbackList';
 import NewFeedback from './screens/NewFeedback';
 import FeedbackDetail from './screens/FeedbackDetail';
 import Caddie from './screens/Caddie';
+import TrainingPlan from './screens/TrainingPlan';
+import TrainingSession from './screens/TrainingSession';
+import TrainingHistory from './screens/TrainingHistory';
 import Venues from './screens/Venues';
 import VenueDetail from './screens/VenueDetail';
 
@@ -98,6 +101,9 @@ function Shell() {
           <Route path="/pratique/nouvelle-seance" element={<AddRange />} />
           <Route path="/pratique/historique" element={<SessionHistory />} />
           <Route path="/pratique/caddie" element={<Caddie />} />
+          <Route path="/pratique/plan" element={<TrainingPlan />} />
+          <Route path="/pratique/plan/historique" element={<TrainingHistory />} />
+          <Route path="/pratique/plan/:sessionId" element={<TrainingSession />} />
           <Route path="/joueurs" element={<Players />} />
           <Route path="/joueurs/nouveau" element={<AddPlayer />} />
           <Route path="/joueurs/:playerId" element={<Profile />} />

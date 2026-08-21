@@ -1,9 +1,15 @@
 import { useNavigate } from 'react-router-dom';
 import TopBar from '../components/TopBar';
 import Card from '../components/Card';
-import { RulerIcon, PlusCircleIcon, TargetIcon, TrendingUpIcon } from '../components/icons';
+import { RulerIcon, PlusCircleIcon, TargetIcon, TrendingUpIcon, FlagIcon } from '../components/icons';
 
 const CARDS = [
+  {
+    Icon: FlagIcon,
+    title: 'Plan d’entraînement',
+    description: 'Un plan simple sur 4 semaines pour améliorer contact, direction et répétabilité.',
+    to: '/pratique/plan',
+  },
   {
     Icon: RulerIcon,
     title: 'Mes distances',

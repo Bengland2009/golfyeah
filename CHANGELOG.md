@@ -2,6 +2,25 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.28.0 — 2026-08-21
+
+- **Nouvelle sous-section « Plan d'entraînement » dans Pratique.** Un
+  plan simple sur 4 semaines pour améliorer le contact, la direction et
+  la répétabilité des coups — pensé pour être ouvert rapidement au range
+  ou au simulateur, suivi pendant 60 minutes, puis fermé. La page
+  d'accueil du plan affiche l'objectif général, la semaine active (avec
+  sa question-repère), la progression sur les 4 semaines, la prochaine
+  séance recommandée et un accès direct aux trois séances (A — Technique
+  au range, B — Précision au range, C — Simulateur) ainsi qu'aux notes
+  de progression. Chaque séance se présente en sections repliables
+  (accordéons) plutôt qu'un long texte, avec un court formulaire « À
+  noter après la séance » et un bouton « Marquer comme complétée ».
+  Les notes sont sauvegardées dans un historique consultable et
+  supprimable ; le nombre de séances complétées, la dernière séance et
+  la prochaine suggérée se recalculent automatiquement à chaque
+  complétion — semaine active comprise, qui avance toutes les 3
+  séances (une rotation complète A/B/C).
+
 ## v1.27.0 — 2026-08-21
 
 - **Scorecard premium sur l'écran Résumé.** La grille de pointage était

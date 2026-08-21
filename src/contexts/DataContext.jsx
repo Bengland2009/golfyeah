@@ -8,7 +8,7 @@ import { CLUB_ORDER, DEFAULT_MY_CLUBS, SEED_PLAYERS, SEED_COURSE, seedRounds, se
 import { finalizeRound, coursePar } from '../lib/scoring';
 import { matchPlayer } from '../lib/identity';
 
-const FS_COLLECTIONS = ['players', 'courses', 'rounds', 'range', 'myClubs', 'expenses', 'feedback', 'feedbackComments'];
+const FS_COLLECTIONS = ['players', 'courses', 'rounds', 'range', 'myClubs', 'expenses', 'feedback', 'feedbackComments', 'trainingLogs'];
 
 const DataContext = createContext(null);
 
@@ -20,7 +20,7 @@ function loadLocal() {
     // Backfill keys added after someone's local store was first created —
     // without this, a returning demo-mode user with old localStorage data
     // would crash on the missing field.
-    if (raw) return { expenses: [], feedback: [], feedbackComments: [], ...JSON.parse(raw) };
+    if (raw) return { expenses: [], feedback: [], feedbackComments: [], trainingLogs: [], ...JSON.parse(raw) };
   } catch {}
   return {
     players: SEED_PLAYERS,
@@ -31,6 +31,7 @@ function loadLocal() {
     expenses: [],
     feedback: [],
     feedbackComments: [],
+    trainingLogs: [],
   };
 }
 
@@ -60,6 +61,7 @@ export function DataProvider({ children }) {
   const [fsExpenses, setFsExpenses] = useState([]);
   const [fsFeedback, setFsFeedback] = useState([]);
   const [fsFeedbackComments, setFsFeedbackComments] = useState([]);
+  const [fsTrainingLogs, setFsTrainingLogs] = useState([]);
   const [loadedCollections, setLoadedCollections] = useState(() => new Set());
   const [dataError, setDataError] = useState(null);
 
@@ -68,7 +70,7 @@ export function DataProvider({ children }) {
     // before that is certain to fail Firestore's rules (see firestore.rules)
     // and would otherwise fire silent permission-denied errors on every load.
     if (!isFirebaseConfigured || !user) {
-      setFsPlayers([]); setFsCourses([]); setFsRounds([]); setFsRange([]); setFsMyClubs({}); setFsExpenses([]); setFsFeedback([]); setFsFeedbackComments([]);
+      setFsPlayers([]); setFsCourses([]); setFsRounds([]); setFsRange([]); setFsMyClubs({}); setFsExpenses([]); setFsFeedback([]); setFsFeedbackComments([]); setFsTrainingLogs([]);
       setLoadedCollections(new Set());
       setDataError(null);
       return;
@@ -96,6 +98,7 @@ export function DataProvider({ children }) {
       onSnapshot(query(g('expenses')), (snap) => { setFsExpenses(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); markLoaded('expenses'); }, onError('expenses')),
       onSnapshot(query(g('feedback')), (snap) => { setFsFeedback(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); markLoaded('feedback'); }, onError('feedback')),
       onSnapshot(query(g('feedbackComments')), (snap) => { setFsFeedbackComments(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); markLoaded('feedbackComments'); }, onError('feedbackComments')),
+      onSnapshot(query(g('trainingLogs')), (snap) => { setFsTrainingLogs(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); markLoaded('trainingLogs'); }, onError('trainingLogs')),
     ];
     return () => unsubs.forEach((u) => u());
   }, [user]);
@@ -133,6 +136,7 @@ export function DataProvider({ children }) {
   const expenses = isFirebaseConfigured ? fsExpenses : local.expenses;
   const feedback = isFirebaseConfigured ? fsFeedback : local.feedback;
   const feedbackComments = isFirebaseConfigured ? fsFeedbackComments : local.feedbackComments;
+  const trainingLogs = isFirebaseConfigured ? fsTrainingLogs : local.trainingLogs;
 
   const liveRound = allRounds.find((r) => r.status === 'active') || null;
   const completedRounds = useMemo(
@@ -652,6 +656,34 @@ export function DataProvider({ children }) {
     }
   }, []);
 
+  // ---------- training plan ----------
+  // Séances A/B/C are repeatable session types, not one-time checklist
+  // items — each completion appends a new log entry (playerId, sessionId,
+  // week, notes) rather than flipping a boolean, so "combien de séances",
+  // "dernière séance" and the current week are all derived live from this
+  // array (same append-only pattern as range/expenses), never a separate
+  // recalculation step.
+  const addTrainingLog = useCallback(async (playerId, { sessionId, week, notes }) => {
+    const doc_ = {
+      playerId, sessionId, week, notes: notes || {},
+      date: new Date().toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' }),
+      createdAt: Date.now(),
+    };
+    if (isFirebaseConfigured) {
+      await addDoc(collection(db, 'groups', GROUP_ID, 'trainingLogs'), doc_);
+    } else {
+      setLocal((s) => ({ ...s, trainingLogs: [{ id: 'tl' + Date.now(), ...doc_ }, ...s.trainingLogs] }));
+    }
+  }, []);
+
+  const deleteTrainingLog = useCallback(async (id) => {
+    if (isFirebaseConfigured) {
+      await deleteDoc(doc(db, 'groups', GROUP_ID, 'trainingLogs', id));
+    } else {
+      setLocal((s) => ({ ...s, trainingLogs: s.trainingLogs.filter((l) => l.id !== id) }));
+    }
+  }, []);
+
   // ---------- clubs ----------
   const getMyClubs = useCallback((playerId) => myClubsMap[playerId] || DEFAULT_MY_CLUBS, [myClubsMap]);
 
@@ -671,7 +703,7 @@ export function DataProvider({ children }) {
   const value = {
     season, setSeason, kindFilter, setKindFilter,
     dataReady, dataError,
-    players, courses, range, expenses, feedback, feedbackComments, allRounds, completedRounds,
+    players, courses, range, expenses, feedback, feedbackComments, allRounds, completedRounds, trainingLogs,
     liveRound, currentLiveCourse, getHolePar, getHoleYardage,
     addPlayer, setPlayerPhoto,
     addCourse, updateCourseHolePar, updateCourseName, updateCourseHoles,
@@ -680,6 +712,7 @@ export function DataProvider({ children }) {
     setStrokes, bumpHoleField, bumpPutts, bumpPuttStroke, setPutts, addBeer, removeBeer, changeHole, goToHole,
     editHoleForRoundOnly, editHoleForCourse, changeRoundFormat, changeRoundCourse, finishRound, abandonRound, deleteRound,
     addRangeEntry, getMyClubs, addClub,
+    addTrainingLog, deleteTrainingLog,
     addExpense, updateExpense, deleteExpense,
     addFeedback, updateFeedback, deleteFeedback, toggleConfirmFeedback, addFeedbackComment,
     CLUB_ORDER,
