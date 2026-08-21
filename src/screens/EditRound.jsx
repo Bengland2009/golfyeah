@@ -1,16 +1,15 @@
-import { Fragment, useState } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Card from '../components/Card';
 import Avatar from '../components/Avatar';
-import Badge from '../components/Badge';
 import Button from '../components/Button';
 import Sheet from '../components/Sheet';
 import SegmentedControl from '../components/SegmentedControl';
 import CompactPicker from '../components/CompactPicker';
+import Scorecard from '../components/Scorecard';
 import { useData } from '../contexts/DataContext';
 import { avatarSrc } from '../lib/avatar';
-import { parLabel, toneFor } from '../lib/scoring';
 
 const PAR_OPTIONS = [3, 4, 5];
 const PUTT_OPTIONS = [
@@ -20,13 +19,6 @@ const PUTT_OPTIONS = [
   { value: 3, label: '3' },
   { value: 4, label: '4+' },
 ];
-
-function tdHead() {
-  return { padding: '6px 10px', textAlign: 'left', fontWeight: 600, borderBottom: '1px solid var(--border-default)', position: 'sticky', left: 0, background: '#fff', whiteSpace: 'nowrap' };
-}
-function td() {
-  return { padding: '4px', textAlign: 'center', borderBottom: '1px solid var(--border-default)' };
-}
 
 function MiniStepper({ label, value, onDec, onInc }) {
   const smallBtn = { width: 28, height: 28, borderRadius: '50%', border: '1px solid var(--border-default)', background: '#fff', cursor: 'pointer', fontSize: 16 };
@@ -122,7 +114,6 @@ export default function EditRound() {
 
   const totalFor = (pid) => scores[pid].reduce((a, v) => a + (Number(v) || 0), 0);
   const puttsTotalFor = (pid) => holePutts[pid].reduce((a, v) => a + (Number(v) || 0), 0);
-  const roundPar = pars.reduce((a, p) => a + (p || 0), 0);
 
   const allParsKnown = pars.every((p) => p != null);
   const allScoresFilled = playerIds.every((pid) => scores[pid].every((v) => v !== '' && Number(v) > 0));
@@ -154,10 +145,6 @@ export default function EditRound() {
     navigate(`/resume/${round.id}`);
   };
 
-  const halves = format === 18
-    ? [{ label: 'Aller', from: 0, to: 9 }, { label: 'Retour', from: 9, to: 18 }]
-    : [{ label: null, from: 0, to: format }];
-
   return (
     <div>
       <Header title="Modifier la partie" onBack={() => navigate(`/resume/${round.id}`)} />
@@ -176,97 +163,17 @@ export default function EditRound() {
           />
         </div>
 
-        {halves.map((half) => {
-          const range = Array.from({ length: half.to - half.from }, (_, k) => half.from + k);
-          return (
-            <div key={half.from}>
-              {half.label && (
-                <div style={{ font: 'var(--text-eyebrow)', letterSpacing: 'var(--letter-spacing-eyebrow)', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 8 }}>
-                  {half.label} ({half.from + 1}–{half.to})
-                </div>
-              )}
-              <Card>
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ borderCollapse: 'collapse', font: 'var(--text-small)' }}>
-                    <tbody>
-                      <tr>
-                        <td style={tdHead()}>Trou</td>
-                        {range.map((h) => <td key={h} style={td()}>{h + 1}</td>)}
-                      </tr>
-                      <tr>
-                        <td style={tdHead()}>Par</td>
-                        {range.map((h) => (
-                          <td key={h} style={td()}>
-                            {pars[h] != null ? (
-                              <span onClick={() => setParPickerHole(h)} style={{ cursor: 'pointer' }}>{pars[h]}</span>
-                            ) : (
-                              <span
-                                onClick={() => setParPickerHole(h)}
-                                style={{
-                                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 26, height: 24,
-                                  borderRadius: 6, border: '1px dashed var(--brand-action)', color: 'var(--brand-action)',
-                                  fontWeight: 700, cursor: 'pointer',
-                                }}
-                              >
-                                ?
-                              </span>
-                            )}
-                          </td>
-                        ))}
-                      </tr>
-                      {playerIds.map((pid) => {
-                        const player = players.find((p) => p.id === pid);
-                        return (
-                          <Fragment key={pid}>
-                            <tr>
-                              <td style={{ ...tdHead(), borderBottom: 'none' }}>{player?.name}</td>
-                              {range.map((h) => (
-                                <td key={h} style={{ ...td(), borderBottom: 'none', paddingBottom: 2 }}>
-                                  <input
-                                    type="text"
-                                    inputMode="numeric"
-                                    pattern="[0-9]*"
-                                    value={scores[pid][h]}
-                                    onChange={(e) => setScore(pid, h, e.target.value)}
-                                    style={{ width: 30, height: 30, textAlign: 'center', border: '1px solid var(--border-default)', borderRadius: 6, font: 'var(--text-small)', padding: 0, outline: 'none' }}
-                                  />
-                                </td>
-                              ))}
-                            </tr>
-                            <tr>
-                              <td style={{ ...tdHead(), color: 'var(--text-muted)', fontWeight: 400, fontSize: 12, paddingTop: 0 }}>Putts</td>
-                              {range.map((h) => {
-                                const v = holePutts[pid][h];
-                                const isSet = v !== '';
-                                return (
-                                  <td key={h} style={{ ...td(), paddingTop: 0 }}>
-                                    <span
-                                      onClick={() => setPuttPickerCell({ pid, holeIdx: h })}
-                                      style={{
-                                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                                        width: 22, height: 20, borderRadius: 6, cursor: 'pointer',
-                                        background: isSet ? '#EAF5EF' : 'transparent',
-                                        border: isSet ? '1px solid rgba(0,103,71,0.2)' : '1px dashed var(--border-default)',
-                                        color: isSet ? 'var(--brand-action)' : 'var(--text-disabled)',
-                                        font: 'var(--text-small)', fontSize: 12, fontWeight: isSet ? 700 : 400,
-                                      }}
-                                    >
-                                      {isSet ? (Number(v) >= 4 ? '4+' : v) : '·'}
-                                    </span>
-                                  </td>
-                                );
-                              })}
-                            </tr>
-                          </Fragment>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </Card>
-            </div>
-          );
-        })}
+        <Scorecard
+          holes={format}
+          pars={pars}
+          players={playerIds.map((pid) => players.find((p) => p.id === pid) || { id: pid, name: '?' })}
+          scores={scores}
+          putts={holePutts}
+          editable
+          onScoreChange={setScore}
+          onPuttClick={(pid, h) => setPuttPickerCell({ pid, holeIdx: h })}
+          onParClick={setParPickerHole}
+        />
 
         {!allParsKnown && (
           <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)', textAlign: 'center' }}>
@@ -275,35 +182,19 @@ export default function EditRound() {
         )}
 
         <div style={{ font: 'var(--text-eyebrow)', letterSpacing: 'var(--letter-spacing-eyebrow)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-          Résultats
+          Statistiques
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {playerIds.map((pid) => {
             const player = players.find((p) => p.id === pid);
-            const complete = scores[pid].every((v) => v !== '') && allParsKnown;
-            const diff = totalFor(pid) - roundPar;
             return (
               <Card key={pid}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <Avatar src={avatarSrc(player)} name={player?.name} size={36} />
-                    <span style={{ font: 'var(--text-label)' }}>{player?.name}</span>
-                  </div>
-                  {complete ? (
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                      <span style={{ font: 'var(--text-stat-lg)', fontSize: 22, fontWeight: 700 }}>{totalFor(pid)}</span>
-                      <Badge tone={toneFor(diff)}>{parLabel(diff)}</Badge>
-                    </div>
-                  ) : (
-                    <span style={{ font: 'var(--text-small)', color: 'var(--text-disabled)' }}>—</span>
-                  )}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+                  <Avatar src={avatarSrc(player)} name={player?.name} size={36} />
+                  <span style={{ font: 'var(--text-label)' }}>{player?.name}</span>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>Putts</span>
-                    <span style={{ font: 'var(--text-label)' }}>{puttsTotalFor(pid)}</span>
-                  </div>
                   <MiniStepper label="Mulligans" value={mulligans[pid]} onDec={() => bump(setMulligans, pid, -1)} onInc={() => bump(setMulligans, pid, 1)} />
                   <MiniStepper label="Balles perdues" value={lostBalls[pid]} onDec={() => bump(setLostBalls, pid, -1)} onInc={() => bump(setLostBalls, pid, 1)} />
                   <MiniStepper label="Bières" value={beers[pid]} onDec={() => bump(setBeers, pid, -1)} onInc={() => bump(setBeers, pid, 1)} />

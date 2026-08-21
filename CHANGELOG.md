@@ -2,6 +2,21 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.27.0 — 2026-08-21
+
+- **Scorecard premium sur l'écran Résumé.** La grille de pointage était
+  un simple tableau de chiffres ; elle prend maintenant la forme d'une
+  vraie carte de pointage golf. Colonnes Total et +/- ajoutées et mises
+  en évidence par un léger lavis vert, ligne « Par » distincte avec fond
+  tinté, noms des joueurs en gras, lignes de séparation claires entre
+  chaque joueur, et une rangée « Putts » secondaire et discrète sous
+  chaque score (masquée quand la ronde n'a pas de données de putts). La
+  première colonne (Trou/Par/joueurs) reste fixe au défilement horizontal
+  sur mobile. Le nouveau composant `Scorecard` est partagé avec l'écran
+  d'édition (« Modifier la partie ») : mêmes lignes, mais scores, pars et
+  putts y deviennent directement modifiables dans la grille, avec Total
+  et +/- qui se recalculent en direct pendant la saisie.
+
 ## v1.26.0 — 2026-08-21
 
 - **Modifier une partie déjà terminée.** Un lien « Modifier la partie »

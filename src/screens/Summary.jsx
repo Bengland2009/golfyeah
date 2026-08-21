@@ -7,11 +7,9 @@ import Sheet from '../components/Sheet';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import RoundExpenses from '../components/RoundExpenses';
+import Scorecard from '../components/Scorecard';
 import { useData } from '../contexts/DataContext';
 import { parLabel, toneFor, coursePar } from '../lib/scoring';
-
-function tdHead() { return { padding: '6px 10px', textAlign: 'left', fontWeight: 600, borderBottom: '1px solid var(--border-default)', position: 'sticky', left: 0, background: '#fff' }; }
-function td() { return { padding: '6px 10px', textAlign: 'center', borderBottom: '1px solid var(--border-default)' }; }
 
 export default function Summary() {
   const { roundId } = useParams();
@@ -79,7 +77,6 @@ export default function Summary() {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', rowGap: 4, font: 'var(--text-small)', color: 'var(--text-muted)' }}>
-                <span>{round.putts?.[pid] || 0} putts</span>
                 <span>{round.mulligans[pid] || 0} mulligans</span>
                 <span>{round.lostBalls[pid] || 0} balle(s) perdue(s)</span>
                 <span>{round.beers[pid] || 0} bières</span>
@@ -89,26 +86,13 @@ export default function Summary() {
         })}
 
         {round.holeScores && course && (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ borderCollapse: 'collapse', width: '100%', font: 'var(--text-small)' }}>
-              <tbody>
-                <tr>
-                  <td style={tdHead()}>Trou</td>
-                  {course.pars.slice(0, round.holes).map((_, i) => <td key={i} style={td()}>{i + 1}</td>)}
-                </tr>
-                <tr>
-                  <td style={tdHead()}>Par</td>
-                  {course.pars.slice(0, round.holes).map((p, i) => <td key={i} style={td()}>{p ?? '-'}</td>)}
-                </tr>
-                {round.playerIds.map((pid) => (
-                  <tr key={pid}>
-                    <td style={tdHead()}>{players.find((p) => p.id === pid)?.name}</td>
-                    {round.holeScores[pid].map((sc, i) => <td key={i} style={td()}>{sc ?? '-'}</td>)}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <Scorecard
+            holes={round.holes}
+            pars={Array.from({ length: round.holes }, (_, i) => course.pars[i] ?? null)}
+            players={round.playerIds.map((pid) => players.find((p) => p.id === pid) || { id: pid, name: '?' })}
+            scores={round.holeScores}
+            putts={round.holePutts}
+          />
         )}
 
         <RoundExpenses roundId={round.id} playerIds={round.playerIds} players={players} />
