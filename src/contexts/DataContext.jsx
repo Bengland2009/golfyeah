@@ -193,6 +193,16 @@ export function DataProvider({ children }) {
     }
   }, [courses]);
 
+  const updateCourseName = useCallback(async (courseId, name) => {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    if (isFirebaseConfigured) {
+      await updateDoc(doc(db, 'groups', GROUP_ID, 'courses', courseId), { name: trimmed });
+    } else {
+      setLocal((s) => ({ ...s, courses: s.courses.map((c) => (c.id === courseId ? { ...c, name: trimmed } : c)) }));
+    }
+  }, []);
+
   // ---------- rounds: new / live ----------
   const startRound = useCallback(async (courseId, format, playerIds) => {
     const scores = {}, beers = {};
@@ -425,6 +435,44 @@ export function DataProvider({ children }) {
     patchLiveRound({ holeOverrides });
   }, [liveRound, updateCourseHolePar, patchLiveRound]);
 
+  // Converts an active round between 9 and 18 holes at any point mid-round —
+  // simulator sessions often run out of time before 18, so this lets a
+  // golfer downshift without abandoning the round, or upshift again if they
+  // change their mind. Shrinking truncates every player's scores and any
+  // holeOverrides beyond the new length, and clamps holeIndex into range.
+  // Every derived stat (mulligans, putts, lostBalls, finishRound's totals,
+  // the leaderboard) only ever sums whatever is present in scores[id], so
+  // the truncated data is automatically correct everywhere downstream —
+  // nothing else needs recalculating. Growing just widens format/holes;
+  // holes 10-18 stay unplayed (sparse array, null par), so the existing
+  // HoleSetupPrompt flow already asks for missing par/yardage as the
+  // player reaches them.
+  const changeRoundFormat = useCallback((newFormat) => {
+    if (!liveRound || newFormat === liveRound.format) return;
+    if (newFormat < liveRound.format) {
+      const scores = {};
+      liveRound.playerIds.forEach((id) => {
+        scores[id] = (liveRound.scores[id] || []).slice(0, newFormat);
+      });
+      const holeOverrides = {};
+      Object.entries(liveRound.holeOverrides || {}).forEach(([idx, ov]) => {
+        if (Number(idx) < newFormat) holeOverrides[idx] = ov;
+      });
+      const holeIndex = Math.min(liveRound.holeIndex, newFormat - 1);
+      patchLiveRound({ format: newFormat, holes: newFormat, scores, holeOverrides, holeIndex });
+    } else {
+      patchLiveRound({ format: newFormat, holes: newFormat });
+    }
+  }, [liveRound, patchLiveRound]);
+
+  // Changing the course mid-round clears per-round hole overrides — they
+  // were par/yardage corrections tied to the old course's holes and
+  // wouldn't make sense against a different course's layout.
+  const changeRoundCourse = useCallback((courseId) => {
+    if (!liveRound) return;
+    patchLiveRound({ courseId, holeOverrides: {} });
+  }, [liveRound, patchLiveRound]);
+
   const finishRound = useCallback(async () => {
     if (!liveRound) return null;
     const course = currentLiveCourse();
@@ -612,11 +660,11 @@ export function DataProvider({ children }) {
     players, courses, range, expenses, feedback, feedbackComments, allRounds, completedRounds,
     liveRound, currentLiveCourse, getHolePar, getHoleYardage,
     addPlayer, setPlayerPhoto,
-    addCourse, updateCourseHolePar, updateCourseHoles,
+    addCourse, updateCourseHolePar, updateCourseName, updateCourseHoles,
     startRound, startIndoorRound, resolveIndoorCourseId, saveQuickCourseAsReusable,
     createCompletedRound,
     setStrokes, bumpHoleField, bumpPutts, bumpPuttStroke, setPutts, addBeer, removeBeer, changeHole, goToHole,
-    editHoleForRoundOnly, editHoleForCourse, finishRound, abandonRound, deleteRound,
+    editHoleForRoundOnly, editHoleForCourse, changeRoundFormat, changeRoundCourse, finishRound, abandonRound, deleteRound,
     addRangeEntry, getMyClubs, addClub,
     addExpense, updateExpense, deleteExpense,
     addFeedback, updateFeedback, deleteFeedback, toggleConfirmFeedback, addFeedbackComment,

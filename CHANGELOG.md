@@ -2,6 +2,23 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.25.0 — 2026-08-21
+
+- **Modifier une partie en cours.** Un nouveau lien « Modifier la partie »,
+  accessible à tout moment pendant une ronde active, permet de changer le
+  terrain, le nombre de trous et le nom de la partie sans l'abandonner.
+  Particulièrement utile sur simulateur, où il est fréquent de ne pas
+  terminer un 18 trous : la partie peut maintenant être convertie en 9
+  trous à tout moment (une confirmation prévient que les données des
+  trous 10 à 18 seront définitivement supprimées), ou repassée de 9 à 18
+  trous si on décide finalement de continuer — les trous 10 à 18 restent
+  alors à configurer au fur et à mesure, comme pour n'importe quel trou
+  manquant. Toutes les statistiques (coups, mulligans, balles perdues,
+  putts, bières) se recalculent automatiquement à partir des trous
+  conservés, sans étape supplémentaire. Cette option disparaît une fois
+  la ronde enregistrée : le format d'une partie terminée ne peut plus
+  être modifié.
+
 ## v1.24.1 — 2026-08-16
 
 - **Raffinement de la fiche Golf, style Apple Plans / Airbnb.** Bannière

@@ -4,9 +4,12 @@ import Card from '../components/Card';
 import Button from '../components/Button';
 import Avatar from '../components/Avatar';
 import Badge from '../components/Badge';
+import Input from '../components/Input';
 import ScoreStepper from '../components/ScoreStepper';
 import BeerCounter from '../components/BeerCounter';
 import Sheet from '../components/Sheet';
+import SegmentedControl from '../components/SegmentedControl';
+import CompactPicker from '../components/CompactPicker';
 import HoleSetupPrompt from '../components/HoleSetupPrompt';
 import RoundExpenses from '../components/RoundExpenses';
 import HoleStrip from '../components/HoleStrip';
@@ -37,9 +40,10 @@ function StatRow({ label, value, onAdd }) {
 export default function Live() {
   const navigate = useNavigate();
   const {
-    players, liveRound, currentLiveCourse, getHolePar, getHoleYardage,
+    players, courses, liveRound, currentLiveCourse, getHolePar, getHoleYardage,
     setStrokes, bumpHoleField, bumpPutts, addBeer, removeBeer, changeHole, goToHole,
-    editHoleForRoundOnly, editHoleForCourse, finishRound, abandonRound,
+    editHoleForRoundOnly, editHoleForCourse, changeRoundFormat, changeRoundCourse, updateCourseName,
+    finishRound, abandonRound,
   } = useData();
   const me = useMe();
 
@@ -47,6 +51,10 @@ export default function Live() {
   const [abandonConfirmOpen, setAbandonConfirmOpen] = useState(false);
   const [editHoleOpen, setEditHoleOpen] = useState(false);
   const [editDraft, setEditDraft] = useState({ par: 4, yardage: 0 });
+  const [editRoundOpen, setEditRoundOpen] = useState(false);
+  const [courseListOpen, setCourseListOpen] = useState(false);
+  const [shrinkConfirmOpen, setShrinkConfirmOpen] = useState(false);
+  const [nameDraft, setNameDraft] = useState('');
 
   if (!liveRound) {
     navigate('/');
@@ -76,6 +84,36 @@ export default function Live() {
 
   const saveHoleSetup = (chosenPar, yardage) => {
     editHoleForCourse(chosenPar, yardage);
+  };
+
+  const openEditRound = () => {
+    setNameDraft(course.name);
+    setEditRoundOpen(true);
+  };
+
+  const saveName = () => {
+    if (nameDraft.trim() && nameDraft.trim() !== course.name) {
+      updateCourseName(liveRound.courseId, nameDraft);
+    }
+  };
+
+  const handleFormatChange = (newFormat) => {
+    if (newFormat < liveRound.format) {
+      setShrinkConfirmOpen(true);
+    } else {
+      changeRoundFormat(newFormat);
+    }
+  };
+
+  const confirmShrink = () => {
+    changeRoundFormat(9);
+    setShrinkConfirmOpen(false);
+  };
+
+  const selectCourse = (courseId) => {
+    changeRoundCourse(courseId);
+    setNameDraft(courses.find((c) => c.id === courseId)?.name || '');
+    setCourseListOpen(false);
   };
 
   const finish = async () => {
@@ -124,8 +162,11 @@ export default function Live() {
       {needsSetup && (
         <>
           <HoleSetupPrompt holeNumber={i + 1} onSave={saveHoleSetup} />
-          <div style={{ padding: '0 var(--page-padding-mobile) var(--page-padding-mobile)' }}>
-            <span onClick={() => setAbandonConfirmOpen(true)} style={{ display: 'block', textAlign: 'center', font: 'var(--text-small)', color: 'var(--color-score-under)', cursor: 'pointer', marginTop: 10 }}>
+          <div style={{ padding: '0 var(--page-padding-mobile) var(--page-padding-mobile)', display: 'flex', flexDirection: 'column', gap: 10, marginTop: 10 }}>
+            <span onClick={openEditRound} style={{ display: 'block', textAlign: 'center', font: 'var(--text-small)', color: 'var(--brand-action)', cursor: 'pointer' }}>
+              Modifier la partie
+            </span>
+            <span onClick={() => setAbandonConfirmOpen(true)} style={{ display: 'block', textAlign: 'center', font: 'var(--text-small)', color: 'var(--color-score-under)', cursor: 'pointer' }}>
               Abandonner la partie
             </span>
           </div>
@@ -176,7 +217,11 @@ export default function Live() {
           <Button variant="secondary" onClick={() => changeHole(1)} style={{ height: 52, width: '100%' }}>Trou suivant</Button>
         )}
 
-        <span onClick={() => setAbandonConfirmOpen(true)} style={{ textAlign: 'center', font: 'var(--text-small)', color: 'var(--color-score-under)', cursor: 'pointer', marginTop: 10 }}>
+        <span onClick={openEditRound} style={{ textAlign: 'center', font: 'var(--text-small)', color: 'var(--brand-action)', cursor: 'pointer', marginTop: 10 }}>
+          Modifier la partie
+        </span>
+
+        <span onClick={() => setAbandonConfirmOpen(true)} style={{ textAlign: 'center', font: 'var(--text-small)', color: 'var(--color-score-under)', cursor: 'pointer' }}>
           Abandonner la partie
         </span>
       </div>
@@ -229,6 +274,71 @@ export default function Live() {
           Mettre à jour le terrain
         </Button>
         <span onClick={() => setEditHoleOpen(false)} style={{ textAlign: 'center', font: 'var(--text-small)', color: 'var(--text-muted)', cursor: 'pointer' }}>Annuler</span>
+      </Sheet>
+
+      <Sheet open={editRoundOpen} onClose={() => { saveName(); setEditRoundOpen(false); }}>
+        <div style={{ font: 'var(--text-h3)' }}>Modifier la partie</div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <span style={{ font: 'var(--text-label)' }}>Terrain</span>
+          <CompactPicker value={course.name} onClick={() => setCourseListOpen(true)} />
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <span style={{ font: 'var(--text-label)' }}>Nombre de trous</span>
+          <SegmentedControl
+            options={[{ value: 9, label: '9 trous' }, { value: 18, label: '18 trous' }]}
+            value={liveRound.format}
+            onChange={handleFormatChange}
+          />
+        </div>
+
+        <Input
+          label="Nom de la partie"
+          value={nameDraft}
+          onChange={(e) => setNameDraft(e.target.value)}
+          onBlur={saveName}
+        />
+
+        <Button variant="primary" onClick={() => { saveName(); setEditRoundOpen(false); }} style={{ height: 52, width: '100%' }}>
+          Terminé
+        </Button>
+      </Sheet>
+
+      <Sheet open={courseListOpen} onClose={() => setCourseListOpen(false)} zIndex={70} dim={0.45}>
+        <div style={{ font: 'var(--text-h3)' }}>Choisir un terrain</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: '50vh', overflowY: 'auto' }}>
+          {courses.map((c) => (
+            <div
+              key={c.id}
+              onClick={() => selectCourse(c.id)}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                padding: '14px 16px', borderRadius: 10,
+                border: c.id === liveRound.courseId ? '2px solid var(--brand-action)' : '1px solid var(--border-default)',
+                cursor: 'pointer',
+              }}
+            >
+              <div>
+                <div style={{ font: 'var(--text-body)', fontWeight: 600 }}>{c.name}</div>
+                <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>
+                  {c.kind === 'interieur' ? 'Simulateur' : c.city} · {c.holes} trous
+                </div>
+              </div>
+              {c.id === liveRound.courseId && <span style={{ color: 'var(--brand-action)', fontWeight: 700 }}>✓</span>}
+            </div>
+          ))}
+        </div>
+        <span onClick={() => setCourseListOpen(false)} style={{ textAlign: 'center', font: 'var(--text-small)', color: 'var(--text-muted)', cursor: 'pointer' }}>Annuler</span>
+      </Sheet>
+
+      <Sheet open={shrinkConfirmOpen} onClose={() => setShrinkConfirmOpen(false)} zIndex={70} dim={0.45}>
+        <div style={{ font: 'var(--text-h3)' }}>Convertir en 9 trous ?</div>
+        <div style={{ font: 'var(--text-body)', color: 'var(--text-muted)' }}>
+          Toutes les données des trous 10 à 18 seront supprimées. Cette action est irréversible.
+        </div>
+        <Button variant="secondary" onClick={() => setShrinkConfirmOpen(false)} style={{ height: 52, width: '100%' }}>Annuler</Button>
+        <Button variant="primary" onClick={confirmShrink} style={{ height: 52, width: '100%', background: 'var(--color-score-under)' }}>Convertir en 9 trous</Button>
       </Sheet>
     </div>
   );
