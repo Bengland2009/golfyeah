@@ -7,7 +7,10 @@ import Button from '../components/Button';
 import { CheckIcon, ChevronRightIcon, GolfBallIcon, MonitorIcon } from '../components/icons';
 import { useData } from '../contexts/DataContext';
 import { useMe } from '../lib/useMe';
-import { PLACES, SIM_MODES, DURATIONS, VALIDATION, VALIDATION_LABELS, sessionsFor } from '../lib/trainingPlan';
+import {
+  PLACES, SIM_MODES, DURATIONS, VALIDATION, VALIDATION_LABELS,
+  LEVELS, sessionsFor, currentLevelIndex, recommendedSessionId,
+} from '../lib/trainingPlan';
 
 const PLACE_ICONS = { range: GolfBallIcon, simulator: MonitorIcon };
 
@@ -56,9 +59,9 @@ function contextLabel(place, mode) {
   return m ? `Simulateur · ${m.label}` : 'Simulateur';
 }
 
-function SessionCard({ session, duration, place, mode, onStart }) {
+function SessionCard({ session, duration, place, mode, recommended, onStart }) {
   return (
-    <Card elevated>
+    <Card elevated={recommended} style={recommended ? { border: '1px solid var(--brand-action)' } : undefined}>
       <div style={{ font: 'var(--text-label)', fontSize: 17 }}>{session.name}</div>
       <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)', marginTop: 2, marginBottom: 12 }}>{duration} min · {contextLabel(place, mode)}</div>
 
@@ -85,6 +88,7 @@ export default function TrainingPlan() {
 
   const myLogs = trainingLogs.filter((l) => l.playerId === me?.id);
   const completedCount = myLogs.length;
+  const level = LEVELS[currentLevelIndex(myLogs)];
 
   const selectPlace = (id) => {
     setPlace(id);
@@ -93,14 +97,28 @@ export default function TrainingPlan() {
 
   const contextReady = place === 'range' || (place === 'simulator' && mode);
   const results = contextReady ? sessionsFor(place, mode, duration) : [];
+  const recommendedId = contextReady ? recommendedSessionId(level, place, mode) : null;
+  const recommended = results.find((s) => s.id === recommendedId) || null;
+  const others = results.filter((s) => s.id !== recommendedId);
+
+  const start = (session) => navigate(`/pratique/plan/${session.id}`, { state: { duration, place, mode } });
 
   return (
     <div>
       <Header title="Plan d'entraînement" onBack={() => navigate('/pratique')} />
       <div style={{ padding: 'var(--page-padding-mobile)', display: 'flex', flexDirection: 'column', gap: 18 }}>
         <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>
-          Choisis ton contexte du jour. Golfyeah te propose une séance compatible.
+          Choisis ton contexte du jour. Golfyeah te guide, sans jamais te forcer.
         </div>
+
+        <Card style={{ background: 'var(--brand-primary)', border: 'none' }}>
+          <div style={{ font: 'var(--text-small)', color: 'rgba(255,255,255,0.65)', marginBottom: 4 }}>Priorité actuelle</div>
+          <div style={{ font: 'var(--font-serif)', fontWeight: 700, fontSize: 24, color: '#fff', marginBottom: 8 }}>{level.name}</div>
+          <div style={{ font: 'var(--text-small)', color: 'rgba(255,255,255,0.85)', lineHeight: 1.4, marginBottom: 8 }}>{level.why}</div>
+          <div style={{ font: 'var(--text-small)', color: 'rgba(255,255,255,0.6)', lineHeight: 1.4, paddingTop: 8, borderTop: '1px solid rgba(255,255,255,0.15)' }}>
+            <span style={{ fontWeight: 600 }}>Pour passer au niveau suivant : </span>{level.passCriterion}
+          </div>
+        </Card>
 
         <Card elevated>
           <div style={{ font: 'var(--text-h3)', fontSize: 18, marginBottom: 14 }}>Je pratique aujourd'hui</div>
@@ -128,8 +146,6 @@ export default function TrainingPlan() {
 
         {contextReady && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {eyebrow('Séances compatibles')}
-
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               <span style={{ font: 'var(--text-small)', color: 'var(--text-muted)', fontWeight: 600 }}>Durée</span>
               <div style={{ display: 'flex', gap: 6 }}>
@@ -145,16 +161,21 @@ export default function TrainingPlan() {
               </div>
             )}
 
-            {results.map((s) => (
-              <SessionCard
-                key={s.id}
-                session={s}
-                duration={duration}
-                place={place}
-                mode={mode}
-                onStart={() => navigate(`/pratique/plan/${s.id}`, { state: { duration, place, mode } })}
-              />
-            ))}
+            {recommended && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {eyebrow('Séance recommandée')}
+                <SessionCard session={recommended} duration={duration} place={place} mode={mode} recommended onStart={() => start(recommended)} />
+              </div>
+            )}
+
+            {others.length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: recommended ? 6 : 0 }}>
+                {eyebrow(recommended ? 'Autres séances utiles' : 'Séances compatibles')}
+                {others.map((s) => (
+                  <SessionCard key={s.id} session={s} duration={duration} place={place} mode={mode} onStart={() => start(s)} />
+                ))}
+              </div>
+            )}
           </div>
         )}
 

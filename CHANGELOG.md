@@ -2,6 +2,30 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.31.0 — 2026-08-21
+
+- **Progression par compétences dans le Plan d'entraînement.** Le plan
+  affiche maintenant une carte « Priorité actuelle » (Contact → Direction
+  → Répétition → Driver jouable → Mode parcours), avec un « Pourquoi ? »
+  et le critère simple pour passer au niveau suivant (ex. « environ 6
+  bons contacts sur 10 au fer 7 »). La priorité avance automatiquement
+  à partir des séances complétées et de leurs notes — jamais un
+  calendrier figé, jamais une obligation : les séances compatibles avec
+  le contexte du jour restent toutes accessibles, la séance recommandée
+  n'est qu'une suggestion mise en évidence (bordure verte, section
+  « Séance recommandée » séparée des « Autres séances utiles »).
+
+  La même priorité s'adapte au contexte du jour plutôt que d'être
+  dupliquée : au niveau « Mode parcours », Golfyeah recommande « Parcours
+  imaginaire au range » si tu pratiques au range, ou « 9 trous sérieux »
+  si tu es au simulateur en mode parcours.
+
+  Les notes de fin de séance changent pour capter ce dont la progression
+  a besoin : Bons contacts /10 et Balles jouables /10 remplacent les
+  anciens champs libres « ce qui a bien/moins bien été » — ce sont les
+  deux seules données que Golfyeah utilise pour calculer automatiquement
+  quand un niveau est atteint.
+
 ## v1.30.0 — 2026-08-21
 
 - **Nouvelle logique de lieu dans le Plan d'entraînement.** Le choix « Où

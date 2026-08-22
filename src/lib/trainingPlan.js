@@ -50,10 +50,12 @@ export const VALIDATION_LABELS = {
 
 // Same six fields after every session, regardless of type — one shared
 // debrief instead of a different form per session, so filling it in never
-// requires re-learning the screen.
+// requires re-learning the screen. goodContacts/playableBalls are also
+// the only two data points the progression system below can actually
+// check against a level's pass criterion — see LEVELS.
 export const TRAINING_NOTE_FIELDS = [
-  { key: 'wentWell', label: 'Ce qui a bien été', type: 'text' },
-  { key: 'wentPoorly', label: 'Ce qui a moins bien été', type: 'text' },
+  { key: 'goodContacts', label: 'Bons contacts', type: 'number', suffix: '/10' },
+  { key: 'playableBalls', label: 'Balles jouables', type: 'number', suffix: '/10' },
   { key: 'missPattern', label: 'Erreur dominante', type: 'select', options: ['Gauche', 'Droite', 'Top', 'Gratte'] },
   { key: 'bestClub', label: 'Bâton le plus fiable', type: 'text' },
   { key: 'worstClub', label: 'Bâton le moins fiable', type: 'text' },
@@ -241,4 +243,95 @@ export function adaptedBlocks(session, targetMinutes) {
   if (targetMinutes >= full) return session.blocks;
   const ratio = targetMinutes / full;
   return session.blocks.map((b) => ({ ...b, minutes: Math.max(5, Math.round((b.minutes * ratio) / 5) * 5) }));
+}
+
+// This is not a calendar — it's a skill progression. It never blocks the
+// player from picking any other session; it only informs which one
+// Golfyeah highlights as "recommandée" for today. `sessionIds` lists
+// which existing library session(s) serve this level — the same skill
+// can point at a different session depending on today's place/mode (see
+// recommendedSessionId), which is how a level "adapts to context" without
+// forking its content.
+//
+// `checkPass` decides when a level is considered cleared, using only
+// what TRAINING_NOTE_FIELDS actually captures (goodContacts,
+// playableBalls) or, when no field maps cleanly to the written
+// criterion (direction, club-repeatability, "9 trous sans mulligan"),
+// a simple count of completed attempts — Golfyeah doesn't invent a
+// numeric grade for something the player didn't explicitly report.
+export const LEVELS = [
+  {
+    level: 1,
+    name: 'Contact',
+    objective: 'Frapper la balle proprement.',
+    priority: 'Qualité du contact avant la distance.',
+    why: 'Tu dois d’abord améliorer la qualité du contact avant de travailler la distance ou le score.',
+    passCriterion: 'Environ 6 bons contacts sur 10 au fer 7, sur une ou deux séances.',
+    sessionIds: ['contact'],
+    checkPass: (logs) => logs.some((l) => Number(l.notes?.goodContacts) >= 6),
+  },
+  {
+    level: 2,
+    name: 'Direction',
+    objective: 'Faire partir la balle vers la cible.',
+    priority: 'Viser un corridor, pas seulement frapper fort.',
+    why: 'Une fois le contact fiable, l’étape suivante est d’envoyer la balle où tu vises.',
+    passCriterion: 'Environ 6 balles sur 10 dans le corridor visé.',
+    sessionIds: ['cibles'],
+    checkPass: (logs) => logs.length >= 1,
+  },
+  {
+    level: 3,
+    name: 'Répétition',
+    objective: 'Reproduire un coup correct plusieurs fois.',
+    priority: 'Changer de bâton sans perdre complètement le swing.',
+    why: 'Un bon coup isolé ne suffit pas — il doit survivre à un changement de bâton.',
+    passCriterion: 'Pouvoir changer de bâton sans perdre complètement son swing.',
+    sessionIds: ['cibles'],
+    checkPass: (logs) => logs.length >= 2,
+  },
+  {
+    level: 4,
+    name: 'Driver jouable',
+    objective: 'Garder la balle en jeu.',
+    priority: 'Fairway ou zone jouable, pas distance maximale.',
+    why: 'Le driver est le bâton où le score se perd le plus vite s’il n’est pas fiable.',
+    passCriterion: 'Environ 5 ou 6 drives sur 10 jouables.',
+    sessionIds: ['driver-jouable'],
+    checkPass: (logs) => logs.some((l) => Number(l.notes?.playableBalls) >= 5),
+  },
+  {
+    level: 5,
+    name: 'Mode parcours',
+    objective: 'Transférer la pratique vers le jeu réel.',
+    priority: 'Une seule balle, une seule décision, pas de recommencement.',
+    why: 'La technique ne compte vraiment que si elle survit à une seule vraie décision, sans deuxième chance.',
+    passCriterion: 'Compléter 9 trous sans mulligan, en notant honnêtement ses erreurs.',
+    sessionIds: ['parcours-imaginaire', 'neuf-trous', 'gestion-de-partie'],
+    checkPass: () => true,
+  },
+];
+
+// Walks the levels in order and stops at the first one not yet passed —
+// that's "where the player currently is". Logs are matched to a level by
+// sessionIds regardless of today's place/mode, so progress carries across
+// contexts (a "Contact" session done at the range counts the same as one
+// done on the simulator).
+export function currentLevelIndex(logs) {
+  for (let i = 0; i < LEVELS.length; i++) {
+    const level = LEVELS[i];
+    const relevant = logs.filter((l) => level.sessionIds.includes(l.sessionId));
+    if (!level.checkPass(relevant)) return i;
+  }
+  return LEVELS.length - 1;
+}
+
+// Picks which of a level's candidate sessions actually fits today's
+// place/mode — the same skill, adapted to context rather than forked
+// into different content. Falls back to the first candidate if none
+// fits today's context (still lets the UI recognize the mismatch).
+export function recommendedSessionId(level, place, mode) {
+  const candidates = level.sessionIds.map(sessionById).filter(Boolean);
+  const match = candidates.find((s) => s.places.includes(place) && (place !== 'simulator' || s.modes.includes(mode)));
+  return (match || candidates[0])?.id || null;
 }

@@ -37,6 +37,23 @@ export default function TrainingNotesForm({ fields, values, onChange }) {
           );
         }
 
+        if (f.type === 'number') {
+          return (
+            <div key={f.key} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <span style={{ font: 'var(--text-label)' }}>{f.label}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <input
+                  type="text" inputMode="numeric" pattern="[0-9]*"
+                  value={values[f.key] || ''}
+                  onChange={(e) => onChange(f.key, e.target.value)}
+                  style={{ width: 72, height: 44, textAlign: 'center', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-sm)', font: 'var(--text-body)', padding: 0, outline: 'none' }}
+                />
+                {f.suffix && <span style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>{f.suffix}</span>}
+              </div>
+            </div>
+          );
+        }
+
         return (
           <Input
             key={f.key}
