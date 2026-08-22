@@ -8,7 +8,7 @@ import { CLUB_ORDER, DEFAULT_MY_CLUBS, SEED_PLAYERS, SEED_COURSE, seedRounds, se
 import { finalizeRound, coursePar } from '../lib/scoring';
 import { matchPlayer } from '../lib/identity';
 
-const FS_COLLECTIONS = ['players', 'courses', 'rounds', 'range', 'myClubs', 'expenses', 'feedback', 'feedbackComments', 'trainingLogs'];
+const FS_COLLECTIONS = ['players', 'courses', 'rounds', 'range', 'myClubs', 'expenses', 'feedback', 'feedbackComments', 'trainingLogs', 'trainingLevel'];
 
 const DataContext = createContext(null);
 
@@ -20,7 +20,7 @@ function loadLocal() {
     // Backfill keys added after someone's local store was first created —
     // without this, a returning demo-mode user with old localStorage data
     // would crash on the missing field.
-    if (raw) return { expenses: [], feedback: [], feedbackComments: [], trainingLogs: [], ...JSON.parse(raw) };
+    if (raw) return { expenses: [], feedback: [], feedbackComments: [], trainingLogs: [], trainingLevel: {}, ...JSON.parse(raw) };
   } catch {}
   return {
     players: SEED_PLAYERS,
@@ -32,6 +32,7 @@ function loadLocal() {
     feedback: [],
     feedbackComments: [],
     trainingLogs: [],
+    trainingLevel: {},
   };
 }
 
@@ -62,6 +63,7 @@ export function DataProvider({ children }) {
   const [fsFeedback, setFsFeedback] = useState([]);
   const [fsFeedbackComments, setFsFeedbackComments] = useState([]);
   const [fsTrainingLogs, setFsTrainingLogs] = useState([]);
+  const [fsTrainingLevel, setFsTrainingLevel] = useState({});
   const [loadedCollections, setLoadedCollections] = useState(() => new Set());
   const [dataError, setDataError] = useState(null);
 
@@ -70,7 +72,7 @@ export function DataProvider({ children }) {
     // before that is certain to fail Firestore's rules (see firestore.rules)
     // and would otherwise fire silent permission-denied errors on every load.
     if (!isFirebaseConfigured || !user) {
-      setFsPlayers([]); setFsCourses([]); setFsRounds([]); setFsRange([]); setFsMyClubs({}); setFsExpenses([]); setFsFeedback([]); setFsFeedbackComments([]); setFsTrainingLogs([]);
+      setFsPlayers([]); setFsCourses([]); setFsRounds([]); setFsRange([]); setFsMyClubs({}); setFsExpenses([]); setFsFeedback([]); setFsFeedbackComments([]); setFsTrainingLogs([]); setFsTrainingLevel({});
       setLoadedCollections(new Set());
       setDataError(null);
       return;
@@ -99,6 +101,12 @@ export function DataProvider({ children }) {
       onSnapshot(query(g('feedback')), (snap) => { setFsFeedback(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); markLoaded('feedback'); }, onError('feedback')),
       onSnapshot(query(g('feedbackComments')), (snap) => { setFsFeedbackComments(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); markLoaded('feedbackComments'); }, onError('feedbackComments')),
       onSnapshot(query(g('trainingLogs')), (snap) => { setFsTrainingLogs(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); markLoaded('trainingLogs'); }, onError('trainingLogs')),
+      onSnapshot(query(g('trainingLevel')), (snap) => {
+        const m = {};
+        snap.docs.forEach((d) => { m[d.id] = d.data().level ?? 0; });
+        setFsTrainingLevel(m);
+        markLoaded('trainingLevel');
+      }, onError('trainingLevel')),
     ];
     return () => unsubs.forEach((u) => u());
   }, [user]);
@@ -137,6 +145,7 @@ export function DataProvider({ children }) {
   const feedback = isFirebaseConfigured ? fsFeedback : local.feedback;
   const feedbackComments = isFirebaseConfigured ? fsFeedbackComments : local.feedbackComments;
   const trainingLogs = isFirebaseConfigured ? fsTrainingLogs : local.trainingLogs;
+  const trainingLevelMap = isFirebaseConfigured ? fsTrainingLevel : local.trainingLevel;
 
   const liveRound = allRounds.find((r) => r.status === 'active') || null;
   const completedRounds = useMemo(
@@ -684,6 +693,20 @@ export function DataProvider({ children }) {
     }
   }, []);
 
+  // The player's confirmed skill level (see LEVELS in lib/trainingPlan.js)
+  // — defaults to 0 (the first level) until they explicitly tap "Passer
+  // à ..." once they're ready. Meeting a level's pass criterion never
+  // moves this on its own; it only unlocks that button.
+  const getTrainingLevel = useCallback((playerId) => trainingLevelMap[playerId] ?? 0, [trainingLevelMap]);
+
+  const setTrainingLevel = useCallback(async (playerId, level) => {
+    if (isFirebaseConfigured) {
+      await setDoc(doc(db, 'groups', GROUP_ID, 'trainingLevel', playerId), { level });
+    } else {
+      setLocal((s) => ({ ...s, trainingLevel: { ...s.trainingLevel, [playerId]: level } }));
+    }
+  }, []);
+
   // ---------- clubs ----------
   const getMyClubs = useCallback((playerId) => myClubsMap[playerId] || DEFAULT_MY_CLUBS, [myClubsMap]);
 
@@ -712,7 +735,7 @@ export function DataProvider({ children }) {
     setStrokes, bumpHoleField, bumpPutts, bumpPuttStroke, setPutts, addBeer, removeBeer, changeHole, goToHole,
     editHoleForRoundOnly, editHoleForCourse, changeRoundFormat, changeRoundCourse, finishRound, abandonRound, deleteRound,
     addRangeEntry, getMyClubs, addClub,
-    addTrainingLog, deleteTrainingLog,
+    addTrainingLog, deleteTrainingLog, getTrainingLevel, setTrainingLevel,
     addExpense, updateExpense, deleteExpense,
     addFeedback, updateFeedback, deleteFeedback, toggleConfirmFeedback, addFeedbackComment,
     CLUB_ORDER,

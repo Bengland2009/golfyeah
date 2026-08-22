@@ -2,6 +2,27 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.32.0 — 2026-08-21
+
+- **Logique de progression transparente dans le Plan d'entraînement.** La
+  carte « Priorité actuelle » explique maintenant clairement pourquoi
+  cette priorité est choisie (« Pourquoi ? »), ce qu'il faut atteindre
+  pour avancer (« Objectif pour avancer »), et où en est le joueur
+  (« Progression : X / 2 séances réussies »). La règle est désormais
+  « 2 séances réussies sur les 3 dernières » — jamais une seule bonne
+  séance ne suffit — et surtout, **atteindre le critère ne fait plus
+  avancer automatiquement** : Golfyeah affiche « Prêt pour la prochaine
+  étape » avec deux boutons, Passer à [niveau suivant] ou Continuer
+  [niveau actuel], et le joueur choisit. La priorité ne change que sur
+  ce tap explicite, jamais toute seule.
+
+  Les niveaux (Contact, Direction, Répétition, Driver jouable, Jeu réel)
+  ont chacun un critère basé sur une vraie donnée reportée en fin de
+  séance : bons contacts au fer 7, balles dans le corridor, contact
+  général, drives jouables — quatre nouveaux champs numériques
+  s'ajoutent au formulaire de fin de séance (déjà partagé par toutes les
+  séances) pour rendre ça possible.
+
 ## v1.31.0 — 2026-08-21
 
 - **Progression par compétences dans le Plan d'entraînement.** Le plan

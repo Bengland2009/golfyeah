@@ -9,7 +9,7 @@ import { useData } from '../contexts/DataContext';
 import { useMe } from '../lib/useMe';
 import {
   PLACES, SIM_MODES, DURATIONS, VALIDATION, VALIDATION_LABELS,
-  LEVELS, sessionsFor, currentLevelIndex, recommendedSessionId,
+  LEVELS, sessionsFor, levelProgress, levelWhy, recommendedSessionId,
 } from '../lib/trainingPlan';
 
 const PLACE_ICONS = { range: GolfBallIcon, simulator: MonitorIcon };
@@ -80,7 +80,7 @@ function SessionCard({ session, duration, place, mode, recommended, onStart }) {
 
 export default function TrainingPlan() {
   const navigate = useNavigate();
-  const { trainingLogs } = useData();
+  const { trainingLogs, getTrainingLevel, setTrainingLevel } = useData();
   const me = useMe();
   const [place, setPlace] = useState(null);
   const [mode, setMode] = useState(null);
@@ -88,7 +88,13 @@ export default function TrainingPlan() {
 
   const myLogs = trainingLogs.filter((l) => l.playerId === me?.id);
   const completedCount = myLogs.length;
-  const level = LEVELS[currentLevelIndex(myLogs)];
+  const levelIndex = getTrainingLevel(me?.id);
+  const level = LEVELS[levelIndex];
+  const nextLevel = LEVELS[levelIndex + 1] || null;
+  const progress = levelProgress(level, myLogs);
+  const why = levelWhy(level, progress.attempts);
+
+  const advance = () => setTrainingLevel(me.id, levelIndex + 1);
 
   const selectPlace = (id) => {
     setPlace(id);
@@ -113,11 +119,46 @@ export default function TrainingPlan() {
 
         <Card style={{ background: 'var(--brand-primary)', border: 'none' }}>
           <div style={{ font: 'var(--text-small)', color: 'rgba(255,255,255,0.65)', marginBottom: 4 }}>Priorité actuelle</div>
-          <div style={{ font: 'var(--font-serif)', fontWeight: 700, fontSize: 24, color: '#fff', marginBottom: 8 }}>{level.name}</div>
-          <div style={{ font: 'var(--text-small)', color: 'rgba(255,255,255,0.85)', lineHeight: 1.4, marginBottom: 8 }}>{level.why}</div>
-          <div style={{ font: 'var(--text-small)', color: 'rgba(255,255,255,0.6)', lineHeight: 1.4, paddingTop: 8, borderTop: '1px solid rgba(255,255,255,0.15)' }}>
-            <span style={{ fontWeight: 600 }}>Pour passer au niveau suivant : </span>{level.passCriterion}
-          </div>
+          <div style={{ font: 'var(--font-serif)', fontWeight: 700, fontSize: 24, color: '#fff', marginBottom: 10 }}>{level.name}</div>
+
+          <div style={{ font: 'var(--text-small)', color: 'rgba(255,255,255,0.6)', fontWeight: 600, marginBottom: 2 }}>Pourquoi ?</div>
+          <div style={{ font: 'var(--text-small)', color: 'rgba(255,255,255,0.85)', lineHeight: 1.4, marginBottom: 10 }}>{why}</div>
+
+          <div style={{ font: 'var(--text-small)', color: 'rgba(255,255,255,0.6)', fontWeight: 600, marginBottom: 2 }}>Objectif pour avancer</div>
+          <div style={{ font: 'var(--text-small)', color: 'rgba(255,255,255,0.85)', lineHeight: 1.4 }}>{level.passCriterion}</div>
+
+          {!level.terminal && !progress.ready && (
+            <div style={{ font: 'var(--text-small)', color: 'rgba(255,255,255,0.85)', marginTop: 10, paddingTop: 10, borderTop: '1px solid rgba(255,255,255,0.15)' }}>
+              <span style={{ fontWeight: 600 }}>Progression : </span>{Math.min(progress.passCount, 2)} / 2 séances réussies
+            </div>
+          )}
+
+          {progress.ready && nextLevel && (
+            <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid rgba(255,255,255,0.15)' }}>
+              <div style={{ font: 'var(--text-label)', color: '#fff', marginBottom: 4 }}>Prêt pour la prochaine étape</div>
+              <div style={{ font: 'var(--text-small)', color: 'rgba(255,255,255,0.85)', lineHeight: 1.4, marginBottom: 2 }}>
+                Tu as atteint l'objectif {level.name} dans {progress.passCount} des {progress.attempts} dernières séances.
+              </div>
+              <div style={{ font: 'var(--text-small)', color: 'rgba(255,255,255,0.85)', lineHeight: 1.4, marginBottom: 12 }}>
+                Prochaine priorité recommandée : {nextLevel.name}.
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button
+                  type="button"
+                  onClick={advance}
+                  style={{ flex: 1, height: 42, borderRadius: 10, border: 'none', background: '#fff', color: 'var(--brand-primary)', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}
+                >
+                  Passer à {nextLevel.name}
+                </button>
+                <button
+                  type="button"
+                  style={{ flex: 1, height: 42, borderRadius: 10, border: '1px solid rgba(255,255,255,0.4)', background: 'transparent', color: '#fff', fontWeight: 600, fontSize: 13, cursor: 'pointer' }}
+                >
+                  Continuer {level.name}
+                </button>
+              </div>
+            </div>
+          )}
         </Card>
 
         <Card elevated>
