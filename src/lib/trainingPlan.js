@@ -9,10 +9,13 @@
 // content. If more time is available than a session's canonical length,
 // the session is shown as-is (never padded with invented extra content).
 
+// `shortLabel` is for tight chip/segment UI (the "Je pratique maintenant"
+// picker); `label` is the fuller description used wherever there's room
+// (session cards, history).
 export const LOCATIONS = [
-  { id: 'range', label: 'Range extérieur' },
-  { id: 'indoor-range', label: 'Golf intérieur — mode range' },
-  { id: 'simulator-course', label: 'Simulateur — parcours' },
+  { id: 'range', label: 'Range extérieur', shortLabel: 'Range' },
+  { id: 'indoor-range', label: 'Golf intérieur — mode range', shortLabel: 'Intérieur' },
+  { id: 'simulator-course', label: 'Simulateur — parcours', shortLabel: 'Simulateur' },
 ];
 
 export const DURATIONS = [30, 60, 90];
@@ -56,7 +59,7 @@ export const TRAINING_NOTE_FIELDS = [
 export const TRAINING_SESSIONS = [
   {
     id: 'contact',
-    name: 'Contact',
+    name: 'Contact solide',
     objective: 'Améliorer la qualité du contact.',
     principle: 'Échauffement progressif, puis répétition technique ciblée sur un seul point à la fois.',
     locations: ['range', 'indoor-range'],
@@ -73,7 +76,7 @@ export const TRAINING_SESSIONS = [
   },
   {
     id: 'cibles',
-    name: 'Cibles',
+    name: 'Cibles et direction',
     objective: 'Développer la direction et une routine fiable.',
     principle: 'Pratique par cibles avec changement de bâton régulier, pour éviter l’automatisme.',
     locations: ['range', 'indoor-range'],

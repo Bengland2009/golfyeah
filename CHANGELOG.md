@@ -2,6 +2,21 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.29.1 — 2026-08-21
+
+- **Refonte ergonomique du Plan d'entraînement.** L'écran passait pour un
+  formulaire vide ; il devient un outil de départ rapide. L'intro se
+  réduit à une phrase, une carte « Je pratique maintenant » regroupe le
+  choix du lieu et de la durée en chips compactes (fond vert pâle,
+  bordure verte, coche discrète à la sélection — visible en une seconde),
+  et les séances compatibles s'affichent immédiatement en dessous dès
+  que les deux choix sont faits, sans grand état vide. Chaque carte de
+  séance est maintenant l'élément principal de la page : titre, durée ·
+  lieu, objectif et principe en une ligne chacun, statut de validation,
+  et un bouton « Commencer » explicite. « Notes de progression » descend
+  en bas de page dans une carte compacte plutôt que de dominer l'écran
+  avant même la première séance.
+
 ## v1.29.0 — 2026-08-21
 
 - **Le Plan d'entraînement propose des séances validées au lieu d'un
