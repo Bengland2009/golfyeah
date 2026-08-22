@@ -2,6 +2,33 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.29.0 — 2026-08-21
+
+- **Le Plan d'entraînement propose des séances validées au lieu d'un
+  programme inventé.** Remplace le calendrier « semaine active » sur 4
+  semaines par une bibliothèque fixe de 4 séances (Contact, Cibles,
+  Parcours simulé, 9 trous sérieux), chacune avec un objectif, un
+  principe d'entraînement, une structure, et un statut de validation
+  honnête. Aucune des 4 séances de départ n'affiche « recommandée par
+  des pros » : sans source ou coach documenté derrière, elles portent le
+  badge « À valider » plutôt qu'une fausse caution.
+
+  À l'ouverture, l'utilisateur choisit où il pratique (range extérieur,
+  golf intérieur — mode range, ou simulateur — parcours) et le temps
+  disponible (30/60/90 min) ; seules les séances compatibles avec ces
+  deux choix s'affichent. Une séance plus courte reste la même
+  structure validée, seulement retimée proportionnellement (mêmes blocs,
+  mêmes exercices, juste moins de minutes chacun) — jamais une séance
+  différente. Le principe, le statut de validation, la durée et le lieu
+  compatible s'affichent discrètement sur chaque séance.
+
+  Les notes après séance sont maintenant les mêmes six champs partout
+  (ce qui a bien été, ce qui a moins bien été, erreur dominante, bâton
+  le plus/moins fiable, priorité pour la prochaine séance), au lieu de
+  champs différents par séance — un seul formulaire à apprendre.
+  L'historique (« Notes de progression ») affiche le lieu et la durée
+  choisis plutôt qu'un numéro de semaine.
+
 ## v1.28.0 — 2026-08-21
 
 - **Nouvelle sous-section « Plan d'entraînement » dans Pratique.** Un

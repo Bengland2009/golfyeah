@@ -7,19 +7,7 @@ import Sheet from '../components/Sheet';
 import { MoreVerticalIcon } from '../components/icons';
 import { useData } from '../contexts/DataContext';
 import { useMe } from '../lib/useMe';
-import { sessionById } from '../lib/trainingPlan';
-
-function noteValue(field, notes) {
-  if (field.type === 'fraction') {
-    const num = notes[`${field.key}_num`];
-    const den = notes[`${field.key}_den`];
-    if (!num && !den) return null;
-    return `${num || '–'} / ${den || '–'}`;
-  }
-  const v = notes[field.key];
-  if (v === undefined || v === null || v === '') return null;
-  return field.type === 'number' && field.suffix ? `${v} ${field.suffix}` : v;
-}
+import { sessionById, TRAINING_NOTE_FIELDS, LOCATIONS } from '../lib/trainingPlan';
 
 export default function TrainingHistory() {
   const navigate = useNavigate();
@@ -48,15 +36,18 @@ export default function TrainingHistory() {
 
         {myLogs.map((log) => {
           const session = sessionById(log.sessionId);
-          const fields = (session?.notesFields || [])
-            .map((f) => ({ label: f.label, value: noteValue(f, log.notes || {}) }))
-            .filter((f) => f.value != null);
+          const locationLabel = LOCATIONS.find((l) => l.id === log.location)?.label || log.location;
+          const fields = TRAINING_NOTE_FIELDS
+            .map((f) => ({ label: f.label, value: log.notes?.[f.key] }))
+            .filter((f) => f.value != null && f.value !== '');
           return (
             <Card key={log.id}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, marginBottom: fields.length ? 10 : 0 }}>
                 <div>
-                  <div style={{ font: 'var(--text-label)', fontSize: 15 }}>{session ? `${session.label} — ${session.title}` : log.sessionId}</div>
-                  <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)', marginTop: 1 }}>Semaine {log.week} · {log.date}</div>
+                  <div style={{ font: 'var(--text-label)', fontSize: 15 }}>{session ? session.name : log.sessionId}</div>
+                  <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)', marginTop: 1 }}>
+                    {locationLabel} · {log.duration} min · {log.date}
+                  </div>
                 </div>
                 <button
                   type="button"
