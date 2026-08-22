@@ -127,9 +127,15 @@ export default function TrainingPlan() {
           <div style={{ font: 'var(--text-small)', color: 'rgba(255,255,255,0.6)', fontWeight: 600, marginBottom: 2 }}>Objectif pour avancer</div>
           <div style={{ font: 'var(--text-small)', color: 'rgba(255,255,255,0.85)', lineHeight: 1.4 }}>{level.passCriterion}</div>
 
-          {!level.terminal && !progress.ready && (
+          {!progress.meetsCriteria && (
             <div style={{ font: 'var(--text-small)', color: 'rgba(255,255,255,0.85)', marginTop: 10, paddingTop: 10, borderTop: '1px solid rgba(255,255,255,0.15)' }}>
               <span style={{ fontWeight: 600 }}>Progression : </span>{Math.min(progress.passCount, 2)} / 2 séances réussies
+            </div>
+          )}
+
+          {progress.meetsCriteria && level.terminal && (
+            <div style={{ font: 'var(--text-small)', color: 'rgba(255,255,255,0.85)', marginTop: 10, paddingTop: 10, borderTop: '1px solid rgba(255,255,255,0.15)' }}>
+              Tu respectes les règles de {level.name} dans {progress.passCount} des {progress.attempts} dernières séances — continue comme ça.
             </div>
           )}
 

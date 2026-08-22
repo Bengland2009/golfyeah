@@ -7,12 +7,16 @@ import Sheet from '../components/Sheet';
 import { MoreVerticalIcon } from '../components/icons';
 import { useData } from '../contexts/DataContext';
 import { useMe } from '../lib/useMe';
-import { sessionById, TRAINING_NOTE_FIELDS, SIM_MODES } from '../lib/trainingPlan';
+import { sessionById, noteFieldsFor, SIM_MODES } from '../lib/trainingPlan';
 
 function contextLabel(place, mode) {
   if (place === 'range') return 'Range extérieur';
   const m = SIM_MODES.find((x) => x.id === mode);
   return m ? `Simulateur · ${m.label}` : 'Simulateur';
+}
+
+function displayValue(field, raw) {
+  return field.type === 'boolean' ? (raw ? 'Oui' : 'Non') : raw;
 }
 
 export default function TrainingHistory() {
@@ -42,9 +46,10 @@ export default function TrainingHistory() {
 
         {myLogs.map((log) => {
           const session = sessionById(log.sessionId);
-          const fields = TRAINING_NOTE_FIELDS
-            .map((f) => ({ label: f.label, value: log.notes?.[f.key] }))
-            .filter((f) => f.value != null && f.value !== '');
+          const fields = noteFieldsFor(log.sessionId)
+            .map((f) => ({ label: f.label, value: log.notes?.[f.key], type: f.type }))
+            .filter((f) => f.value != null && f.value !== '')
+            .map((f) => ({ label: f.label, value: displayValue(f, f.value) }));
           return (
             <Card key={log.id}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, marginBottom: fields.length ? 10 : 0 }}>

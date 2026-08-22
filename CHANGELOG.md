@@ -2,6 +2,25 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.32.1 — 2026-08-21
+
+- **Le critère « Jeu réel » n'est plus automatiquement réussi.** Correctif
+  du gap signalé après la dernière mise à jour : compléter une séance
+  « 9 trous sérieux », « Parcours imaginaire au range » ou « Gestion de
+  partie » comptait comme une réussite dans tous les cas. Quatre nouveaux
+  champs apparaissent maintenant sur le formulaire de fin de séance
+  uniquement pour ces trois séances : 9 trous complétés (Oui/Non),
+  mulligans utilisés, coups recommencés, notes de ronde honnêtes
+  (Oui/Non). Le critère de Jeu réel exige désormais que les quatre soient
+  respectés exactement (9 trous complétés = Oui, 0 mulligan, 0 coup
+  recommencé, notes honnêtes = Oui) — un champ laissé vide ne compte
+  jamais comme une réussite silencieuse.
+
+  Le critère de Répétition confirme maintenant qu'une séance était bien
+  une séance à bâtons multiples via le gabarit de la séance elle-même
+  (« Cibles et direction » couvre déjà PW à Driver), plutôt que de se
+  fier uniquement au contact général reporté.
+
 ## v1.32.0 — 2026-08-21
 
 - **Logique de progression transparente dans le Plan d'entraînement.** La

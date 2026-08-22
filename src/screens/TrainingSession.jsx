@@ -9,7 +9,7 @@ import Accordion from '../components/Accordion';
 import TrainingNotesForm from '../components/TrainingNotesForm';
 import { useData } from '../contexts/DataContext';
 import { useMe } from '../lib/useMe';
-import { sessionById, adaptedBlocks, TRAINING_NOTE_FIELDS, VALIDATION, VALIDATION_LABELS, SIM_MODES } from '../lib/trainingPlan';
+import { sessionById, adaptedBlocks, noteFieldsFor, VALIDATION, VALIDATION_LABELS, SIM_MODES } from '../lib/trainingPlan';
 
 function statusTone(status) {
   return status === VALIDATION.VALIDATED_SOURCE || status === VALIDATION.VALIDATED_COACH ? 'success' : 'neutral';
@@ -87,7 +87,7 @@ export default function TrainingSession() {
 
         <Card>
           <div style={{ font: 'var(--text-label)', fontSize: 15, marginBottom: 14 }}>À noter après la séance</div>
-          <TrainingNotesForm fields={TRAINING_NOTE_FIELDS} values={notes} onChange={setField} />
+          <TrainingNotesForm fields={noteFieldsFor(session.id)} values={notes} onChange={setField} />
         </Card>
 
         <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>

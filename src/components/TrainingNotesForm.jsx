@@ -1,9 +1,9 @@
 import Input from './Input';
 
-// Renders the shared post-session debrief fields (see
-// TRAINING_NOTE_FIELDS in lib/trainingPlan.js) — same six fields after
-// every session, so this stays a couple of text fields plus one chip
-// picker, never a form wizard.
+// Renders whichever post-session debrief fields the caller passes in
+// (see noteFieldsFor in lib/trainingPlan.js) — the shared fields plus,
+// for the "Jeu réel" session family, a few extra ones — so this stays a
+// short set of quick controls, never a form wizard.
 export default function TrainingNotesForm({ fields, values, onChange }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -29,6 +29,35 @@ export default function TrainingNotesForm({ fields, values, onChange }) {
                       }}
                     >
                       {opt}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        }
+
+        if (f.type === 'boolean') {
+          return (
+            <div key={f.key} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <span style={{ font: 'var(--text-label)' }}>{f.label}</span>
+              <div style={{ display: 'flex', gap: 8 }}>
+                {[{ v: true, l: 'Oui' }, { v: false, l: 'Non' }].map((opt) => {
+                  const active = values[f.key] === opt.v;
+                  return (
+                    <button
+                      key={opt.l}
+                      type="button"
+                      onClick={() => onChange(f.key, opt.v)}
+                      style={{
+                        flex: 1, height: 36, borderRadius: 999, cursor: 'pointer',
+                        border: active ? '1px solid var(--brand-action)' : '1px solid var(--border-default)',
+                        background: active ? '#EAF5EF' : '#fff',
+                        color: active ? 'var(--brand-action)' : 'var(--text-body)',
+                        font: 'var(--text-small)', fontWeight: active ? 700 : 400,
+                      }}
+                    >
+                      {opt.l}
                     </button>
                   );
                 })}

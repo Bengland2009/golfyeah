@@ -65,6 +65,25 @@ export const TRAINING_NOTE_FIELDS = [
   { key: 'nextPriority', label: 'Priorité pour la prochaine séance', type: 'text' },
 ];
 
+// Only shown for the "Jeu réel" family of sessions (see
+// REAL_ROUND_SESSION_IDS) — these four are exactly what the Jeu réel
+// pass criterion checks, so unlike the shared fields above they only
+// appear when they're actually meaningful to fill in.
+export const REAL_ROUND_SESSION_IDS = ['parcours-imaginaire', 'neuf-trous', 'gestion-de-partie'];
+
+export const REAL_ROUND_NOTE_FIELDS = [
+  { key: 'completedNineHoles', label: '9 trous complétés', type: 'boolean' },
+  { key: 'mulligansUsed', label: 'Mulligans utilisés', type: 'number' },
+  { key: 'restartedShots', label: 'Coups recommencés', type: 'number' },
+  { key: 'sessionNotesCompleted', label: 'Notes de ronde honnêtes', type: 'boolean' },
+];
+
+export function noteFieldsFor(sessionId) {
+  return REAL_ROUND_SESSION_IDS.includes(sessionId)
+    ? [...TRAINING_NOTE_FIELDS, ...REAL_ROUND_NOTE_FIELDS]
+    : TRAINING_NOTE_FIELDS;
+}
+
 // `places` is which top-level place(s) a session fits; `modes` only
 // matters when 'simulator' is in `places` — it says which simulator
 // mode(s) it needs. `blocks` is the one canonical, validated structure
@@ -97,6 +116,11 @@ export const TRAINING_SESSIONS = [
     places: ['range', 'simulator'],
     modes: ['sim-range'],
     durations: [30, 60, 90],
+    // Its own block already rotates through PW/Fer8/Fer7/Fer5/Hybride/
+    // Driver — this is the template-level confirmation that a completed
+    // log of this session really was a mixed-club attempt, used by
+    // LEVELS' Répétition criterion (Option A, no extra field needed).
+    mixedClub: true,
     status: VALIDATION.PENDING,
     source: 'Basée sur des principes de pratique golf couramment enseignés (pratique par blocs, cibles précises). À documenter/valider par une source ou un coach.',
     blocks: [
@@ -260,11 +284,15 @@ export function adaptedBlocks(session, targetMinutes) {
 // "adapts to context" without forking its content.
 //
 // `passesAttempt(log)` decides whether one completed session counts as a
-// success for this level, using only what TRAINING_NOTE_FIELDS actually
-// captures. Where no field maps cleanly to the written criterion (Mode
-// parcours' "sans mulligan, notes honnêtes" isn't a number the player
-// reports), Golfyeah doesn't invent a grade — the criterion stays
-// visible as guidance text and every attempt counts as a pass.
+// success for this level. Every level's criterion is mechanically
+// checked against real reported data — nothing here defaults to "always
+// passes". numEquals guards the exact-zero checks (mulligansUsed,
+// restartedShots): Number('') is 0 in JS, so an unfilled field must not
+// silently count as "0 mulligans used".
+function numEquals(value, target) {
+  return value !== undefined && value !== null && value !== '' && Number(value) === target;
+}
+
 export const LEVELS = [
   {
     level: 1,
@@ -291,7 +319,11 @@ export const LEVELS = [
     passCriterion: 'Une séance mixte avec plusieurs bâtons et un contact général d’au moins 6/10, dans 2 des 3 dernières séances.',
     whyStart: 'Tu n’as pas encore complété assez de séances pour confirmer que ton swing tient en changeant de bâton. Golfyeah propose donc une séance mixte avec plusieurs bâtons.',
     sessionIds: ['cibles'],
-    passesAttempt: (log) => Number(log.notes?.contactGeneral) >= 6,
+    // "Séance mixte" is confirmed by the session template itself
+    // (cibles.mixedClub) rather than an extra field — completion is
+    // already implicit since a log only exists once the session was
+    // marked done.
+    passesAttempt: (log) => !!sessionById(log.sessionId)?.mixedClub && Number(log.notes?.contactGeneral) >= 6,
   },
   {
     level: 4,
@@ -308,25 +340,41 @@ export const LEVELS = [
     objective: 'Transférer la pratique vers une vraie ronde.',
     passCriterion: 'Compléter 9 trous sans mulligan, sans coup recommencé, avec des notes honnêtes après la ronde.',
     whyStart: 'Tu n’as pas encore transféré ta pratique vers une vraie ronde. Golfyeah propose donc de jouer 9 trous sans mulligan, avec des notes honnêtes.',
-    sessionIds: ['parcours-imaginaire', 'neuf-trous', 'gestion-de-partie'],
-    passesAttempt: () => true,
+    sessionIds: REAL_ROUND_SESSION_IDS,
+    // Only a pass if every serious-round rule was actually respected —
+    // never a free pass just for showing up. sessionNotesCompleted and
+    // completedNineHoles must be explicitly ticked "Oui" (undefined
+    // fails both, same as never having answered); mulligansUsed and
+    // restartedShots must be exactly 0, guarded against a blank field
+    // silently reading as zero.
+    passesAttempt: (log) => (
+      log.notes?.completedNineHoles === true
+      && numEquals(log.notes?.mulligansUsed, 0)
+      && numEquals(log.notes?.restartedShots, 0)
+      && log.notes?.sessionNotesCompleted === true
+    ),
     terminal: true,
   },
 ];
 
 // The core rule: "2 séances réussies sur les 3 dernières" — never a
 // single good session. Looks only at logs for this level's session(s),
-// newest first, windowed to the last 3 attempts.
+// newest first, windowed to the last 3 attempts. `meetsCriteria` and
+// `ready` are kept separate so a terminal level (Jeu réel — nothing to
+// advance to) still honestly reports whether its criterion is met,
+// without ever showing a "next step" prompt that doesn't exist.
 export function levelProgress(level, logs) {
   const relevant = logs
     .filter((l) => level.sessionIds.includes(l.sessionId))
     .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
     .slice(0, 3);
   const passCount = relevant.filter(level.passesAttempt).length;
+  const meetsCriteria = relevant.length > 0 && passCount >= 2;
   return {
     attempts: relevant.length,
     passCount,
-    ready: !level.terminal && relevant.length > 0 && passCount >= 2,
+    meetsCriteria,
+    ready: meetsCriteria && !level.terminal,
   };
 }
 
