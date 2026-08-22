@@ -10,6 +10,7 @@ import { useMe } from '../lib/useMe';
 import {
   PLACES, SIM_MODES, DURATIONS, VALIDATION, VALIDATION_LABELS,
   LEVELS, sessionsFor, levelProgress, levelWhy, recommendedSessionId,
+  adaptedSteps, noteFieldsFor,
 } from '../lib/trainingPlan';
 
 const PLACE_ICONS = { range: GolfBallIcon, simulator: MonitorIcon };
@@ -59,16 +60,49 @@ function contextLabel(place, mode) {
   return m ? `Simulateur · ${m.label}` : 'Simulateur';
 }
 
+// A session card is a preview of the guided sheet, not just a
+// description — "quel bâton, combien de balles" must be readable before
+// tapping "Commencer". cardLine mirrors the exact worked example: club —
+// ballCount balles <hint>, falling back to the club alone (or the title)
+// when a step has no ball count.
+function cardLine(step) {
+  if (step.club && step.ballCount) return `${step.club} — ${step.ballCount} balles${step.cardHint ? ` ${step.cardHint}` : ''}`;
+  if (step.club) return step.cardHint ? `${step.club} — ${step.cardHint}` : step.club;
+  return step.title;
+}
+
 function SessionCard({ session, duration, place, mode, recommended, onStart }) {
+  const steps = adaptedSteps(session, duration);
+  const toDo = steps.slice(0, 4);
+  const fields = noteFieldsFor(session.id);
+  const noteLabels = (session.previewNoteKeys || [])
+    .map((key) => fields.find((f) => f.key === key)?.label)
+    .filter(Boolean);
+
   return (
     <Card elevated={recommended} style={recommended ? { border: '1px solid var(--brand-action)' } : undefined}>
       <div style={{ font: 'var(--text-label)', fontSize: 17 }}>{session.name}</div>
       <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)', marginTop: 2, marginBottom: 12 }}>{duration} min · {contextLabel(place, mode)}</div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 14, font: 'var(--text-small)', lineHeight: 1.4 }}>
-        <div><span style={{ fontWeight: 600 }}>Objectif : </span><span style={{ color: 'var(--text-muted)' }}>{session.objective}</span></div>
-        <div><span style={{ fontWeight: 600 }}>Principe : </span><span style={{ color: 'var(--text-muted)' }}>{session.principle}</span></div>
+      <div style={{ marginBottom: noteLabels.length ? 10 : 14 }}>
+        <div style={{ font: 'var(--text-small)', fontWeight: 700, marginBottom: 4 }}>À faire</div>
+        <ul style={{ margin: 0, paddingLeft: 18, display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {toDo.map((s) => (
+            <li key={s.title} style={{ font: 'var(--text-small)', color: 'var(--text-muted)', lineHeight: 1.4 }}>{cardLine(s)}</li>
+          ))}
+        </ul>
       </div>
+
+      {noteLabels.length > 0 && (
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ font: 'var(--text-small)', fontWeight: 700, marginBottom: 4 }}>À noter</div>
+          <ul style={{ margin: 0, paddingLeft: 18, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {noteLabels.map((label) => (
+              <li key={label} style={{ font: 'var(--text-small)', color: 'var(--text-muted)', lineHeight: 1.4 }}>{label}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
         <Badge tone={statusTone(session.status)}>{VALIDATION_LABELS[session.status]}</Badge>

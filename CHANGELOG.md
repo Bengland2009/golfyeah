@@ -2,6 +2,26 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.33.0 — 2026-08-22
+
+- **Les séances du Plan d'entraînement deviennent des fiches guidées.** Une
+  carte de séance comme « Contact solide » n'affiche plus seulement un
+  objectif et un principe abstraits — elle montre directement quoi faire :
+  « À faire » (jusqu'à 4 lignes concrètes — bâton, nombre de balles,
+  précision) et « À noter » (les 2 éléments à observer en fin de séance).
+  L'écran détaillé après « Commencer » suit maintenant chaque séance étape
+  par étape : durée, bâton, nombre de balles, instructions et éléments à
+  observer pour chaque étape, plutôt qu'une simple liste de points.
+
+  Chaque séance a maintenant une structure interne (`steps`) avec bâton,
+  nombre de balles, instructions et observations par étape, au lieu de
+  blocs de texte libre. Sur une durée plus courte, Golfyeah retire d'abord
+  les étapes optionnelles (jamais les étapes essentielles) avant de
+  raccourcir le temps de celles qui restent — la structure validée n'est
+  jamais réinventée, seulement adaptée. Aucun changement à la logique de
+  progression (niveaux, critères de réussite) : seule la présentation des
+  séances change.
+
 ## v1.32.1 — 2026-08-21
 
 - **Le critère « Jeu réel » n'est plus automatiquement réussi.** Correctif

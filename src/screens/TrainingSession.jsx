@@ -9,7 +9,7 @@ import Accordion from '../components/Accordion';
 import TrainingNotesForm from '../components/TrainingNotesForm';
 import { useData } from '../contexts/DataContext';
 import { useMe } from '../lib/useMe';
-import { sessionById, adaptedBlocks, noteFieldsFor, VALIDATION, VALIDATION_LABELS, SIM_MODES } from '../lib/trainingPlan';
+import { sessionById, adaptedSteps, noteFieldsFor, VALIDATION, VALIDATION_LABELS, SIM_MODES } from '../lib/trainingPlan';
 
 function statusTone(status) {
   return status === VALIDATION.VALIDATED_SOURCE || status === VALIDATION.VALIDATED_COACH ? 'success' : 'neutral';
@@ -37,8 +37,8 @@ export default function TrainingSession() {
   const place = routerLocation.state?.place || session.places[0];
   const mode = routerLocation.state?.mode || (place === 'simulator' ? session.modes[0] : null);
   const contextLabel = place === 'range' ? 'Range extérieur' : `Simulateur · ${SIM_MODES.find((m) => m.id === mode)?.label || ''}`;
-  const blocks = adaptedBlocks(session, duration);
-  const extraTime = duration > session.blocks.reduce((a, b) => a + b.minutes, 0);
+  const steps = adaptedSteps(session, duration);
+  const extraTime = duration > session.steps.reduce((a, s) => a + s.durationMinutes, 0);
 
   const setField = (key, value) => setNotes((n) => ({ ...n, [key]: value }));
 
@@ -69,20 +69,38 @@ export default function TrainingSession() {
 
         {extraTime && (
           <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)', fontStyle: 'italic' }}>
-            Tu as plus de temps que la structure de base — profites-en pour répéter les blocs qui te semblent utiles.
+            Tu as plus de temps que la structure de base — profites-en pour répéter les étapes qui te semblent utiles.
           </div>
         )}
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {blocks.map((b, i) => (
-            <Accordion key={b.title} title={b.title} subtitle={`${b.minutes} min`} defaultOpen={i === 0}>
-              <ul style={{ margin: 0, paddingLeft: 18, display: 'flex', flexDirection: 'column', gap: 6 }}>
-                {b.items.map((item) => (
-                  <li key={item} style={{ font: 'var(--text-body)', fontSize: 15, lineHeight: 1.4, color: 'var(--text-body)' }}>{item}</li>
-                ))}
-              </ul>
-            </Accordion>
-          ))}
+          {steps.map((s, i) => {
+            const subtitleParts = [`${s.durationMinutes} min`];
+            if (s.club) subtitleParts.push(s.club);
+            return (
+              <Accordion key={s.title} title={`Étape ${i + 1} — ${s.title}`} subtitle={subtitleParts.join(' · ')} defaultOpen={i === 0}>
+                {s.ballCount && (
+                  <div style={{ font: 'var(--text-small)', fontWeight: 700, marginBottom: 8 }}>{s.ballCount} balles</div>
+                )}
+                <div style={{ font: 'var(--text-small)', fontWeight: 700, marginBottom: 4 }}>À faire</div>
+                <ul style={{ margin: 0, paddingLeft: 18, display: 'flex', flexDirection: 'column', gap: 6, marginBottom: s.observe?.length ? 14 : 0 }}>
+                  {s.instructions.map((item) => (
+                    <li key={item} style={{ font: 'var(--text-body)', fontSize: 15, lineHeight: 1.4, color: 'var(--text-body)' }}>{item}</li>
+                  ))}
+                </ul>
+                {s.observe?.length > 0 && (
+                  <>
+                    <div style={{ font: 'var(--text-small)', fontWeight: 700, marginBottom: 4 }}>À observer</div>
+                    <ul style={{ margin: 0, paddingLeft: 18, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      {s.observe.map((item) => (
+                        <li key={item} style={{ font: 'var(--text-body)', fontSize: 15, lineHeight: 1.4, color: 'var(--text-muted)' }}>{item}</li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+              </Accordion>
+            );
+          })}
         </div>
 
         <Card>
