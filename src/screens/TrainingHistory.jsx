@@ -7,7 +7,13 @@ import Sheet from '../components/Sheet';
 import { MoreVerticalIcon } from '../components/icons';
 import { useData } from '../contexts/DataContext';
 import { useMe } from '../lib/useMe';
-import { sessionById, TRAINING_NOTE_FIELDS, LOCATIONS } from '../lib/trainingPlan';
+import { sessionById, TRAINING_NOTE_FIELDS, SIM_MODES } from '../lib/trainingPlan';
+
+function contextLabel(place, mode) {
+  if (place === 'range') return 'Range extérieur';
+  const m = SIM_MODES.find((x) => x.id === mode);
+  return m ? `Simulateur · ${m.label}` : 'Simulateur';
+}
 
 export default function TrainingHistory() {
   const navigate = useNavigate();
@@ -36,7 +42,6 @@ export default function TrainingHistory() {
 
         {myLogs.map((log) => {
           const session = sessionById(log.sessionId);
-          const locationLabel = LOCATIONS.find((l) => l.id === log.location)?.label || log.location;
           const fields = TRAINING_NOTE_FIELDS
             .map((f) => ({ label: f.label, value: log.notes?.[f.key] }))
             .filter((f) => f.value != null && f.value !== '');
@@ -46,7 +51,7 @@ export default function TrainingHistory() {
                 <div>
                   <div style={{ font: 'var(--text-label)', fontSize: 15 }}>{session ? session.name : log.sessionId}</div>
                   <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)', marginTop: 1 }}>
-                    {locationLabel} · {log.duration} min · {log.date}
+                    {contextLabel(log.place, log.mode)} · {log.duration} min · {log.date}
                   </div>
                 </div>
                 <button

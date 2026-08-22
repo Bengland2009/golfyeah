@@ -8,14 +8,21 @@
 // shrinks the same blocks proportionally, it never swaps in different
 // content. If more time is available than a session's canonical length,
 // the session is shown as-is (never padded with invented extra content).
+//
+// Place/mode model: "where you practice" has exactly two answers — a real
+// range or a simulator. A simulator additionally has a mode (range-style
+// practice vs. playing an actual round), because that's what actually
+// determines which sessions make sense — not a third flat "location".
 
-// `shortLabel` is for tight chip/segment UI (the "Je pratique maintenant"
-// picker); `label` is the fuller description used wherever there's room
-// (session cards, history).
-export const LOCATIONS = [
-  { id: 'range', label: 'Range extérieur', shortLabel: 'Range' },
-  { id: 'indoor-range', label: 'Golf intérieur — mode range', shortLabel: 'Intérieur' },
-  { id: 'simulator-course', label: 'Simulateur — parcours', shortLabel: 'Simulateur' },
+export const PLACES = [
+  { id: 'range', label: 'Range extérieur' },
+  { id: 'simulator', label: 'Simulateur' },
+];
+
+// Only asked when place === 'simulator'.
+export const SIM_MODES = [
+  { id: 'sim-range', label: 'Mode range' },
+  { id: 'sim-course', label: 'Mode parcours' },
 ];
 
 export const DURATIONS = [30, 60, 90];
@@ -53,16 +60,19 @@ export const TRAINING_NOTE_FIELDS = [
   { key: 'nextPriority', label: 'Priorité pour la prochaine séance', type: 'text' },
 ];
 
-// `blocks` is each session's one canonical, validated structure (sized to
-// its longest listed duration). adaptedBlocks() is the only thing that
-// ever changes what's shown for a shorter pick.
+// `places` is which top-level place(s) a session fits; `modes` only
+// matters when 'simulator' is in `places` — it says which simulator
+// mode(s) it needs. `blocks` is the one canonical, validated structure
+// (sized to the session's longest listed duration); adaptedBlocks() is
+// the only thing that ever changes what's shown for a shorter pick.
 export const TRAINING_SESSIONS = [
   {
     id: 'contact',
     name: 'Contact solide',
     objective: 'Améliorer la qualité du contact.',
     principle: 'Échauffement progressif, puis répétition technique ciblée sur un seul point à la fois.',
-    locations: ['range', 'indoor-range'],
+    places: ['range', 'simulator'],
+    modes: ['sim-range'],
     durations: [30, 60, 90],
     status: VALIDATION.PENDING,
     source: 'Basée sur des principes de pratique golf couramment enseignés (échauffement progressif, répétition ciblée). À documenter/valider par une source ou un coach.',
@@ -79,7 +89,8 @@ export const TRAINING_SESSIONS = [
     name: 'Cibles et direction',
     objective: 'Développer la direction et une routine fiable.',
     principle: 'Pratique par cibles avec changement de bâton régulier, pour éviter l’automatisme.',
-    locations: ['range', 'indoor-range'],
+    places: ['range', 'simulator'],
+    modes: ['sim-range'],
     durations: [30, 60, 90],
     status: VALIDATION.PENDING,
     source: 'Basée sur des principes de pratique golf couramment enseignés (pratique par blocs, cibles précises). À documenter/valider par une source ou un coach.',
@@ -97,11 +108,29 @@ export const TRAINING_SESSIONS = [
     ],
   },
   {
-    id: 'parcours-simule',
-    name: 'Parcours simulé',
-    objective: 'Faire le transfert vers le jeu réel.',
+    id: 'driver-jouable',
+    name: 'Driver jouable',
+    objective: 'Retrouver un driver fiable et une balle en jeu.',
+    principle: 'Répétition ciblée du même point technique, priorité donnée à la balle jouable plutôt qu’à la distance.',
+    places: ['range', 'simulator'],
+    modes: ['sim-range'],
+    durations: [30, 60, 90],
+    status: VALIDATION.PENDING,
+    source: 'Basée sur des principes de pratique golf couramment enseignés (répétition ciblée, priorité au résultat jouable). À documenter/valider par une source ou un coach.',
+    blocks: [
+      { title: 'Échauffement', minutes: 10, items: ['Wedge et fers courts pour sentir le contact'] },
+      { title: 'Trajectoire', minutes: 25, items: ['Cible = corridor de fairway', 'Priorité à la balle en jeu, pas à la distance', 'Une routine avant chaque balle'] },
+      { title: 'Répétition', minutes: 15, items: ['Répéter le même point technique sur 10 balles', 'Ne pas changer de correctif en cours de route'] },
+      { title: 'Bilan', minutes: 10, items: ['Compter les balles jouables sur 10', 'Nommer le point technique qui a le plus aidé'] },
+    ],
+  },
+  {
+    id: 'parcours-imaginaire',
+    name: 'Parcours imaginaire au range',
+    objective: 'Faire le transfert vers le jeu réel, au range.',
     principle: 'Simulation de parcours en pratique libre : enchaîner des coups différents, une seule tentative chacun, jamais le même coup deux fois.',
-    locations: ['range', 'indoor-range'],
+    places: ['range'],
+    modes: [],
     durations: [30, 60, 90],
     status: VALIDATION.PENDING,
     source: 'Basée sur des principes de pratique golf couramment enseignés (transfert vers le jeu, pratique aléatoire). À documenter/valider par une source ou un coach.',
@@ -111,7 +140,45 @@ export const TRAINING_SESSIONS = [
         title: 'Mode parcours', minutes: 40,
         items: ['Ne jamais jouer deux fois le même coup.', 'Exemple : Driver → Fer 7 → Wedge → Driver → Fer 5 → Wedge → Hybride → Fer 8', 'Choisir le bâton avant de regarder le résultat'],
       },
-      { title: 'Bilan', minutes: 10, items: ['Compter les coups qui auraient été jouables sur un vrai trou', 'Noter le bâton le plus fiable du parcours simulé'] },
+      { title: 'Bilan', minutes: 10, items: ['Compter les coups qui auraient été jouables sur un vrai trou', 'Noter le bâton le plus fiable du parcours imaginaire'] },
+    ],
+  },
+  {
+    id: 'distances-carry',
+    name: 'Distances carry',
+    objective: 'Connaître ses vraies distances de carry, bâton par bâton.',
+    principle: 'Mesure répétée par bâton à l’aide des données du simulateur, sans corriger le geste en cours de série.',
+    places: ['simulator'],
+    modes: ['sim-range'],
+    durations: [30, 60, 90],
+    status: VALIDATION.PENDING,
+    source: 'Basée sur des principes de pratique golf couramment enseignés (mesure répétée, données objectives). À documenter/valider par une source ou un coach.',
+    blocks: [
+      { title: 'Échauffement', minutes: 10, items: ['Quelques wedges avant de commencer les mesures'] },
+      {
+        title: 'Mesures par bâton', minutes: 40,
+        items: ['5 à 8 balles par bâton, du plus court au plus long', 'Noter le carry moyen affiché, pas le meilleur coup', 'Ignorer les balles clairement ratées'],
+      },
+      { title: 'Bilan', minutes: 10, items: ['Mettre à jour mes distances dans Mes distances', 'Identifier le bâton le plus irrégulier'] },
+    ],
+  },
+  {
+    id: 'dispersion',
+    name: 'Dispersion gauche/droite',
+    objective: 'Voir où partent vraiment mes balles, pas où je pense qu’elles partent.',
+    principle: 'Observation de la dispersion latérale affichée par le simulateur, par bâton, sans essayer de la corriger pendant la série.',
+    places: ['simulator'],
+    modes: ['sim-range'],
+    durations: [30, 60, 90],
+    status: VALIDATION.PENDING,
+    source: 'Basée sur des principes de pratique golf couramment enseignés (observation neutre, données objectives). À documenter/valider par une source ou un coach.',
+    blocks: [
+      { title: 'Échauffement', minutes: 10, items: ['Quelques balles pour se mettre en route'] },
+      {
+        title: 'Série par bâton', minutes: 40,
+        items: ['8 à 10 balles par bâton sans changer de cible', 'Regarder la dispersion affichée après la série, pas balle par balle', 'Noter le côté qui revient le plus souvent'],
+      },
+      { title: 'Bilan', minutes: 10, items: ['Nommer le bâton le plus dispersé', 'Une seule priorité pour la prochaine séance'] },
     ],
   },
   {
@@ -119,7 +186,8 @@ export const TRAINING_SESSIONS = [
     name: '9 trous sérieux',
     objective: 'Jouer comme sur un vrai terrain.',
     principle: 'Transfert complet en conditions de jeu réelles, sur simulateur, sans filet de sécurité.',
-    locations: ['simulator-course'],
+    places: ['simulator'],
+    modes: ['sim-course'],
     durations: [60, 90],
     status: VALIDATION.PENDING,
     source: 'Basée sur des principes de pratique golf couramment enseignés (jeu à tentative unique, transfert en conditions réelles). À documenter/valider par une source ou un coach.',
@@ -129,14 +197,34 @@ export const TRAINING_SESSIONS = [
       { title: 'Bilan', minutes: 10, items: ['Score', 'Meilleur aspect de la ronde', 'Priorité pour la prochaine séance'] },
     ],
   },
+  {
+    id: 'gestion-de-partie',
+    name: 'Gestion de partie',
+    objective: 'Jouer intelligemment plutôt que de viser le coup parfait.',
+    principle: 'Prise de décision avant chaque coup — cible et bâton conservateurs — plutôt que travail technique.',
+    places: ['simulator'],
+    modes: ['sim-course'],
+    durations: [60, 90],
+    status: VALIDATION.PENDING,
+    source: 'Basée sur des principes de pratique golf couramment enseignés (gestion de parcours, prise de décision). À documenter/valider par une source ou un coach.',
+    blocks: [
+      { title: 'Règles', minutes: 10, items: ['Choisir la cible la plus sûre, pas la plus ambitieuse', 'Un seul bâton envisagé par coup, pas d’hésitation', 'Jouer pour le centre du green, jamais pour le drapeau'] },
+      { title: 'Sur le parcours', minutes: 70, items: ['Jouer autant de trous que le temps le permet', 'Compter les fois où le choix « prudent » aurait mieux servi', 'Éviter tout coup à risque inutile'] },
+      { title: 'Bilan', minutes: 10, items: ['Score', 'Nombre de décisions « prudentes » respectées', 'Priorité pour la prochaine séance'] },
+    ],
+  },
 ];
 
 export function sessionById(id) {
   return TRAINING_SESSIONS.find((s) => s.id === id) || null;
 }
 
-export function sessionsFor(locationId, duration) {
-  return TRAINING_SESSIONS.filter((s) => s.locations.includes(locationId) && s.durations.includes(duration));
+export function sessionsFor(place, mode, duration) {
+  return TRAINING_SESSIONS.filter((s) => {
+    if (!s.places.includes(place)) return false;
+    if (place === 'simulator' && !s.modes.includes(mode)) return false;
+    return s.durations.includes(duration);
+  });
 }
 
 function fullLength(session) {

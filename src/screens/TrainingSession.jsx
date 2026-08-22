@@ -9,7 +9,7 @@ import Accordion from '../components/Accordion';
 import TrainingNotesForm from '../components/TrainingNotesForm';
 import { useData } from '../contexts/DataContext';
 import { useMe } from '../lib/useMe';
-import { sessionById, adaptedBlocks, TRAINING_NOTE_FIELDS, VALIDATION, VALIDATION_LABELS, LOCATIONS } from '../lib/trainingPlan';
+import { sessionById, adaptedBlocks, TRAINING_NOTE_FIELDS, VALIDATION, VALIDATION_LABELS, SIM_MODES } from '../lib/trainingPlan';
 
 function statusTone(status) {
   return status === VALIDATION.VALIDATED_SOURCE || status === VALIDATION.VALIDATED_COACH ? 'success' : 'neutral';
@@ -34,8 +34,9 @@ export default function TrainingSession() {
   }
 
   const duration = routerLocation.state?.duration || session.durations[session.durations.length - 1];
-  const practiceLocation = routerLocation.state?.location || session.locations[0];
-  const locationLabel = LOCATIONS.find((l) => l.id === practiceLocation)?.label || practiceLocation;
+  const place = routerLocation.state?.place || session.places[0];
+  const mode = routerLocation.state?.mode || (place === 'simulator' ? session.modes[0] : null);
+  const contextLabel = place === 'range' ? 'Range extérieur' : `Simulateur · ${SIM_MODES.find((m) => m.id === mode)?.label || ''}`;
   const blocks = adaptedBlocks(session, duration);
   const extraTime = duration > session.blocks.reduce((a, b) => a + b.minutes, 0);
 
@@ -43,7 +44,7 @@ export default function TrainingSession() {
 
   const confirmComplete = async () => {
     setSaving(true);
-    await addTrainingLog(me.id, { sessionId: session.id, location: practiceLocation, duration, notes });
+    await addTrainingLog(me.id, { sessionId: session.id, place, mode, duration, notes });
     setSaving(false);
     setConfirmOpen(false);
     setSavedOpen(true);
@@ -63,7 +64,7 @@ export default function TrainingSession() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <Badge tone={statusTone(session.status)}>{VALIDATION_LABELS[session.status]}</Badge>
           <span style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>{duration} min</span>
-          <span style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>· {locationLabel}</span>
+          <span style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>· {contextLabel}</span>
         </div>
 
         {extraTime && (

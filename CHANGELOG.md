@@ -2,6 +2,29 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.30.0 — 2026-08-21
+
+- **Nouvelle logique de lieu dans le Plan d'entraînement.** Le choix « Où
+  je pratique » mélangeait trois concepts différents (Range, Intérieur,
+  Simulateur) ; il redevient les deux vraies réponses possibles : Range
+  extérieur ou Simulateur — deux gros choix clairs. Si Simulateur est
+  choisi, une deuxième question apparaît : Mode range ou Mode parcours,
+  puisque c'est ce que l'utilisateur *fait* au simulateur qui détermine
+  les séances pertinentes, pas le lieu seul.
+
+  La bibliothèque de séances s'agrandit en conséquence (toujours « à
+  valider », aucune ne prétend être validée sans source réelle) :
+  **Range extérieur** — Contact solide, Cibles et direction, Driver
+  jouable, Parcours imaginaire au range. **Simulateur + Mode range** —
+  Contact solide, Cibles et direction, Driver jouable, Distances carry,
+  Dispersion gauche/droite (ces trois dernières exploitent les mesures
+  du simulateur — carry, dispersion — impossibles à obtenir sur un
+  vrai range). **Simulateur + Mode parcours** — 9 trous sérieux, Gestion
+  de partie.
+
+  La durée (30/60/90 min) reste un choix, mais seulement après le lieu
+  (et le mode si simulateur) — jamais en premier.
+
 ## v1.29.1 — 2026-08-21
 
 - **Refonte ergonomique du Plan d'entraînement.** L'écran passait pour un

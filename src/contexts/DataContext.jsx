@@ -659,13 +659,13 @@ export function DataProvider({ children }) {
   // ---------- training plan ----------
   // Sessions from lib/trainingPlan.js are repeatable, not one-time
   // checklist items — each completion appends a new log entry (playerId,
-  // sessionId, location, duration, notes) rather than flipping a boolean,
-  // so "combien de séances" and "dernière séance" are derived live from
-  // this array (same append-only pattern as range/expenses), never a
-  // separate recalculation step.
-  const addTrainingLog = useCallback(async (playerId, { sessionId, location, duration, notes }) => {
+  // sessionId, place, mode, duration, notes) rather than flipping a
+  // boolean, so "combien de séances" and "dernière séance" are derived
+  // live from this array (same append-only pattern as range/expenses),
+  // never a separate recalculation step.
+  const addTrainingLog = useCallback(async (playerId, { sessionId, place, mode, duration, notes }) => {
     const doc_ = {
-      playerId, sessionId, location, duration, notes: notes || {},
+      playerId, sessionId, place, mode: mode || null, duration, notes: notes || {},
       date: new Date().toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' }),
       createdAt: Date.now(),
     };
