@@ -2,6 +2,30 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.34.0 — 2026-08-23
+
+- **Le Plan d'entraînement propose des formats de séance, plus des
+  durées.** Les choix 30 / 60 / 90 min laissaient croire que la durée
+  était ce qui comptait le plus dans une séance de pratique — ce n'est
+  pas ce que les pros et enseignants mettent de l'avant. Ce qui compte :
+  une séance courte, structurée, avec une cible claire, une routine, un
+  test mesurable et des notes en fin de séance. Le picker « Durée »
+  devient donc « Format », avec trois choix : Express (20 min), Standard
+  (30 min, recommandé par défaut) et Longue (45 min). 90 minutes n'est
+  plus proposé pour une séance de range normale — avec 90 minutes,
+  Golfyeah suggère plutôt de jouer 9 trous au simulateur.
+
+  Chaque format est une structure pensée pour ce format (échauffement,
+  exercice principal, test), pas une longue séance rétrécie
+  proportionnellement — Express, Standard et Longue ont chacun leur
+  propre contenu.
+
+  En mode parcours (simulateur), le picker de durée est remplacé par un
+  choix de format de ronde : « 9 trous sérieux » (disponible) et
+  « 18 trous » (affiché honnêtement comme à venir, pas encore
+  sélectionnable — Golfyeah n'a pas encore de contenu validé pour 18
+  trous).
+
 ## v1.33.0 — 2026-08-22
 
 - **Les séances du Plan d'entraînement deviennent des fiches guidées.** Une

@@ -8,9 +8,10 @@ import { CheckIcon, ChevronRightIcon, GolfBallIcon, MonitorIcon } from '../compo
 import { useData } from '../contexts/DataContext';
 import { useMe } from '../lib/useMe';
 import {
-  PLACES, SIM_MODES, DURATIONS, VALIDATION, VALIDATION_LABELS,
+  PLACES, SIM_MODES, FORMATS, DEFAULT_FORMAT_ID, ROUND_LENGTHS, DEFAULT_ROUND_LENGTH,
+  VALIDATION, VALIDATION_LABELS,
   LEVELS, sessionsFor, levelProgress, levelWhy, recommendedSessionId,
-  adaptedSteps, noteFieldsFor,
+  stepsForSession, noteFieldsFor,
 } from '../lib/trainingPlan';
 
 const PLACE_ICONS = { range: GolfBallIcon, simulator: MonitorIcon };
@@ -27,25 +28,30 @@ function eyebrow(text) {
 // small check) across all three steps — only the size changes: the place
 // choice is the "gros choix clair" step, mode and duration are lighter
 // follow-up chips.
-function Choice({ label, Icon, active, onClick, size = 'sm' }) {
+function Choice({ label, sublabel, Icon, active, onClick, size = 'sm', disabled = false }) {
   const big = size === 'lg';
   const mid = size === 'md';
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
+      disabled={disabled}
       style={{
         flex: 1, display: 'flex', flexDirection: big ? 'column' : 'row', alignItems: 'center', justifyContent: 'center',
-        gap: big ? 6 : 5, height: big ? 76 : mid ? 46 : 38, borderRadius: big ? 14 : 999, cursor: 'pointer', padding: '0 8px',
+        gap: big ? 6 : 5, height: big ? 76 : mid ? 46 : 38, borderRadius: big ? 14 : 999, cursor: disabled ? 'not-allowed' : 'pointer', padding: '0 8px',
         border: active ? '1px solid var(--brand-action)' : '1px solid var(--border-default)',
         background: active ? '#EAF5EF' : '#fff',
-        color: active ? 'var(--brand-action)' : 'var(--text-body)',
+        color: disabled ? 'var(--text-muted)' : active ? 'var(--brand-action)' : 'var(--text-body)',
         font: big ? 'var(--text-label)' : 'var(--text-small)', fontSize: big ? 15 : undefined, fontWeight: active ? 700 : 500,
+        opacity: disabled ? 0.5 : 1,
       }}
     >
       {Icon && <Icon width={big ? 22 : 16} height={big ? 22 : 16} strokeWidth={1.75} style={{ flexShrink: 0 }} />}
       {!Icon && active && <CheckIcon width={13} height={13} strokeWidth={3} style={{ flexShrink: 0 }} />}
-      {label}
+      <span>
+        {label}
+        {sublabel && <span style={{ display: 'block', fontSize: 11, fontWeight: 400, opacity: 0.8 }}>{sublabel}</span>}
+      </span>
     </button>
   );
 }
@@ -71,8 +77,19 @@ function cardLine(step) {
   return step.title;
 }
 
-function SessionCard({ session, duration, place, mode, recommended, onStart }) {
-  const steps = adaptedSteps(session, duration);
+// Sessions authored per format (range / mode range) show the format's
+// minutes; sessions played in holes (mode parcours) show the round
+// length instead — duration was never the point, so neither picker
+// pretends the other applies.
+function sessionMetaLabel(session, formatId, roundLength, place, mode) {
+  const isRound = !!session.roundLengths;
+  const format = FORMATS.find((f) => f.id === formatId);
+  const timeLabel = isRound ? `${roundLength} trous` : format ? `${format.label} — ${format.minutes} min` : '';
+  return `${timeLabel} · ${contextLabel(place, mode)}`;
+}
+
+function SessionCard({ session, formatId, roundLength, place, mode, recommended, onStart }) {
+  const steps = stepsForSession(session, formatId);
   const toDo = steps.slice(0, 4);
   const fields = noteFieldsFor(session.id);
   const noteLabels = (session.previewNoteKeys || [])
@@ -82,7 +99,7 @@ function SessionCard({ session, duration, place, mode, recommended, onStart }) {
   return (
     <Card elevated={recommended} style={recommended ? { border: '1px solid var(--brand-action)' } : undefined}>
       <div style={{ font: 'var(--text-label)', fontSize: 17 }}>{session.name}</div>
-      <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)', marginTop: 2, marginBottom: 12 }}>{duration} min · {contextLabel(place, mode)}</div>
+      <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)', marginTop: 2, marginBottom: 12 }}>{sessionMetaLabel(session, formatId, roundLength, place, mode)}</div>
 
       <div style={{ marginBottom: noteLabels.length ? 10 : 14 }}>
         <div style={{ font: 'var(--text-small)', fontWeight: 700, marginBottom: 4 }}>À faire</div>
@@ -118,7 +135,8 @@ export default function TrainingPlan() {
   const me = useMe();
   const [place, setPlace] = useState(null);
   const [mode, setMode] = useState(null);
-  const [duration, setDuration] = useState(60);
+  const [formatId, setFormatId] = useState(DEFAULT_FORMAT_ID);
+  const [roundLength, setRoundLength] = useState(DEFAULT_ROUND_LENGTH);
 
   const myLogs = trainingLogs.filter((l) => l.playerId === me?.id);
   const completedCount = myLogs.length;
@@ -136,12 +154,13 @@ export default function TrainingPlan() {
   };
 
   const contextReady = place === 'range' || (place === 'simulator' && mode);
-  const results = contextReady ? sessionsFor(place, mode, duration) : [];
+  const isCourseMode = mode === 'sim-course';
+  const results = contextReady ? sessionsFor(place, mode) : [];
   const recommendedId = contextReady ? recommendedSessionId(level, place, mode) : null;
   const recommended = results.find((s) => s.id === recommendedId) || null;
   const others = results.filter((s) => s.id !== recommendedId);
 
-  const start = (session) => navigate(`/pratique/plan/${session.id}`, { state: { duration, place, mode } });
+  const start = (session) => navigate(`/pratique/plan/${session.id}`, { state: { formatId, roundLength, place, mode } });
 
   return (
     <div>
@@ -227,25 +246,46 @@ export default function TrainingPlan() {
 
         {contextReady && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <span style={{ font: 'var(--text-small)', color: 'var(--text-muted)', fontWeight: 600 }}>Durée</span>
-              <div style={{ display: 'flex', gap: 6 }}>
-                {DURATIONS.map((d) => (
-                  <Choice key={d} label={`${d} min`} active={duration === d} onClick={() => setDuration(d)} size="sm" />
-                ))}
+            {!isCourseMode && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <span style={{ font: 'var(--text-small)', color: 'var(--text-muted)', fontWeight: 600 }}>Format</span>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  {FORMATS.map((f) => (
+                    <Choice key={f.id} label={f.label} sublabel={`${f.minutes} min`} active={formatId === f.id} onClick={() => setFormatId(f.id)} size="md" />
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
+
+            {isCourseMode && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <span style={{ font: 'var(--text-small)', color: 'var(--text-muted)', fontWeight: 600 }}>Format</span>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  {ROUND_LENGTHS.map((r) => (
+                    <Choice
+                      key={r.id}
+                      label={r.label}
+                      sublabel={r.comingSoon ? 'Bientôt' : undefined}
+                      active={roundLength === r.id}
+                      onClick={() => setRoundLength(r.id)}
+                      size="md"
+                      disabled={r.comingSoon}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
 
             {!results.length && (
               <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>
-                Aucune séance compatible avec ce contexte et ce temps.
+                Aucune séance compatible avec ce contexte.
               </div>
             )}
 
             {recommended && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {eyebrow('Séance recommandée')}
-                <SessionCard session={recommended} duration={duration} place={place} mode={mode} recommended onStart={() => start(recommended)} />
+                <SessionCard session={recommended} formatId={formatId} roundLength={roundLength} place={place} mode={mode} recommended onStart={() => start(recommended)} />
               </div>
             )}
 
@@ -253,7 +293,7 @@ export default function TrainingPlan() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: recommended ? 6 : 0 }}>
                 {eyebrow(recommended ? 'Autres séances utiles' : 'Séances compatibles')}
                 {others.map((s) => (
-                  <SessionCard key={s.id} session={s} duration={duration} place={place} mode={mode} onStart={() => start(s)} />
+                  <SessionCard key={s.id} session={s} formatId={formatId} roundLength={roundLength} place={place} mode={mode} onStart={() => start(s)} />
                 ))}
               </div>
             )}

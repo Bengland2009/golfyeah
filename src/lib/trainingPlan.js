@@ -3,12 +3,19 @@
 // user-editable" convention as lib/venues.js).
 //
 // Ground rule: Golfyeah never invents a session on the fly. Every session
-// below is a validated structure; personalization only ever *adapts* that
-// structure to the time available (adaptedSteps, at the bottom) — it
-// keeps the essential steps, drops optional ones if needed, and retimes
-// what's kept proportionally. It never swaps in different content. If
-// more time is available than a session's canonical length, the session
-// is shown as-is (never padded with invented extra content).
+// below is a validated structure, authored directly for each format it
+// supports (see FORMATS/stepsByFormat) rather than computed by shrinking
+// one canonical version — a short session isn't a proportionally
+// squeezed long one, it's its own deliberately-scoped structure.
+//
+// Duration is not the point of a practice session — attention, structure,
+// a clear target, a routine, a measurable test and end-of-session notes
+// are what actually matter. So the picker is a *format* (Express/
+// Standard/Longue), not a bare minute count, and 90 minutes is
+// deliberately not offered for normal range practice: it invites
+// unfocused ball-mashing rather than a real practice block. A player with
+// 90 minutes is better served playing 9 holes on the simulator, or (later)
+// an advanced session combining multiple practice zones.
 //
 // Place/mode model: "where you practice" has exactly two answers — a real
 // range or a simulator. A simulator additionally has a mode (range-style
@@ -26,7 +33,33 @@ export const SIM_MODES = [
   { id: 'sim-course', label: 'Mode parcours' },
 ];
 
-export const DURATIONS = [30, 60, 90];
+// Practice-session format, for range or simulator "mode range" sessions.
+// Each format is its own authored structure (see TRAINING_SESSIONS'
+// stepsByFormat), not a proportional shrink of a longer one. Minutes are
+// shown for orientation, but the format name is the primary label — this
+// is a choice of session shape, not a timer.
+export const FORMATS = [
+  { id: 'express', label: 'Express', minutes: 20 },
+  { id: 'standard', label: 'Standard', minutes: 30 },
+  { id: 'longue', label: 'Longue', minutes: 45 },
+];
+
+export const DEFAULT_FORMAT_ID = 'standard';
+
+export function formatById(id) {
+  return FORMATS.find((f) => f.id === id) || null;
+}
+
+// Mode parcours isn't timed practice, it's played in holes — so it gets
+// its own picker instead of a duration/format. 18 trous is named here
+// honestly as not-yet-available rather than silently omitted, since
+// Golfyeah has no validated 18-hole content yet.
+export const ROUND_LENGTHS = [
+  { id: 9, label: '9 trous sérieux' },
+  { id: 18, label: '18 trous', comingSoon: true },
+];
+
+export const DEFAULT_ROUND_LENGTH = 9;
 
 // Every session must carry one of these — and the UI must never claim a
 // session is "recommandée par des pros" unless its status actually says so.
@@ -87,15 +120,20 @@ export function noteFieldsFor(sessionId) {
 
 // `places` is which top-level place(s) a session fits; `modes` only
 // matters when 'simulator' is in `places` — it says which simulator
-// mode(s) it needs. `steps` is the one canonical, validated structure
-// (sized to the session's longest listed duration) — each step is a
+// mode(s) it needs.
+//
+// Range / mode-range sessions carry `stepsByFormat`: a fully authored
+// step list per FORMATS id (express/standard/longue) — each step is a
 // guided instruction sheet, not a description: title, how long, which
-// club, how many balls, what to do, what to observe. `essential: false`
-// marks a step that adaptedSteps() may drop first when time is short;
-// `essential: true` steps are always kept. `previewNoteKeys` picks which
-// 2 debrief fields (from TRAINING_NOTE_FIELDS) surface as the card's "À
-// noter" preview. adaptedSteps() is the only thing that ever changes
-// what's shown for a shorter pick.
+// club, how many balls, what to do, what to observe. A shorter format is
+// its own deliberately-scoped structure, not the long one shrunk down.
+//
+// Mode-parcours sessions (played in holes, not minutes) carry a single
+// `steps` list instead, and `roundLengths` says which ROUND_LENGTHS
+// they're authored for.
+//
+// `previewNoteKeys` picks which 2 debrief fields surface as the card's
+// "À noter" preview.
 export const TRAINING_SESSIONS = [
   {
     id: 'contact',
@@ -104,33 +142,63 @@ export const TRAINING_SESSIONS = [
     principle: 'Échauffement progressif, puis répétition technique ciblée sur un seul point à la fois.',
     places: ['range', 'simulator'],
     modes: ['sim-range'],
-    durations: [30, 60, 90],
     status: VALIDATION.PENDING,
     source: 'Basée sur des principes de pratique golf couramment enseignés (échauffement progressif, répétition ciblée). À documenter/valider par une source ou un coach.',
     previewNoteKeys: ['goodContacts', 'playableBalls'],
-    steps: [
-      {
-        title: 'Échauffement', durationMinutes: 10, club: 'Wedge', ballCount: null, cardHint: 'tranquilles', essential: true,
-        instructions: ['Petits swings', 'Rythme tranquille', 'Chercher le contact, pas la distance'],
-      },
-      {
-        title: 'Fer 7', durationMinutes: 20, club: 'Fer 7', ballCount: 20, cardHint: 'vers une cible', essential: true,
-        instructions: ['Choisir une cible', 'Faire une routine avant chaque balle', 'Frapper 20 balles', 'Ne travailler qu’un seul point technique'],
-        observe: ['Contact propre', 'Direction de départ', 'Balles complètement ratées'],
-      },
-      {
-        title: 'Fer 5 / Fer 6', durationMinutes: 10, club: 'Fer 5/6', ballCount: 10, cardHint: null, essential: false,
-        instructions: ['Même objectif : contact solide', 'Ne pas forcer'],
-      },
-      {
-        title: 'Hybride / bois', durationMinutes: 10, club: 'Hybride/bois', ballCount: 10, cardHint: null, essential: false,
-        instructions: ['Chercher une trajectoire jouable'],
-      },
-      {
-        title: 'Driver jouable', durationMinutes: 10, club: 'Driver', ballCount: 10, cardHint: 'jouables', essential: true,
-        instructions: ['Viser un corridor de fairway', 'Ne pas chercher la distance maximale', 'Noter combien de balles seraient jouables'],
-      },
-    ],
+    stepsByFormat: {
+      express: [
+        {
+          title: 'Échauffement', durationMinutes: 3, club: 'Wedge', ballCount: null, cardHint: 'tranquilles',
+          instructions: ['Petits swings', 'Rythme tranquille', 'Chercher le contact, pas la distance'],
+        },
+        {
+          title: 'Fer 7', durationMinutes: 12, club: 'Fer 7', ballCount: 12, cardHint: 'vers une cible',
+          instructions: ['Choisir une cible', 'Faire une routine avant chaque balle', 'Frapper 12 balles', 'Ne travailler qu’un seul point technique'],
+          observe: ['Contact propre', 'Direction de départ'],
+        },
+        {
+          title: 'Driver jouable', durationMinutes: 3, club: 'Driver', ballCount: 5, cardHint: 'jouables',
+          instructions: ['Viser un corridor de fairway', 'Noter combien de balles seraient jouables'],
+          observe: ['Balles jouables sur 5'],
+        },
+      ],
+      standard: [
+        {
+          title: 'Échauffement', durationMinutes: 5, club: 'Wedge', ballCount: null, cardHint: 'tranquilles',
+          instructions: ['Petits swings', 'Rythme tranquille', 'Chercher le contact, pas la distance'],
+        },
+        {
+          title: 'Fer 7', durationMinutes: 15, club: 'Fer 7', ballCount: 20, cardHint: 'vers une cible',
+          instructions: ['Choisir une cible', 'Faire une routine avant chaque balle', 'Frapper 20 balles', 'Ne travailler qu’un seul point technique'],
+          observe: ['Contact propre', 'Direction de départ', 'Balles complètement ratées'],
+        },
+        {
+          title: 'Driver jouable', durationMinutes: 7, club: 'Driver', ballCount: 10, cardHint: 'jouables',
+          instructions: ['Viser un corridor de fairway', 'Ne pas chercher la distance maximale', 'Noter combien de balles seraient jouables'],
+          observe: ['Balles jouables sur 10'],
+        },
+      ],
+      longue: [
+        {
+          title: 'Échauffement', durationMinutes: 8, club: 'Wedge', ballCount: null, cardHint: 'tranquilles',
+          instructions: ['Petits swings', 'Rythme tranquille', 'Chercher le contact, pas la distance'],
+        },
+        {
+          title: 'Fer 7', durationMinutes: 15, club: 'Fer 7', ballCount: 20, cardHint: 'vers une cible',
+          instructions: ['Choisir une cible', 'Faire une routine avant chaque balle', 'Frapper 20 balles', 'Ne travailler qu’un seul point technique'],
+          observe: ['Contact propre', 'Direction de départ', 'Balles complètement ratées'],
+        },
+        {
+          title: 'Fer 5 / Fer 6', durationMinutes: 7, club: 'Fer 5/6', ballCount: 10, cardHint: null,
+          instructions: ['Même objectif : contact solide', 'Ne pas forcer'],
+        },
+        {
+          title: 'Driver jouable', durationMinutes: 10, club: 'Driver', ballCount: 12, cardHint: 'jouables',
+          instructions: ['Viser un corridor de fairway', 'Ne pas chercher la distance maximale', 'Noter combien de balles seraient jouables'],
+          observe: ['Balles jouables sur 12'],
+        },
+      ],
+    },
   },
   {
     id: 'cibles',
@@ -139,55 +207,99 @@ export const TRAINING_SESSIONS = [
     principle: 'Pratique par cibles avec changement de bâton régulier, pour éviter l’automatisme.',
     places: ['range', 'simulator'],
     modes: ['sim-range'],
-    durations: [30, 60, 90],
-    // Its own steps already rotate through PW/Fer8/Fer7/Fer5/Hybride/
-    // Driver — this is the template-level confirmation that a completed
-    // log of this session really was a mixed-club attempt, used by
-    // LEVELS' Répétition criterion (Option A, no extra field needed).
+    // Every format below rotates through at least 3 clubs — this is the
+    // template-level confirmation that a completed log of this session
+    // really was a mixed-club attempt, used by LEVELS' Répétition
+    // criterion (Option A, no extra field needed).
     mixedClub: true,
     status: VALIDATION.PENDING,
     source: 'Basée sur des principes de pratique golf couramment enseignés (pratique par blocs, cibles précises). À documenter/valider par une source ou un coach.',
     previewNoteKeys: ['corridorBalls', 'missPattern'],
-    steps: [
-      {
-        title: 'Échauffement', durationMinutes: 10, club: 'Wedge + fer court', ballCount: null, cardHint: 'tranquilles', essential: true,
-        instructions: ['Petits swings', 'Chercher le contact avant la cible'],
-      },
-      {
-        title: 'Cibles — PW', durationMinutes: 8, club: 'PW', ballCount: 5, cardHint: '≈ 100 vg', essential: true,
-        instructions: ['Choisir une cible', 'Faire une routine avant chaque balle', 'Frapper 5 balles puis changer de bâton'],
-        observe: ['Balles dans le corridor visé'],
-      },
-      {
-        title: 'Cibles — Fer 8', durationMinutes: 8, club: 'Fer 8', ballCount: 5, cardHint: '≈ 120 vg', essential: true,
-        instructions: ['Même cible, même routine', 'Frapper 5 balles puis changer de bâton'],
-        observe: ['Balles dans le corridor visé'],
-      },
-      {
-        title: 'Cibles — Fer 7', durationMinutes: 8, club: 'Fer 7', ballCount: 5, cardHint: '≈ 130 vg', essential: true,
-        instructions: ['Même cible, même routine', 'Frapper 5 balles puis changer de bâton'],
-        observe: ['Balles dans le corridor visé'],
-      },
-      {
-        title: 'Cibles — Fer 5', durationMinutes: 8, club: 'Fer 5', ballCount: 5, cardHint: '≈ 150 vg', essential: false,
-        instructions: ['Même cible, même routine', 'Frapper 5 balles puis changer de bâton'],
-        observe: ['Balles dans le corridor visé'],
-      },
-      {
-        title: 'Cibles — Hybride', durationMinutes: 8, club: 'Hybride', ballCount: 5, cardHint: '≈ 165–175 vg', essential: false,
-        instructions: ['Même cible, même routine', 'Frapper 5 balles puis changer de bâton'],
-        observe: ['Balles dans le corridor visé'],
-      },
-      {
-        title: 'Cibles — Driver', durationMinutes: 8, club: 'Driver', ballCount: 5, cardHint: 'fairway imaginaire', essential: true,
-        instructions: ['Cible = fairway imaginaire', 'Frapper 5 balles'],
-        observe: ['Balles dans le corridor visé'],
-      },
-      {
-        title: 'Finition', durationMinutes: 10, club: null, ballCount: 5, cardHint: 'au bâton le plus fiable', essential: false,
-        instructions: ['Terminer avec 5 balles au bâton le plus fiable de la séance', 'Nommer une seule priorité pour la prochaine fois'],
-      },
-    ],
+    stepsByFormat: {
+      express: [
+        {
+          title: 'Échauffement', durationMinutes: 3, club: 'Wedge + fer court', ballCount: null, cardHint: 'tranquilles',
+          instructions: ['Petits swings', 'Chercher le contact avant la cible'],
+        },
+        {
+          title: 'Cibles — PW', durationMinutes: 4, club: 'PW', ballCount: 4, cardHint: '≈ 100 vg',
+          instructions: ['Choisir une cible', 'Frapper 4 balles puis changer de bâton'],
+          observe: ['Balles dans le corridor visé'],
+        },
+        {
+          title: 'Cibles — Fer 7', durationMinutes: 4, club: 'Fer 7', ballCount: 4, cardHint: '≈ 130 vg',
+          instructions: ['Même cible, même routine', 'Frapper 4 balles puis changer de bâton'],
+          observe: ['Balles dans le corridor visé'],
+        },
+        {
+          title: 'Cibles — Driver', durationMinutes: 4, club: 'Driver', ballCount: 4, cardHint: 'fairway imaginaire',
+          instructions: ['Cible = fairway imaginaire', 'Frapper 4 balles'],
+          observe: ['Balles dans le corridor visé'],
+        },
+        {
+          title: 'Test corridor', durationMinutes: 3, club: 'Fer 7', ballCount: 5, cardHint: 'sous pression',
+          instructions: ['5 balles au fer 7, une seule tentative chacune', 'Viser précisément le corridor'],
+          observe: ['Balles dans le corridor visé sur 5'],
+        },
+      ],
+      standard: [
+        {
+          title: 'Échauffement', durationMinutes: 5, club: 'Wedge + fer court', ballCount: null, cardHint: 'tranquilles',
+          instructions: ['Petits swings', 'Chercher le contact avant la cible'],
+        },
+        {
+          title: 'Cibles — PW', durationMinutes: 5, club: 'PW', ballCount: 5, cardHint: '≈ 100 vg',
+          instructions: ['Choisir une cible', 'Frapper 5 balles puis changer de bâton'],
+          observe: ['Balles dans le corridor visé'],
+        },
+        {
+          title: 'Cibles — Fer 7', durationMinutes: 5, club: 'Fer 7', ballCount: 5, cardHint: '≈ 130 vg',
+          instructions: ['Même cible, même routine', 'Frapper 5 balles puis changer de bâton'],
+          observe: ['Balles dans le corridor visé'],
+        },
+        {
+          title: 'Cibles — Driver', durationMinutes: 5, club: 'Driver', ballCount: 5, cardHint: 'fairway imaginaire',
+          instructions: ['Cible = fairway imaginaire', 'Frapper 5 balles'],
+          observe: ['Balles dans le corridor visé'],
+        },
+        {
+          title: 'Test corridor', durationMinutes: 7, club: 'Fer 7', ballCount: 10, cardHint: 'sous pression',
+          instructions: ['10 balles au fer 7, une seule tentative chacune', 'Viser précisément le corridor'],
+          observe: ['Balles dans le corridor visé sur 10'],
+        },
+      ],
+      longue: [
+        {
+          title: 'Échauffement', durationMinutes: 8, club: 'Wedge + fer court', ballCount: null, cardHint: 'tranquilles',
+          instructions: ['Petits swings', 'Chercher le contact avant la cible'],
+        },
+        {
+          title: 'Cibles — PW', durationMinutes: 5, club: 'PW', ballCount: 5, cardHint: '≈ 100 vg',
+          instructions: ['Choisir une cible', 'Frapper 5 balles puis changer de bâton'],
+          observe: ['Balles dans le corridor visé'],
+        },
+        {
+          title: 'Cibles — Fer 8', durationMinutes: 5, club: 'Fer 8', ballCount: 5, cardHint: '≈ 120 vg',
+          instructions: ['Même cible, même routine', 'Frapper 5 balles puis changer de bâton'],
+          observe: ['Balles dans le corridor visé'],
+        },
+        {
+          title: 'Cibles — Fer 7', durationMinutes: 6, club: 'Fer 7', ballCount: 6, cardHint: '≈ 130 vg',
+          instructions: ['Même cible, même routine', 'Frapper 6 balles puis changer de bâton'],
+          observe: ['Balles dans le corridor visé'],
+        },
+        {
+          title: 'Cibles — Driver', durationMinutes: 6, club: 'Driver', ballCount: 6, cardHint: 'fairway imaginaire',
+          instructions: ['Cible = fairway imaginaire', 'Frapper 6 balles'],
+          observe: ['Balles dans le corridor visé'],
+        },
+        {
+          title: 'Test corridor', durationMinutes: 10, club: 'Fer 7', ballCount: 12, cardHint: 'sous pression',
+          instructions: ['12 balles au fer 7, une seule tentative chacune', 'Viser précisément le corridor'],
+          observe: ['Balles dans le corridor visé sur 12'],
+        },
+      ],
+    },
   },
   {
     id: 'driver-jouable',
@@ -196,29 +308,56 @@ export const TRAINING_SESSIONS = [
     principle: 'Répétition ciblée du même point technique, priorité donnée à la balle jouable plutôt qu’à la distance.',
     places: ['range', 'simulator'],
     modes: ['sim-range'],
-    durations: [30, 60, 90],
     status: VALIDATION.PENDING,
     source: 'Basée sur des principes de pratique golf couramment enseignés (répétition ciblée, priorité au résultat jouable). À documenter/valider par une source ou un coach.',
     previewNoteKeys: ['playableBalls', 'missPattern'],
-    steps: [
-      {
-        title: 'Échauffement', durationMinutes: 10, club: 'Wedge / fers courts', ballCount: null, cardHint: 'pour sentir le contact', essential: true,
-        instructions: ['Petits swings', 'Chercher le contact avant la trajectoire'],
-      },
-      {
-        title: 'Trajectoire', durationMinutes: 25, club: 'Driver', ballCount: null, cardHint: null, essential: true,
-        instructions: ['Cible = corridor de fairway', 'Priorité à la balle en jeu, pas à la distance', 'Une routine avant chaque balle'],
-      },
-      {
-        title: 'Répétition', durationMinutes: 15, club: 'Driver', ballCount: 10, cardHint: 'jouables', essential: true,
-        instructions: ['Répéter le même point technique sur 10 balles', 'Ne pas changer de correctif en cours de route'],
-        observe: ['Balles jouables sur 10'],
-      },
-      {
-        title: 'Bilan', durationMinutes: 10, club: null, ballCount: null, cardHint: null, essential: false,
-        instructions: ['Compter les balles jouables sur 10', 'Nommer le point technique qui a le plus aidé'],
-      },
-    ],
+    stepsByFormat: {
+      express: [
+        {
+          title: 'Échauffement', durationMinutes: 3, club: 'Wedge / fers courts', ballCount: null, cardHint: 'pour sentir le contact',
+          instructions: ['Petits swings', 'Chercher le contact avant la trajectoire'],
+        },
+        {
+          title: 'Trajectoire', durationMinutes: 12, club: 'Driver', ballCount: null, cardHint: null,
+          instructions: ['Cible = corridor de fairway', 'Priorité à la balle en jeu, pas à la distance', 'Une routine avant chaque balle'],
+        },
+        {
+          title: 'Test jouable', durationMinutes: 3, club: 'Driver', ballCount: 5, cardHint: 'jouables',
+          instructions: ['Répéter le même point technique sur 5 balles', 'Ne pas changer de correctif en cours de route'],
+          observe: ['Balles jouables sur 5'],
+        },
+      ],
+      standard: [
+        {
+          title: 'Échauffement', durationMinutes: 5, club: 'Wedge / fers courts', ballCount: null, cardHint: 'pour sentir le contact',
+          instructions: ['Petits swings', 'Chercher le contact avant la trajectoire'],
+        },
+        {
+          title: 'Trajectoire', durationMinutes: 15, club: 'Driver', ballCount: null, cardHint: null,
+          instructions: ['Cible = corridor de fairway', 'Priorité à la balle en jeu, pas à la distance', 'Une routine avant chaque balle'],
+        },
+        {
+          title: 'Test jouable', durationMinutes: 7, club: 'Driver', ballCount: 10, cardHint: 'jouables',
+          instructions: ['Répéter le même point technique sur 10 balles', 'Ne pas changer de correctif en cours de route'],
+          observe: ['Balles jouables sur 10'],
+        },
+      ],
+      longue: [
+        {
+          title: 'Échauffement', durationMinutes: 8, club: 'Wedge / fers courts', ballCount: null, cardHint: 'pour sentir le contact',
+          instructions: ['Petits swings', 'Chercher le contact avant la trajectoire'],
+        },
+        {
+          title: 'Trajectoire', durationMinutes: 22, club: 'Driver', ballCount: null, cardHint: null,
+          instructions: ['Cible = corridor de fairway', 'Priorité à la balle en jeu, pas à la distance', 'Une routine avant chaque balle'],
+        },
+        {
+          title: 'Test jouable', durationMinutes: 10, club: 'Driver', ballCount: 15, cardHint: 'jouables',
+          instructions: ['Répéter le même point technique sur 15 balles', 'Ne pas changer de correctif en cours de route'],
+          observe: ['Balles jouables sur 15'],
+        },
+      ],
+    },
   },
   {
     id: 'parcours-imaginaire',
@@ -227,25 +366,56 @@ export const TRAINING_SESSIONS = [
     principle: 'Simulation de parcours en pratique libre : enchaîner des coups différents, une seule tentative chacun, jamais le même coup deux fois.',
     places: ['range'],
     modes: [],
-    durations: [30, 60, 90],
     status: VALIDATION.PENDING,
     source: 'Basée sur des principes de pratique golf couramment enseignés (transfert vers le jeu, pratique aléatoire). À documenter/valider par une source ou un coach.',
     previewNoteKeys: ['playableBalls', 'bestClub'],
-    steps: [
-      {
-        title: 'Échauffement', durationMinutes: 10, club: 'Wedge', ballCount: null, cardHint: 'pour sentir le contact', essential: true,
-        instructions: ['Quelques wedges avant de commencer'],
-      },
-      {
-        title: 'Mode parcours', durationMinutes: 40, club: 'Variés', ballCount: null, cardHint: 'jamais le même coup deux fois', essential: true,
-        instructions: ['Ne jamais jouer deux fois le même coup', 'Exemple : Driver → Fer 7 → Wedge → Driver → Fer 5 → Wedge → Hybride → Fer 8', 'Choisir le bâton avant de regarder le résultat'],
-        observe: ['Coups qui auraient été jouables sur un vrai trou'],
-      },
-      {
-        title: 'Bilan', durationMinutes: 10, club: null, ballCount: null, cardHint: null, essential: true,
-        instructions: ['Compter les coups qui auraient été jouables sur un vrai trou', 'Noter le bâton le plus fiable du parcours imaginaire'],
-      },
-    ],
+    stepsByFormat: {
+      express: [
+        {
+          title: 'Échauffement', durationMinutes: 3, club: 'Wedge', ballCount: null, cardHint: 'pour sentir le contact',
+          instructions: ['Quelques wedges avant de commencer'],
+        },
+        {
+          title: 'Mode parcours', durationMinutes: 12, club: 'Variés', ballCount: null, cardHint: 'jamais le même coup deux fois',
+          instructions: ['Ne jamais jouer deux fois le même coup', 'Exemple : Driver → Fer 7 → Wedge → Fer 5 → Wedge', 'Choisir le bâton avant de regarder le résultat'],
+          observe: ['Coups qui auraient été jouables sur un vrai trou'],
+        },
+        {
+          title: 'Bilan', durationMinutes: 3, club: null, ballCount: null, cardHint: null,
+          instructions: ['Compter les coups qui auraient été jouables sur un vrai trou', 'Noter le bâton le plus fiable du parcours imaginaire'],
+        },
+      ],
+      standard: [
+        {
+          title: 'Échauffement', durationMinutes: 5, club: 'Wedge', ballCount: null, cardHint: 'pour sentir le contact',
+          instructions: ['Quelques wedges avant de commencer'],
+        },
+        {
+          title: 'Mode parcours', durationMinutes: 15, club: 'Variés', ballCount: null, cardHint: 'jamais le même coup deux fois',
+          instructions: ['Ne jamais jouer deux fois le même coup', 'Exemple : Driver → Fer 7 → Wedge → Driver → Fer 5 → Wedge → Hybride → Fer 8', 'Choisir le bâton avant de regarder le résultat'],
+          observe: ['Coups qui auraient été jouables sur un vrai trou'],
+        },
+        {
+          title: 'Bilan', durationMinutes: 7, club: null, ballCount: null, cardHint: null,
+          instructions: ['Compter les coups qui auraient été jouables sur un vrai trou', 'Noter le bâton le plus fiable du parcours imaginaire'],
+        },
+      ],
+      longue: [
+        {
+          title: 'Échauffement', durationMinutes: 8, club: 'Wedge', ballCount: null, cardHint: 'pour sentir le contact',
+          instructions: ['Quelques wedges avant de commencer'],
+        },
+        {
+          title: 'Mode parcours', durationMinutes: 22, club: 'Variés', ballCount: null, cardHint: 'jamais le même coup deux fois',
+          instructions: ['Ne jamais jouer deux fois le même coup', 'Exemple : Driver → Fer 7 → Wedge → Driver → Fer 5 → Wedge → Hybride → Fer 8', 'Choisir le bâton avant de regarder le résultat'],
+          observe: ['Coups qui auraient été jouables sur un vrai trou'],
+        },
+        {
+          title: 'Bilan', durationMinutes: 10, club: null, ballCount: null, cardHint: null,
+          instructions: ['Compter les coups qui auraient été jouables sur un vrai trou', 'Noter le bâton le plus fiable du parcours imaginaire'],
+        },
+      ],
+    },
   },
   {
     id: 'distances-carry',
@@ -254,25 +424,56 @@ export const TRAINING_SESSIONS = [
     principle: 'Mesure répétée par bâton à l’aide des données du simulateur, sans corriger le geste en cours de série.',
     places: ['simulator'],
     modes: ['sim-range'],
-    durations: [30, 60, 90],
     status: VALIDATION.PENDING,
     source: 'Basée sur des principes de pratique golf couramment enseignés (mesure répétée, données objectives). À documenter/valider par une source ou un coach.',
     previewNoteKeys: ['bestClub', 'worstClub'],
-    steps: [
-      {
-        title: 'Échauffement', durationMinutes: 10, club: 'Wedge', ballCount: null, cardHint: null, essential: true,
-        instructions: ['Quelques wedges avant de commencer les mesures'],
-      },
-      {
-        title: 'Mesures par bâton', durationMinutes: 40, club: 'Tous les bâtons', ballCount: 8, cardHint: 'par bâton', essential: true,
-        instructions: ['5 à 8 balles par bâton, du plus court au plus long', 'Noter le carry moyen affiché, pas le meilleur coup', 'Ignorer les balles clairement ratées'],
-        observe: ['Carry moyen par bâton'],
-      },
-      {
-        title: 'Bilan', durationMinutes: 10, club: null, ballCount: null, cardHint: null, essential: true,
-        instructions: ['Mettre à jour mes distances dans Mes distances', 'Identifier le bâton le plus irrégulier'],
-      },
-    ],
+    stepsByFormat: {
+      express: [
+        {
+          title: 'Échauffement', durationMinutes: 3, club: 'Wedge', ballCount: null, cardHint: null,
+          instructions: ['Quelques wedges avant de commencer les mesures'],
+        },
+        {
+          title: 'Mesures par bâton', durationMinutes: 12, club: 'Tous les bâtons', ballCount: 5, cardHint: 'par bâton',
+          instructions: ['3 à 5 balles par bâton, du plus court au plus long', 'Noter le carry moyen affiché, pas le meilleur coup', 'Ignorer les balles clairement ratées'],
+          observe: ['Carry moyen par bâton'],
+        },
+        {
+          title: 'Bilan', durationMinutes: 3, club: null, ballCount: null, cardHint: null,
+          instructions: ['Mettre à jour mes distances dans Mes distances', 'Identifier le bâton le plus irrégulier'],
+        },
+      ],
+      standard: [
+        {
+          title: 'Échauffement', durationMinutes: 5, club: 'Wedge', ballCount: null, cardHint: null,
+          instructions: ['Quelques wedges avant de commencer les mesures'],
+        },
+        {
+          title: 'Mesures par bâton', durationMinutes: 15, club: 'Tous les bâtons', ballCount: 8, cardHint: 'par bâton',
+          instructions: ['5 à 8 balles par bâton, du plus court au plus long', 'Noter le carry moyen affiché, pas le meilleur coup', 'Ignorer les balles clairement ratées'],
+          observe: ['Carry moyen par bâton'],
+        },
+        {
+          title: 'Bilan', durationMinutes: 7, club: null, ballCount: null, cardHint: null,
+          instructions: ['Mettre à jour mes distances dans Mes distances', 'Identifier le bâton le plus irrégulier'],
+        },
+      ],
+      longue: [
+        {
+          title: 'Échauffement', durationMinutes: 8, club: 'Wedge', ballCount: null, cardHint: null,
+          instructions: ['Quelques wedges avant de commencer les mesures'],
+        },
+        {
+          title: 'Mesures par bâton', durationMinutes: 22, club: 'Tous les bâtons', ballCount: 10, cardHint: 'par bâton',
+          instructions: ['5 à 10 balles par bâton, du plus court au plus long', 'Noter le carry moyen affiché, pas le meilleur coup', 'Ignorer les balles clairement ratées'],
+          observe: ['Carry moyen par bâton'],
+        },
+        {
+          title: 'Bilan', durationMinutes: 10, club: null, ballCount: null, cardHint: null,
+          instructions: ['Mettre à jour mes distances dans Mes distances', 'Identifier le bâton le plus irrégulier'],
+        },
+      ],
+    },
   },
   {
     id: 'dispersion',
@@ -281,25 +482,56 @@ export const TRAINING_SESSIONS = [
     principle: 'Observation de la dispersion latérale affichée par le simulateur, par bâton, sans essayer de la corriger pendant la série.',
     places: ['simulator'],
     modes: ['sim-range'],
-    durations: [30, 60, 90],
     status: VALIDATION.PENDING,
     source: 'Basée sur des principes de pratique golf couramment enseignés (observation neutre, données objectives). À documenter/valider par une source ou un coach.',
     previewNoteKeys: ['missPattern', 'worstClub'],
-    steps: [
-      {
-        title: 'Échauffement', durationMinutes: 10, club: 'Wedge', ballCount: null, cardHint: 'pour se mettre en route', essential: true,
-        instructions: ['Quelques balles pour se mettre en route'],
-      },
-      {
-        title: 'Série par bâton', durationMinutes: 40, club: 'Tous les bâtons', ballCount: 10, cardHint: 'par bâton', essential: true,
-        instructions: ['8 à 10 balles par bâton sans changer de cible', 'Regarder la dispersion affichée après la série, pas balle par balle'],
-        observe: ['Côté qui revient le plus souvent'],
-      },
-      {
-        title: 'Bilan', durationMinutes: 10, club: null, ballCount: null, cardHint: null, essential: true,
-        instructions: ['Nommer le bâton le plus dispersé', 'Une seule priorité pour la prochaine séance'],
-      },
-    ],
+    stepsByFormat: {
+      express: [
+        {
+          title: 'Échauffement', durationMinutes: 3, club: 'Wedge', ballCount: null, cardHint: 'pour se mettre en route',
+          instructions: ['Quelques balles pour se mettre en route'],
+        },
+        {
+          title: 'Série par bâton', durationMinutes: 12, club: 'Tous les bâtons', ballCount: 6, cardHint: 'par bâton',
+          instructions: ['6 à 8 balles par bâton sans changer de cible', 'Regarder la dispersion affichée après la série, pas balle par balle'],
+          observe: ['Côté qui revient le plus souvent'],
+        },
+        {
+          title: 'Bilan', durationMinutes: 3, club: null, ballCount: null, cardHint: null,
+          instructions: ['Nommer le bâton le plus dispersé', 'Une seule priorité pour la prochaine séance'],
+        },
+      ],
+      standard: [
+        {
+          title: 'Échauffement', durationMinutes: 5, club: 'Wedge', ballCount: null, cardHint: 'pour se mettre en route',
+          instructions: ['Quelques balles pour se mettre en route'],
+        },
+        {
+          title: 'Série par bâton', durationMinutes: 15, club: 'Tous les bâtons', ballCount: 10, cardHint: 'par bâton',
+          instructions: ['8 à 10 balles par bâton sans changer de cible', 'Regarder la dispersion affichée après la série, pas balle par balle'],
+          observe: ['Côté qui revient le plus souvent'],
+        },
+        {
+          title: 'Bilan', durationMinutes: 7, club: null, ballCount: null, cardHint: null,
+          instructions: ['Nommer le bâton le plus dispersé', 'Une seule priorité pour la prochaine séance'],
+        },
+      ],
+      longue: [
+        {
+          title: 'Échauffement', durationMinutes: 8, club: 'Wedge', ballCount: null, cardHint: 'pour se mettre en route',
+          instructions: ['Quelques balles pour se mettre en route'],
+        },
+        {
+          title: 'Série par bâton', durationMinutes: 22, club: 'Tous les bâtons', ballCount: 12, cardHint: 'par bâton',
+          instructions: ['8 à 12 balles par bâton sans changer de cible', 'Regarder la dispersion affichée après la série, pas balle par balle'],
+          observe: ['Côté qui revient le plus souvent'],
+        },
+        {
+          title: 'Bilan', durationMinutes: 10, club: null, ballCount: null, cardHint: null,
+          instructions: ['Nommer le bâton le plus dispersé', 'Une seule priorité pour la prochaine séance'],
+        },
+      ],
+    },
   },
   {
     id: 'neuf-trous',
@@ -308,22 +540,22 @@ export const TRAINING_SESSIONS = [
     principle: 'Transfert complet en conditions de jeu réelles, sur simulateur, sans filet de sécurité.',
     places: ['simulator'],
     modes: ['sim-course'],
-    durations: [60, 90],
+    roundLengths: [9],
     status: VALIDATION.PENDING,
     source: 'Basée sur des principes de pratique golf couramment enseignés (jeu à tentative unique, transfert en conditions réelles). À documenter/valider par une source ou un coach.',
     previewNoteKeys: ['completedNineHoles', 'nextPriority'],
     steps: [
       {
-        title: 'Règles', durationMinutes: 10, club: null, ballCount: null, cardHint: null, essential: true,
+        title: 'Règles', durationMinutes: 10, club: null, ballCount: null, cardHint: null,
         instructions: ['Aucun mulligan', 'Pas de coup recommencé', 'Jouer avec mes vraies distances', 'Choisir le bâton avant de regarder le résultat', 'Ne pas chercher le coup parfait'],
       },
       {
-        title: 'Sur le parcours', durationMinutes: 70, club: 'Tous les bâtons', ballCount: null, cardHint: null, essential: true,
-        instructions: ['Jouer autant de trous que le temps le permet, au rythme d’une vraie ronde', 'Rester sur la décision prise avant chaque coup'],
+        title: 'Sur le parcours', durationMinutes: 70, club: 'Tous les bâtons', ballCount: null, cardHint: null,
+        instructions: ['Jouer les 9 trous au rythme d’une vraie ronde', 'Rester sur la décision prise avant chaque coup'],
         observe: ['Pénalités et coups complètement ratés'],
       },
       {
-        title: 'Bilan', durationMinutes: 10, club: null, ballCount: null, cardHint: null, essential: true,
+        title: 'Bilan', durationMinutes: 10, club: null, ballCount: null, cardHint: null,
         instructions: ['Noter le score', 'Meilleur aspect de la ronde', 'Priorité pour la prochaine séance'],
       },
     ],
@@ -335,22 +567,22 @@ export const TRAINING_SESSIONS = [
     principle: 'Prise de décision avant chaque coup — cible et bâton conservateurs — plutôt que travail technique.',
     places: ['simulator'],
     modes: ['sim-course'],
-    durations: [60, 90],
+    roundLengths: [9],
     status: VALIDATION.PENDING,
     source: 'Basée sur des principes de pratique golf couramment enseignés (gestion de parcours, prise de décision). À documenter/valider par une source ou un coach.',
     previewNoteKeys: ['completedNineHoles', 'nextPriority'],
     steps: [
       {
-        title: 'Règles', durationMinutes: 10, club: null, ballCount: null, cardHint: null, essential: true,
+        title: 'Règles', durationMinutes: 10, club: null, ballCount: null, cardHint: null,
         instructions: ['Choisir la cible la plus sûre, pas la plus ambitieuse', 'Un seul bâton envisagé par coup, pas d’hésitation', 'Jouer pour le centre du green, jamais pour le drapeau'],
       },
       {
-        title: 'Sur le parcours', durationMinutes: 70, club: 'Tous les bâtons', ballCount: null, cardHint: null, essential: true,
-        instructions: ['Jouer autant de trous que le temps le permet', 'Éviter tout coup à risque inutile'],
+        title: 'Sur le parcours', durationMinutes: 70, club: 'Tous les bâtons', ballCount: null, cardHint: null,
+        instructions: ['Jouer les 9 trous à ce rythme', 'Éviter tout coup à risque inutile'],
         observe: ['Fois où le choix « prudent » aurait mieux servi'],
       },
       {
-        title: 'Bilan', durationMinutes: 10, club: null, ballCount: null, cardHint: null, essential: true,
+        title: 'Bilan', durationMinutes: 10, club: null, ballCount: null, cardHint: null,
         instructions: ['Noter le score', 'Nombre de décisions « prudentes » respectées', 'Priorité pour la prochaine séance'],
       },
     ],
@@ -361,44 +593,22 @@ export function sessionById(id) {
   return TRAINING_SESSIONS.find((s) => s.id === id) || null;
 }
 
-export function sessionsFor(place, mode, duration) {
+export function sessionsFor(place, mode) {
   return TRAINING_SESSIONS.filter((s) => {
     if (!s.places.includes(place)) return false;
     if (place === 'simulator' && !s.modes.includes(mode)) return false;
-    return s.durations.includes(duration);
+    return true;
   });
 }
 
-function fullLength(session) {
-  return session.steps.reduce((a, s) => a + s.durationMinutes, 0);
-}
-
-// The only place a session's structure is ever touched. When there's as
-// much or more time than the canonical length, every step is returned
-// untouched. When there's less: essential steps are always kept, then
-// optional steps are added back (in their original order) for as long as
-// they still fit the target time, then the kept steps are proportionally
-// retimed to fit — never removing an essential step, never adding
-// content, never editing an instruction's text. That's adapting a
-// validated session to less time, not inventing a shorter one.
-export function adaptedSteps(session, targetMinutes) {
-  const full = fullLength(session);
-  if (targetMinutes >= full) return session.steps;
-
-  const essential = session.steps.filter((s) => s.essential);
-  const optional = session.steps.filter((s) => !s.essential);
-  let kept = [...essential];
-  let keptMinutes = essential.reduce((a, s) => a + s.durationMinutes, 0);
-  for (const step of optional) {
-    if (keptMinutes + step.durationMinutes > targetMinutes) continue;
-    kept.push(step);
-    keptMinutes += step.durationMinutes;
-  }
-  kept.sort((a, b) => session.steps.indexOf(a) - session.steps.indexOf(b));
-
-  const ratio = targetMinutes / keptMinutes;
-  if (ratio >= 1) return kept;
-  return kept.map((s) => ({ ...s, durationMinutes: Math.max(5, Math.round((s.durationMinutes * ratio) / 5) * 5) }));
+// The one place that resolves "which steps does this session show" — a
+// format-authored session (stepsByFormat) looks up the requested format
+// (falling back to Standard if an unknown id somehow arrives); a
+// round-length session (steps) isn't format-driven, so it just returns
+// its one fixed structure regardless of what's passed.
+export function stepsForSession(session, formatId) {
+  if (session.stepsByFormat) return session.stepsByFormat[formatId] || session.stepsByFormat[DEFAULT_FORMAT_ID];
+  return session.steps || [];
 }
 
 // This is not a calendar — it's a skill progression. It never blocks the

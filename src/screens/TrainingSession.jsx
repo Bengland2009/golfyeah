@@ -9,7 +9,10 @@ import Accordion from '../components/Accordion';
 import TrainingNotesForm from '../components/TrainingNotesForm';
 import { useData } from '../contexts/DataContext';
 import { useMe } from '../lib/useMe';
-import { sessionById, adaptedSteps, noteFieldsFor, VALIDATION, VALIDATION_LABELS, SIM_MODES } from '../lib/trainingPlan';
+import {
+  sessionById, stepsForSession, noteFieldsFor, VALIDATION, VALIDATION_LABELS, SIM_MODES,
+  FORMATS, DEFAULT_FORMAT_ID, DEFAULT_ROUND_LENGTH,
+} from '../lib/trainingPlan';
 
 function statusTone(status) {
   return status === VALIDATION.VALIDATED_SOURCE || status === VALIDATION.VALIDATED_COACH ? 'success' : 'neutral';
@@ -33,18 +36,24 @@ export default function TrainingSession() {
     return null;
   }
 
-  const duration = routerLocation.state?.duration || session.durations[session.durations.length - 1];
+  const isRoundSession = !!session.roundLengths;
+  const formatId = routerLocation.state?.formatId || DEFAULT_FORMAT_ID;
+  const roundLength = routerLocation.state?.roundLength || DEFAULT_ROUND_LENGTH;
   const place = routerLocation.state?.place || session.places[0];
   const mode = routerLocation.state?.mode || (place === 'simulator' ? session.modes[0] : null);
   const contextLabel = place === 'range' ? 'Range extérieur' : `Simulateur · ${SIM_MODES.find((m) => m.id === mode)?.label || ''}`;
-  const steps = adaptedSteps(session, duration);
-  const extraTime = duration > session.steps.reduce((a, s) => a + s.durationMinutes, 0);
+  const format = FORMATS.find((f) => f.id === formatId);
+  const timeLabel = isRoundSession ? `${roundLength} trous` : format ? `${format.label} — ${format.minutes} min` : '';
+  const steps = stepsForSession(session, formatId);
 
   const setField = (key, value) => setNotes((n) => ({ ...n, [key]: value }));
 
   const confirmComplete = async () => {
     setSaving(true);
-    await addTrainingLog(me.id, { sessionId: session.id, place, mode, duration, notes });
+    const logPayload = { sessionId: session.id, place, mode, notes };
+    if (isRoundSession) logPayload.roundLength = roundLength;
+    else { logPayload.formatId = formatId; logPayload.duration = format?.minutes; }
+    await addTrainingLog(me.id, logPayload);
     setSaving(false);
     setConfirmOpen(false);
     setSavedOpen(true);
@@ -63,15 +72,9 @@ export default function TrainingSession() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <Badge tone={statusTone(session.status)}>{VALIDATION_LABELS[session.status]}</Badge>
-          <span style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>{duration} min</span>
+          <span style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>{timeLabel}</span>
           <span style={{ font: 'var(--text-small)', color: 'var(--text-muted)' }}>· {contextLabel}</span>
         </div>
-
-        {extraTime && (
-          <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)', fontStyle: 'italic' }}>
-            Tu as plus de temps que la structure de base — profites-en pour répéter les étapes qui te semblent utiles.
-          </div>
-        )}
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {steps.map((s, i) => {

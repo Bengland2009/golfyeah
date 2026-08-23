@@ -7,12 +7,23 @@ import Sheet from '../components/Sheet';
 import { MoreVerticalIcon } from '../components/icons';
 import { useData } from '../contexts/DataContext';
 import { useMe } from '../lib/useMe';
-import { sessionById, noteFieldsFor, SIM_MODES } from '../lib/trainingPlan';
+import { sessionById, noteFieldsFor, SIM_MODES, FORMATS } from '../lib/trainingPlan';
 
 function contextLabel(place, mode) {
   if (place === 'range') return 'Range extérieur';
   const m = SIM_MODES.find((x) => x.id === mode);
   return m ? `Simulateur · ${m.label}` : 'Simulateur';
+}
+
+// A logged session carries either a format (range / mode range) or a
+// round length (mode parcours) — never both, never a bare minute count
+// on its own once a format is known, so the format's name shows up here
+// too, not just its minutes.
+function timeLabel(log) {
+  if (log.roundLength) return `${log.roundLength} trous`;
+  const format = FORMATS.find((f) => f.id === log.formatId);
+  if (format) return `${format.label} — ${format.minutes} min`;
+  return log.duration ? `${log.duration} min` : '';
 }
 
 function displayValue(field, raw) {
@@ -56,7 +67,7 @@ export default function TrainingHistory() {
                 <div>
                   <div style={{ font: 'var(--text-label)', fontSize: 15 }}>{session ? session.name : log.sessionId}</div>
                   <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)', marginTop: 1 }}>
-                    {contextLabel(log.place, log.mode)} · {log.duration} min · {log.date}
+                    {contextLabel(log.place, log.mode)} · {timeLabel(log)} · {log.date}
                   </div>
                 </div>
                 <button
