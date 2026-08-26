@@ -3,9 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Card from '../components/Card';
 import Badge from '../components/Badge';
-import SegmentedControl from '../components/SegmentedControl';
 import { LockIcon } from '../components/icons';
-import { CLUBS, TABS, DEFAULT_CLUB, DEFAULT_TAB, contentFor } from '../lib/addressContact';
+import { CLUBS, TABS, DEFAULT_CLUB, DEFAULT_TAB, contentFor, QUICK_COMPARE } from '../lib/addressContact';
 import { diagramFor } from '../components/AddressDiagrams';
 
 // Small glyphs for the info-card icon slots — one per label this screen
@@ -56,18 +55,48 @@ function ClubButton({ club, active, onClick }) {
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
       style={{
-        flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+        flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
         height: 40, borderRadius: 11, padding: '0 4px', cursor: disabled ? 'not-allowed' : 'pointer',
-        border: active ? '1px solid var(--brand-action)' : '1px solid var(--border-default)',
-        background: active ? '#EAF5EF' : '#fff',
+        border: active ? '1px solid var(--brand-action)' : disabled ? '1px solid transparent' : '1px solid var(--border-default)',
+        background: active ? '#EAF5EF' : disabled ? 'var(--surface-tint)' : '#fff',
         color: disabled ? 'var(--text-disabled)' : active ? 'var(--brand-action)' : 'var(--text-body)',
-        font: 'var(--text-label)', fontSize: 13, opacity: disabled ? 0.7 : 1,
+        font: 'var(--text-label)', fontSize: 13,
       }}
       title={disabled ? 'Bientôt disponible' : undefined}
     >
       {club.label}
-      {disabled && <LockIcon width={11} height={11} strokeWidth={2} style={{ flexShrink: 0 }} />}
+      {disabled && <LockIcon width={10} height={10} strokeWidth={2} style={{ flexShrink: 0, opacity: 0.6 }} />}
     </button>
+  );
+}
+
+// A local, more compact tab toggle — the shared SegmentedControl is
+// tuned for other screens; this one intentionally trims height/padding/
+// shadow per the "onglets plus compacts" request, without touching the
+// shared component other screens rely on.
+function CompactTabs({ options, value, onChange }) {
+  return (
+    <div style={{ display: 'flex', background: 'var(--surface-tint)', borderRadius: 10, padding: 3, gap: 3 }}>
+      {options.map((opt) => {
+        const active = value === opt.value;
+        return (
+          <button
+            key={opt.value}
+            type="button"
+            onClick={() => onChange(opt.value)}
+            style={{
+              flex: 1, height: 32, borderRadius: 8, border: 'none', cursor: 'pointer',
+              background: active ? '#fff' : 'transparent',
+              boxShadow: active ? '0 1px 3px rgba(23,33,29,0.1)' : 'none',
+              font: 'var(--text-small)', fontWeight: 600, fontSize: 13,
+              color: active ? 'var(--text-body)' : 'var(--text-muted)',
+            }}
+          >
+            {opt.label}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
@@ -93,7 +122,7 @@ export default function AddressContact() {
           ))}
         </div>
 
-        <SegmentedControl
+        <CompactTabs
           options={TABS.map((t) => ({ value: t.id, label: t.label }))}
           value={tab}
           onChange={setTab}
@@ -101,9 +130,24 @@ export default function AddressContact() {
 
         {content && Diagram ? (
           <>
-            <Card>
-              <Diagram />
-              <div style={{ font: 'var(--text-small)', fontSize: 11.5, color: 'var(--text-muted)', textAlign: 'center', marginTop: 8, lineHeight: 1.4 }}>
+            <Card tint style={{ padding: '10px 14px' }}>
+              <div style={{ font: 'var(--text-eyebrow)', fontSize: 10, color: 'var(--brand-action)', textTransform: 'uppercase', letterSpacing: 'var(--letter-spacing-eyebrow)', marginBottom: 6 }}>
+                À retenir
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                {content.keyPoints.map((point) => (
+                  <div key={point} style={{ font: 'var(--text-small)', fontSize: 13.5, color: 'var(--text-body)', lineHeight: 1.35, fontWeight: 500 }}>
+                    {point}
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            <Card style={{ padding: 12 }}>
+              <div style={{ maxWidth: 280, margin: '0 auto' }}>
+                <Diagram />
+              </div>
+              <div style={{ font: 'var(--text-small)', fontSize: 11.5, color: 'var(--text-muted)', textAlign: 'center', marginTop: 6, lineHeight: 1.35 }}>
                 {content.caption}
               </div>
             </Card>
@@ -117,7 +161,7 @@ export default function AddressContact() {
                     </div>
                     <div style={{ minWidth: 0 }}>
                       <div style={{ font: 'var(--text-eyebrow)', fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 'var(--letter-spacing-eyebrow)' }}>{row.label}</div>
-                      <div style={{ font: 'var(--text-body)', fontSize: 13.5, lineHeight: 1.3, marginTop: 1 }}>{row.value}</div>
+                      <div style={{ font: 'var(--text-body)', fontSize: 15, fontWeight: 700, lineHeight: 1.3, marginTop: 1 }}>{row.value}</div>
                     </div>
                   </div>
                 ))}
@@ -137,6 +181,20 @@ export default function AddressContact() {
             </div>
           </Card>
         )}
+
+        <Card tint>
+          <div style={{ font: 'var(--text-eyebrow)', fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 'var(--letter-spacing-eyebrow)', marginBottom: 10 }}>
+            Driver vs Fer 7
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {QUICK_COMPARE.map((c) => (
+              <div key={c.club} style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                <span style={{ font: 'var(--text-label)', fontSize: 14, flexShrink: 0, minWidth: 58 }}>{c.club}</span>
+                <span style={{ font: 'var(--text-small)', fontSize: 13, color: 'var(--text-muted)' }}>{c.label}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
       </div>
     </div>
   );

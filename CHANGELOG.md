@@ -2,6 +2,21 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.36.0 — 2026-08-26
+
+- **Adresse & contact : lecture plus rapide, mobile plus confortable.**
+  Un bloc « À retenir » (3 points très courts) apparaît maintenant avant
+  le schéma pour chaque bâton/onglet. Le schéma visuel est plus compact
+  (largeur limitée, labels plus lisibles) pour ne plus dominer l'écran, et
+  les légendes sous le schéma sont raccourcies. Les cartes d'information
+  affichent maintenant leur valeur en plus gros/gras pour rester
+  scannables d'un coup d'œil. Les onglets Adresse / Arc et contact sont
+  plus compacts (hauteur, padding et ombre réduits), et les bâtons
+  verrouillés (B/H, Chip) sont plus discrets (texte plus pâle, bordure
+  plus légère, cadenas plus petit). Un encadré « Driver vs Fer 7 » en bas
+  de page résume la différence principale entre les deux bâtons. Aucun
+  changement au contenu technique — seulement à sa présentation.
+
 ## v1.35.0 — 2026-08-26
 
 - **Nouvelle sous-section « Adresse & contact » dans Pratique.** Une fiche

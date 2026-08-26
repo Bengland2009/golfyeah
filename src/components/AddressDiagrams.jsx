@@ -33,13 +33,13 @@ export function DriverAddressDiagram() {
       <line x1="100" y1="250" x2="300" y2="250" stroke="var(--brand-action)" strokeWidth="2.5" />
       <ellipse cx="150" cy="250" rx="27" ry="11" fill="var(--brand-action)" />
       <ellipse cx="250" cy="250" rx="27" ry="11" fill="var(--brand-action)" />
-      <text x="150" y="271" textAnchor="middle" fontFamily={FONT} fontSize="10.5" fill="var(--text-muted)">arrière</text>
-      <text x="250" y="271" textAnchor="middle" fontFamily={FONT} fontSize="10.5" fill="var(--text-muted)">avant</text>
+      <text x="150" y="271" textAnchor="middle" fontFamily={FONT} fontSize="12" fontWeight="600" fill="var(--text-muted)">arrière</text>
+      <text x="250" y="271" textAnchor="middle" fontFamily={FONT} fontSize="12" fontWeight="600" fill="var(--text-muted)">avant</text>
 
       <line x1="204" y1="225" x2="194" y2="135" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeDasharray="1 4" opacity="0.55" />
 
       <line x1="156" y1="148" x2="232" y2="122" stroke="currentColor" strokeWidth="10" strokeLinecap="round" />
-      <text x="194" y="106" textAnchor="middle" fontFamily={SERIF} fontSize="10.5" fontWeight="700" fill="currentColor" opacity="0.85">épaules</text>
+      <text x="194" y="106" textAnchor="middle" fontFamily={SERIF} fontSize="12.5" fontWeight="700" fill="currentColor" opacity="0.9">épaules</text>
 
       <line x1="232" y1="122" x2="222" y2="158" stroke="currentColor" strokeWidth="4.5" strokeLinecap="round" opacity="0.55" />
       <line x1="156" y1="148" x2="222" y2="158" stroke="currentColor" strokeWidth="4.5" strokeLinecap="round" opacity="0.55" />
@@ -49,11 +49,11 @@ export function DriverAddressDiagram() {
 
       <Ball cx="260" cy="250" />
 
-      <text x="95" y="282" textAnchor="end" fontFamily={FONT} fontSize="10" fill="var(--text-muted)" opacity="0.85">pression</text>
+      <text x="95" y="282" textAnchor="end" fontFamily={FONT} fontSize="11" fontWeight="600" fill="var(--text-muted)" opacity="0.9">pression</text>
       <line x1="150" y1="278" x2="250" y2="278" stroke="var(--border-default)" strokeWidth="6" strokeLinecap="round" />
       <circle cx="195" cy="278" r="5.5" fill="currentColor" />
-      <text x="150" y="294" textAnchor="middle" fontFamily={FONT} fontSize="9.5" fill="var(--text-muted)">55%</text>
-      <text x="250" y="294" textAnchor="middle" fontFamily={FONT} fontSize="9.5" fill="var(--text-muted)">45%</text>
+      <text x="150" y="294" textAnchor="middle" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="var(--text-muted)">55%</text>
+      <text x="250" y="294" textAnchor="middle" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="var(--text-muted)">45%</text>
     </svg>
   );
 }
@@ -75,13 +75,13 @@ export function DriverArcDiagram() {
       <path d="M 72 88 Q 208 186 345 66" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.8" />
 
       <circle cx="195" cy="132" r="3" fill="currentColor" />
-      <text x="195" y="152" textAnchor="middle" fontFamily={FONT} fontSize="10" fill="currentColor" opacity="0.7">point bas</text>
+      <text x="195" y="152" textAnchor="middle" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="currentColor" opacity="0.85">point bas</text>
 
       <line x1="240" y1="132" x2="240" y2="123" stroke={GOLD_DEEP} strokeWidth="2.5" />
       <Ball cx="240" cy="114" />
 
-      <text x="270" y="82" textAnchor="middle" fontFamily={SERIF} fontSize="11.5" fontWeight="700" fill="currentColor">Driver</text>
-      <text x="270" y="96" textAnchor="middle" fontFamily={FONT} fontSize="10" fill="currentColor" opacity="0.8">légèrement remontant</text>
+      <text x="270" y="82" textAnchor="middle" fontFamily={SERIF} fontSize="13" fontWeight="700" fill="currentColor">Driver</text>
+      <text x="270" y="96" textAnchor="middle" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="currentColor" opacity="0.85">légèrement remontant</text>
     </svg>
   );
 }
@@ -101,13 +101,13 @@ export function Fer7AddressDiagram() {
       <line x1="100" y1="250" x2="300" y2="250" stroke="var(--brand-action)" strokeWidth="2.5" />
       <ellipse cx="160" cy="250" rx="27" ry="11" fill="var(--brand-action)" />
       <ellipse cx="240" cy="250" rx="27" ry="11" fill="var(--brand-action)" />
-      <text x="160" y="271" textAnchor="middle" fontFamily={FONT} fontSize="10.5" fill="var(--text-muted)">arrière</text>
-      <text x="240" y="271" textAnchor="middle" fontFamily={FONT} fontSize="10.5" fill="var(--text-muted)">avant</text>
+      <text x="160" y="271" textAnchor="middle" fontFamily={FONT} fontSize="12" fontWeight="600" fill="var(--text-muted)">arrière</text>
+      <text x="240" y="271" textAnchor="middle" fontFamily={FONT} fontSize="12" fontWeight="600" fill="var(--text-muted)">avant</text>
 
       <line x1="191" y1="225" x2="186" y2="137" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeDasharray="1 4" opacity="0.55" />
 
       <line x1="150" y1="140" x2="222" y2="134" stroke="currentColor" strokeWidth="10" strokeLinecap="round" />
-      <text x="186" y="108" textAnchor="middle" fontFamily={SERIF} fontSize="10.5" fontWeight="700" fill="currentColor" opacity="0.85">épaules</text>
+      <text x="186" y="108" textAnchor="middle" fontFamily={SERIF} fontSize="12.5" fontWeight="700" fill="currentColor" opacity="0.9">épaules</text>
 
       <line x1="222" y1="134" x2="203" y2="163" stroke="currentColor" strokeWidth="4.5" strokeLinecap="round" opacity="0.55" />
       <line x1="150" y1="140" x2="203" y2="163" stroke="currentColor" strokeWidth="4.5" strokeLinecap="round" opacity="0.55" />
@@ -120,8 +120,8 @@ export function Fer7AddressDiagram() {
       <text x="95" y="282" textAnchor="end" fontFamily={FONT} fontSize="10" fill="var(--text-muted)" opacity="0.85">pression</text>
       <line x1="160" y1="278" x2="240" y2="278" stroke="var(--border-default)" strokeWidth="6" strokeLinecap="round" />
       <circle cx="202" cy="278" r="5.5" fill="currentColor" />
-      <text x="160" y="294" textAnchor="middle" fontFamily={FONT} fontSize="9.5" fill="var(--text-muted)">48%</text>
-      <text x="240" y="294" textAnchor="middle" fontFamily={FONT} fontSize="9.5" fill="var(--text-muted)">52%</text>
+      <text x="160" y="294" textAnchor="middle" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="var(--text-muted)">48%</text>
+      <text x="240" y="294" textAnchor="middle" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="var(--text-muted)">52%</text>
     </svg>
   );
 }
@@ -144,14 +144,14 @@ export function Fer7ArcDiagram() {
       <path d="M 78 78 Q 212 176 345 96" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.8" />
 
       <circle cx="225" cy="132" r="3" fill="currentColor" />
-      <text x="225" y="153" textAnchor="middle" fontFamily={FONT} fontSize="10" fill="currentColor" opacity="0.7">point bas</text>
+      <text x="225" y="153" textAnchor="middle" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="currentColor" opacity="0.85">point bas</text>
 
       <Ball cx="175" cy="123" />
 
       <line x1="155" y1="103" x2="172" y2="118" stroke="currentColor" strokeWidth="1.6" markerEnd="url(#arrowArcF)" opacity="0.8" />
 
-      <text x="150" y="92" textAnchor="middle" fontFamily={SERIF} fontSize="11.5" fontWeight="700" fill="currentColor">Fer 7</text>
-      <text x="150" y="106" textAnchor="middle" fontFamily={FONT} fontSize="10" fill="currentColor" opacity="0.8">descendant</text>
+      <text x="150" y="92" textAnchor="middle" fontFamily={SERIF} fontSize="13" fontWeight="700" fill="currentColor">Fer 7</text>
+      <text x="150" y="106" textAnchor="middle" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="currentColor" opacity="0.85">descendant</text>
     </svg>
   );
 }
