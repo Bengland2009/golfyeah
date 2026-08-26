@@ -27,6 +27,7 @@ import FeedbackList from './screens/FeedbackList';
 import NewFeedback from './screens/NewFeedback';
 import FeedbackDetail from './screens/FeedbackDetail';
 import Caddie from './screens/Caddie';
+import AddressContact from './screens/AddressContact';
 import TrainingPlan from './screens/TrainingPlan';
 import TrainingSession from './screens/TrainingSession';
 import TrainingHistory from './screens/TrainingHistory';
@@ -101,6 +102,7 @@ function Shell() {
           <Route path="/pratique/nouvelle-seance" element={<AddRange />} />
           <Route path="/pratique/historique" element={<SessionHistory />} />
           <Route path="/pratique/caddie" element={<Caddie />} />
+          <Route path="/pratique/adresse-contact" element={<AddressContact />} />
           <Route path="/pratique/plan" element={<TrainingPlan />} />
           <Route path="/pratique/plan/historique" element={<TrainingHistory />} />
           <Route path="/pratique/plan/:sessionId" element={<TrainingSession />} />

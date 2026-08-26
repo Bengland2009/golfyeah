@@ -2,6 +2,18 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.35.0 — 2026-08-26
+
+- **Nouvelle sous-section « Adresse & contact » dans Pratique.** Une fiche
+  visuelle rapide à consulter au range ou au simulateur : comment se
+  placer à l'adresse, et comment le bâton doit entrer en contact avec la
+  balle, bâton par bâton. Un sélecteur de bâton (Driver, Fer 7 —
+  disponibles; B/H et Chip — verrouillés, affichés honnêtement comme à
+  venir) et deux onglets (Adresse / Arc et contact), chacun avec un
+  diagramme et 2-3 cartes d'information courtes. Accessible depuis
+  Pratique, au même niveau que Plan d'entraînement, Mes distances et
+  Caddie.
+
 ## v1.34.0 — 2026-08-23
 
 - **Le Plan d'entraînement propose des formats de séance, plus des

@@ -195,3 +195,22 @@ export function CalendarIcon(props) {
     </svg>
   );
 }
+export function LockIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" width={22} height={22} {...common} {...props}>
+      <rect x="5" y="11" width="14" height="10" rx="2.5" />
+      <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+    </svg>
+  );
+}
+export function AlignIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" width={22} height={22} {...common} {...props}>
+      <circle cx="7" cy="6" r="2.5" />
+      <path d="M7 8.5V14" />
+      <path d="M7 14l-3 6" />
+      <path d="M7 14l4 2 2 4" />
+      <path d="M13 12l7-4" />
+    </svg>
+  );
+}
