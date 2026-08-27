@@ -283,11 +283,78 @@ export function HybrideAddressDiagram() {
   );
 }
 
+// Both played off the turf: the club meets the ball before the ground, and
+// the low point of the arc — like the turf interaction after it — falls
+// past the ball, toward the target. Since these diagrams put the target on
+// the LEFT (matching the Adresse tab's convention) rather than the right
+// like Driver/Fer 7's existing Arc diagrams, the swing here runs
+// right-to-left and "after the ball" means smaller x, not larger — the
+// mirror image of the Driver/Fer 7 pattern above. Bois' arc is wide and
+// shallow (skims the turf over a long stretch); Hybride's is narrower and
+// dips closer to the ground (a steeper, more compact attack) — the shape
+// difference carries the distinction, not just color, per the brief.
+export function BoisArcDiagram() {
+  return (
+    <svg viewBox="0 0 400 190" role="img" style={{ width: '100%', height: 'auto', display: 'block', color: 'var(--text-body)' }}
+      aria-label="Vue de côté pour le bois, joué depuis le gazon : arc large et peu profond. La tête touche la balle avant le sol ; le point bas survient légèrement après la balle, vers la cible à gauche, suivi d'une légère brosse du gazon — jamais un contact remontant comme au driver.">
+      <defs>
+        <marker id="arrowArcB" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="currentColor" />
+        </marker>
+      </defs>
+      <text x="350" y="30" textAnchor="end" fontFamily={FONT} fontSize="10.5" fill="currentColor" opacity="0.65">sens du swing</text>
+      <line x1="350" y1="42" x2="290" y2="42" stroke="currentColor" strokeWidth="1.5" markerEnd="url(#arrowArcB)" opacity="0.6" />
+
+      <rect x="40" y="132" width="320" height="18" fill="var(--surface-tint)" />
+      <line x1="40" y1="132" x2="360" y2="132" stroke="var(--brand-action)" strokeWidth="2.5" />
+      <ellipse cx="178" cy="132" rx="24" ry="3" fill="currentColor" opacity="0.16" />
+      <path d="M 350 100 Q 210 145 90 110" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.8" />
+
+      <circle cx="195" cy="132" r="3" fill="currentColor" />
+      <text x="195" y="152" textAnchor="middle" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="currentColor" opacity="0.85">point bas</text>
+      <text x="148" y="169" textAnchor="middle" fontFamily={FONT} fontSize="10.5" fontWeight="600" fill="currentColor" opacity="0.7">brosse légère</text>
+
+      <Ball cx="245" cy="123" />
+      <ClubHead cx="260" cy="120" club="bois" />
+      <text x="277" y="132" textAnchor="start" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="currentColor" opacity="0.85">contact</text>
+    </svg>
+  );
+}
+
+export function HybrideArcDiagram() {
+  return (
+    <svg viewBox="0 0 400 190" role="img" style={{ width: '100%', height: 'auto', display: 'block', color: 'var(--text-body)' }}
+      aria-label="Vue de côté pour l'hybride, joué depuis le gazon : arc plus compact et plus descendant que celui du bois. La tête touche la balle avant le sol ; le point bas survient après la balle, vers la cible à gauche, suivi d'un petit divot discret.">
+      <defs>
+        <marker id="arrowArcH" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="currentColor" />
+        </marker>
+      </defs>
+      <text x="350" y="30" textAnchor="end" fontFamily={FONT} fontSize="10.5" fill="currentColor" opacity="0.65">sens du swing</text>
+      <line x1="350" y1="42" x2="290" y2="42" stroke="currentColor" strokeWidth="1.5" markerEnd="url(#arrowArcH)" opacity="0.6" />
+
+      <rect x="40" y="132" width="320" height="18" fill="var(--surface-tint)" />
+      <line x1="40" y1="132" x2="360" y2="132" stroke="var(--brand-action)" strokeWidth="2.5" />
+      <ellipse cx="158" cy="132.5" rx="12" ry="2.8" fill="currentColor" opacity="0.22" />
+      <ellipse cx="152" cy="132" rx="5" ry="2" fill="currentColor" opacity="0.35" />
+      <path d="M 300 70 Q 210 195 150 78" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.8" />
+
+      <circle cx="175" cy="132" r="3" fill="currentColor" />
+      <text x="175" y="152" textAnchor="middle" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="currentColor" opacity="0.85">point bas après</text>
+      <text x="148" y="169" textAnchor="middle" fontFamily={FONT} fontSize="10.5" fontWeight="600" fill="currentColor" opacity="0.7">petit divot</text>
+
+      <Ball cx="210" cy="123" />
+      <ClubHead cx="224" cy="120" club="hybride" />
+      <text x="234" y="124" textAnchor="start" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="currentColor" opacity="0.85">contact descendant</text>
+    </svg>
+  );
+}
+
 export const DIAGRAMS = {
   driver: { adresse: DriverAddressDiagram, arc: DriverArcDiagram },
   fer7: { adresse: Fer7AddressDiagram, arc: Fer7ArcDiagram },
-  bois: { adresse: BoisAddressDiagram },
-  hybride: { adresse: HybrideAddressDiagram },
+  bois: { adresse: BoisAddressDiagram, arc: BoisArcDiagram },
+  hybride: { adresse: HybrideAddressDiagram, arc: HybrideArcDiagram },
 };
 
 export function diagramFor(club, tab) {

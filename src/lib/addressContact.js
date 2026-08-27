@@ -1,11 +1,9 @@
 // Content for the "Adresse & contact" reference sheet under Pratique — a
 // small, fixed library (same "bundled with the app, not user-editable"
 // convention as lib/venues.js and lib/trainingPlan.js). Driver, Fer 7,
-// Bois and Hybride are authored today; Chip is named honestly as
-// locked/coming-soon rather than shipped with placeholder content that
-// could be mistaken for real guidance. Bois/Hybride only have an
-// "adresse" entry so far — their "arc" tab isn't built yet (see
-// AddressContact.jsx's fallback for that case).
+// Bois and Hybride are authored today, each with both tabs; Chip is
+// named honestly as locked/coming-soon rather than shipped with
+// placeholder content that could be mistaken for real guidance.
 
 export const CLUBS = [
   { id: 'driver', label: 'Driver', locked: false },
@@ -90,6 +88,15 @@ export const CONTENT = {
       ],
       footnote: { badge: 'Info', text: '3-bois plus près du talon ; 5/7-bois légèrement plus vers le centre.' },
     },
+    arc: {
+      keyPoints: ['Arc large et rasant', 'Balle avant le sol', 'Légère brosse après'],
+      caption: 'Balayer signifie arriver peu profondément, pas frapper en remontant.',
+      info: [
+        { label: 'Arc', value: 'Large et peu profond' },
+        { label: 'Contact', value: 'Balle puis légère brosse du gazon' },
+        { label: 'Point bas', value: 'Légèrement après la balle' },
+      ],
+    },
   },
   hybride: {
     adresse: {
@@ -100,6 +107,15 @@ export const CONTENT = {
         { label: 'Balle', value: '2 à 5 cm devant le centre' },
         { label: 'Épaules', value: 'Presque nivelées, torse centré' },
         { label: 'Pression', value: '50 % avant / 50 % arrière' },
+      ],
+    },
+    arc: {
+      keyPoints: ['Arc plus descendant', 'Balle avant le sol', 'Petit divot après'],
+      caption: 'Frappe l’hybride comme un fer, sans chercher à soulever la balle.',
+      info: [
+        { label: 'Arc', value: 'Plus compact et légèrement descendant' },
+        { label: 'Contact', value: 'Balle puis petit divot' },
+        { label: 'Point bas', value: 'Après la balle' },
       ],
     },
   },

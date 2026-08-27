@@ -48,6 +48,13 @@ const INFO_ICONS = {
       <circle cx="27" cy="20" r="2.4" fill="currentColor" />
     </svg>
   ),
+  'Arc': (
+    <svg viewBox="0 0 40 40" width={19} height={19}>
+      <path d="M 8 15 Q 20 30 32 15" fill="none" stroke="currentColor" strokeWidth="1.6" opacity="0.8" />
+      <circle cx="8" cy="15" r="1.8" fill="currentColor" />
+      <circle cx="32" cy="15" r="1.8" fill="currentColor" />
+    </svg>
+  ),
 };
 
 function ClubButton({ club, active, onClick }) {
@@ -139,7 +146,6 @@ export default function AddressContact() {
 
   const isBH = club === 'bois-hybride';
   const effectiveClub = isBH ? subClub : club;
-  const isArcPendingForBH = isBH && tab === 'arc';
 
   const content = contentFor(effectiveClub, tab);
   const Diagram = diagramFor(effectiveClub, tab);
@@ -229,7 +235,7 @@ export default function AddressContact() {
         ) : (
           <Card>
             <div style={{ font: 'var(--text-body)', color: 'var(--text-muted)', textAlign: 'center', padding: '12px 0' }}>
-              {isArcPendingForBH ? 'À venir pour Arc et contact.' : 'Bientôt disponible pour ce bâton.'}
+              Bientôt disponible pour ce bâton.
             </div>
           </Card>
         )}

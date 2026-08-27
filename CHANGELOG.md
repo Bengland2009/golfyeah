@@ -2,6 +2,22 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.47.0 — 2026-08-27
+
+- **Arc et contact pour Bois et Hybride.** Le contenu temporaire « À
+  venir » est retiré : les deux coups (joués depuis le gazon) ont
+  maintenant leur propre schéma. Comme la vue Adresse place la cible à
+  gauche, le swing part de la droite vers la gauche et le point bas —
+  après la balle — apparaît donc à gauche d'elle, l'inverse de la
+  convention utilisée par les schémas Driver/Fer 7 existants (non
+  modifiés). Le Bois montre un arc large et peu profond qui rase le
+  gazon, une tête de bois arrondie au contact, et une légère brosse
+  après la balle. L'Hybride montre un arc nettement plus compact et
+  descendant, une tête plus petite, et un petit divot discret. Les deux
+  schémas partagent la même échelle pour que la différence saute aux
+  yeux sans lire le texte. Changer d'onglet en cours de route ou
+  revenir à Adresse conserve le choix Bois/Hybride en mémoire.
+
 ## v1.46.0 — 2026-08-27
 
 - **Zone de balle rendue lisible pour Bois et Hybride.** Le petit segment
