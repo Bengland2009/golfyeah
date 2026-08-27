@@ -9,12 +9,37 @@ const GOLD_DEEP = '#8C6420';
 const FONT = 'Inter, -apple-system, sans-serif';
 const SERIF = "'Libre Baskerville', Georgia, serif";
 
-function Ball({ cx, cy, r = 9 }) {
+// `flat` drops the glossy highlight for the more compact, sober top-view
+// diagrams — the side-view Arc diagrams keep the original glossier ball.
+function Ball({ cx, cy, r = 9, flat = false }) {
   return (
     <>
       <circle cx={cx} cy={cy} r={r} fill={GOLD} stroke={GOLD_DEEP} strokeWidth={1.2} />
-      <ellipse cx={cx - 1.5} cy={cy - 1.5} rx={3} ry={2} fill="#fff" opacity={0.4} />
+      {!flat && <ellipse cx={cx - 1.5} cy={cy - 1.5} rx={3} ry={2} fill="#fff" opacity={0.4} />}
     </>
+  );
+}
+
+// A small, flat clubhead silhouette sitting just right of the ball (target
+// is left) — rounded/bulbous for the Driver, a thinner blade for the Fer 7,
+// so the two clubs read differently without any shaft, arms or body. Each
+// gets a small two-tone "face" accent on its ball-facing edge, echoing the
+// shoe icon's two-tone language, so it reads as a clubhead rather than a
+// second, darker ball.
+function ClubHead({ cx, cy, club }) {
+  if (club === 'driver') {
+    return (
+      <g transform={`rotate(-10 ${cx} ${cy})`}>
+        <ellipse cx={cx} cy={cy} rx="7" ry="4.3" fill="currentColor" />
+        <ellipse cx={cx - 3.3} cy={cy} rx="2.3" ry="3.4" fill="var(--brand-primary)" opacity="0.9" />
+      </g>
+    );
+  }
+  return (
+    <g transform={`rotate(-8 ${cx} ${cy})`}>
+      <rect x={cx - 5.5} y={cy - 2.1} width="11" height="4.2" rx="2" fill="currentColor" />
+      <rect x={cx - 5.5} y={cy - 2.1} width="2.6" height="4.2" rx="1.3" fill="var(--brand-primary)" opacity="0.9" />
+    </g>
   );
 }
 
@@ -48,44 +73,42 @@ function Shoe({ cx, cy, angle }) {
 // which is what makes Driver's wider stance and more-forward ball legible
 // against Fer 7's narrower one. Replaces the old face-view figure
 // (shoulders/club-shaft/pressure): that already lives as text below.
-function TopView({ frontX, backX, ballX, talonAvantX, arcFront, arcBack, ariaLabel }) {
+function TopView({ frontX, backX, ballX, talonAvantX, arcFront, arcBack, club, ariaLabel }) {
   const centreX = 100;
-  const pivotY = 132;
+  const pivotY = 100;
   const heelY = pivotY + 15;
-  const ballY = 58;
-  const ballR = 11;
-  const clubheadCx = ballX + 16;
-  const rulerY = 192;
+  const ballY = 44;
+  const ballR = 6.5;
+  const clubheadCx = ballX + 17;
+  const rulerY = 158;
 
   return (
-    <svg viewBox="0 0 200 218" role="img" style={{ width: '100%', height: 'auto', display: 'block', color: 'var(--text-body)' }}
+    <svg viewBox="0 0 200 180" role="img" style={{ width: '100%', height: 'auto', display: 'block', color: 'var(--text-body)' }}
       aria-label={ariaLabel}>
-      <text x={centreX} y="12" textAnchor="middle" fontFamily={FONT} fontSize="9" fill="var(--text-muted)">cible à gauche</text>
-      <line x1="170" y1="24" x2="30" y2="24" stroke="currentColor" strokeWidth="1.4" opacity="0.55" strokeDasharray="1 4" />
-      <polygon points="37,20 37,28 30,24" fill="currentColor" opacity="0.55" />
+      <text x={centreX} y="8" textAnchor="middle" fontFamily={FONT} fontSize="9" fill="var(--text-muted)">cible à gauche</text>
+      <line x1="170" y1="18" x2="30" y2="18" stroke="currentColor" strokeWidth="1.4" opacity="0.55" strokeDasharray="1 4" />
+      <polygon points="37,14 37,22 30,18" fill="currentColor" opacity="0.55" />
 
-      <Ball cx={ballX} cy={ballY} r={ballR} />
-      <g transform={`rotate(-18 ${clubheadCx} 56)`}>
-        <ellipse cx={clubheadCx} cy="56" rx="9" ry="6" fill="currentColor" opacity="0.82" />
-      </g>
+      <Ball cx={ballX} cy={ballY} r={ballR} flat />
+      <ClubHead cx={clubheadCx} cy={ballY} club={club} />
       <line x1={ballX} y1={ballY + ballR + 4} x2={ballX} y2={rulerY} stroke="var(--text-muted)" strokeWidth="1.3" strokeDasharray="1 3" opacity="0.6" />
 
       <Shoe cx={frontX} cy={pivotY} angle={-25} />
       <path d={`M ${frontX} ${pivotY - 15} A 15 15 0 0 0 ${arcFront.x} ${arcFront.y}`} fill="none" stroke="var(--text-muted)" strokeWidth="1.4" opacity="0.75" />
-      <text x={frontX} y={heelY + 16} textAnchor="middle" fontFamily={FONT} fontSize="10" fontWeight="600" fill="var(--text-body)">avant</text>
-      <text x={frontX} y={heelY + 29} textAnchor="middle" fontFamily={FONT} fontSize="8.5" fill="var(--text-muted)">25°</text>
+      <text x={frontX} y={heelY + 14} textAnchor="middle" fontFamily={FONT} fontSize="10" fontWeight="600" fill="var(--text-body)">avant</text>
+      <text x={frontX} y={heelY + 27} textAnchor="middle" fontFamily={FONT} fontSize="8.5" fill="var(--text-muted)">25°</text>
 
       <Shoe cx={backX} cy={pivotY} angle={10} />
       <path d={`M ${backX} ${pivotY - 15} A 15 15 0 0 1 ${arcBack.x} ${arcBack.y}`} fill="none" stroke="var(--text-muted)" strokeWidth="1.4" opacity="0.75" />
-      <text x={backX} y={heelY + 16} textAnchor="middle" fontFamily={FONT} fontSize="10" fontWeight="600" fill="var(--text-body)">arrière</text>
-      <text x={backX} y={heelY + 29} textAnchor="middle" fontFamily={FONT} fontSize="8.5" fill="var(--text-muted)">10°</text>
+      <text x={backX} y={heelY + 14} textAnchor="middle" fontFamily={FONT} fontSize="10" fontWeight="600" fill="var(--text-body)">arrière</text>
+      <text x={backX} y={heelY + 27} textAnchor="middle" fontFamily={FONT} fontSize="8.5" fill="var(--text-muted)">10°</text>
 
       <line x1="15" y1={rulerY} x2="185" y2={rulerY} stroke="var(--border-default)" strokeWidth="1.3" />
       <line x1={talonAvantX} y1={rulerY - 4} x2={talonAvantX} y2={rulerY + 4} stroke="var(--text-muted)" strokeWidth="1.3" />
       <line x1={centreX} y1={rulerY - 4} x2={centreX} y2={rulerY + 4} stroke="var(--text-muted)" strokeWidth="1.3" />
       <circle cx={ballX} cy={rulerY} r="3" fill="var(--brand-action)" />
-      <text x={talonAvantX} y={rulerY - 8} textAnchor="middle" fontFamily={FONT} fontSize="8.5" fill="var(--text-muted)">talon avant</text>
-      <text x={centreX} y={rulerY + 15} textAnchor="middle" fontFamily={FONT} fontSize="8.5" fill="var(--text-muted)">centre</text>
+      <text x={talonAvantX} y={rulerY + 13} textAnchor="middle" fontFamily={FONT} fontSize="8" fill="var(--text-muted)">talon</text>
+      <text x={centreX} y={rulerY + 13} textAnchor="middle" fontFamily={FONT} fontSize="8" fill="var(--text-muted)">centre</text>
     </svg>
   );
 }
@@ -97,8 +120,9 @@ export function DriverAddressDiagram() {
       backX={165}
       ballX={49}
       talonAvantX={49}
-      arcFront={{ x: 28.66, y: 118.41 }}
-      arcBack={{ x: 167.6, y: 117.23 }}
+      arcFront={{ x: 28.66, y: 86.41 }}
+      arcBack={{ x: 167.6, y: 85.23 }}
+      club="driver"
       ariaLabel="Vue du joueur vers le sol pour le driver : stance large, pied avant à gauche, pied arrière à droite, cible à gauche, tête de bâton derrière la balle. La balle, bien au-dessus des pieds, s'aligne exactement avec l'intérieur du talon avant sur le repère au sol."
     />
   );
@@ -139,8 +163,9 @@ export function Fer7AddressDiagram() {
       backX={142.5}
       ballX={92}
       talonAvantX={69.5}
-      arcFront={{ x: 51.16, y: 118.41 }}
-      arcBack={{ x: 145.1, y: 117.23 }}
+      arcFront={{ x: 51.16, y: 86.41 }}
+      arcBack={{ x: 145.1, y: 85.23 }}
+      club="fer7"
       ariaLabel="Vue du joueur vers le sol pour le fer 7 : stance largeur d'épaules, pied avant à gauche, pied arrière à droite, cible à gauche, tête de bâton derrière la balle. La balle, bien au-dessus des pieds, s'aligne légèrement à gauche du centre, vers la cible, sur le repère au sol."
     />
   );

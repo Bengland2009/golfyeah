@@ -2,6 +2,18 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.44.0 — 2026-08-27
+
+- **Retouche visuelle du schéma d'adresse.** La balle était trop grosse et
+  la tête de bâton à côté ressemblait à une deuxième balle noire collée
+  dessus. La balle est maintenant ~40 % plus petite et proportionnée aux
+  chaussures ; la tête de bâton est une forme distincte (ronde pour le
+  Driver, mince pour le Fer 7), en couleur charbon, nettement séparée de la
+  balle. Le schéma est aussi ~18 % plus compact en hauteur et les libellés
+  sous les pieds et sous le repère (talon/centre) sont mieux espacés pour
+  qu'aucun ne se touche. Aucune position latérale (balle, pieds, repères,
+  ligne de projection) n'a changé.
+
 ## v1.43.0 — 2026-08-27
 
 - **Diagramme d'adresse agrandi et retravaillé.** Le dessin était trop
