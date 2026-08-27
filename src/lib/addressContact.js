@@ -133,6 +133,17 @@ export const CONTENT = {
       ],
       footnote: { badge: 'Référence', text: 'chip standard sur une bonne lie. Les variantes roulée et haute seront ajoutées plus tard.' },
     },
+    arc: {
+      context: 'Standard · bonne lie',
+      keyPoints: ['Petit arc contrôlé', 'Semelle qui brosse le sol', 'Point bas juste après'],
+      caption: 'Laisse la semelle brosser le sol; ne cherche pas à cueillir la balle.',
+      info: [
+        { label: 'Arc', value: 'Court et contrôlé' },
+        { label: 'Contact', value: 'Semelle qui brosse le sol' },
+        { label: 'Point bas', value: 'Sous ou légèrement après la balle' },
+      ],
+      footnote: { badge: 'Info', text: 'bras, épaules et poitrine bougent ensemble, avec une petite rotation vers la cible.' },
+    },
   },
 };
 

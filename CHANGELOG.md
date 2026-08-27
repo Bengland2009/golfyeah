@@ -2,6 +2,21 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.50.0 — 2026-08-27
+
+- **Arc et contact pour le Chip standard.** Le contenu temporaire
+  « À venir » est retiré : le chip a maintenant son propre schéma, dans
+  le même langage visuel que Bois et Hybride (ligne de sol, balle, arc,
+  tête de bâton, flèche intégrée, marqueurs de contact et de point bas,
+  zone de gazon brossée). L'arc est court et peu profond — plus court
+  que celui de l'hybride, sans être ni plus creux ni plus abrupt — et le
+  point bas tombe presque sous la balle, à une distance bien plus
+  courte que pour l'hybride. La semelle du wedge brosse le sol : aucun
+  divot, seulement une texture légère. Le contexte « Standard · bonne
+  lie » reste affiché en passant de Adresse à Arc et contact, et aucune
+  carte comparative n'apparaît tant que Chip est actif. La vue Adresse
+  du chip, Driver, Fer 7 et B/H restent inchangés.
+
 ## v1.49.0 — 2026-08-27
 
 - **Chip débloqué : setup Adresse pour un chip standard.** Le bouton

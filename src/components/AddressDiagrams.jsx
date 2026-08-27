@@ -396,12 +396,44 @@ export function HybrideArcDiagram() {
   );
 }
 
+// A standard chip: shorter and shallower than the Hybride's arc (not
+// deeper, not steeper), the sole brushing the ground rather than digging
+// in. The point bas sits almost right under the ball — a much shorter
+// gap than the Hybride's — with a light brushed-turf texture (no divot)
+// starting under the ball and trailing slightly further left.
+export function ChipArcDiagram() {
+  return (
+    <svg viewBox="0 0 400 170" role="img" style={{ width: '100%', height: 'auto', display: 'block', color: 'var(--text-body)' }}
+      aria-label="Vue de côté pour le chip standard sur bonne lie : petit arc court et peu profond, plus court que celui de l'hybride, avec une flèche sur sa partie descendante montrant la tête de bâton se déplacer de droite à gauche. La semelle du wedge touche la balle avant de brosser le sol ; le point bas se trouve presque sous la balle, très légèrement à gauche, sans divot.">
+      <rect x="40" y="100" width="320" height="18" fill="var(--surface-tint)" />
+      <line x1="40" y1="100" x2="360" y2="100" stroke="var(--brand-action)" strokeWidth="3.2" />
+      <line x1="199" y1="99" x2="206" y2="103" stroke="currentColor" strokeWidth="2" opacity="0.55" strokeLinecap="round" />
+      <line x1="208" y1="99" x2="215" y2="103" stroke="currentColor" strokeWidth="2" opacity="0.55" strokeLinecap="round" />
+      <line x1="217" y1="99" x2="224" y2="103" stroke="currentColor" strokeWidth="2" opacity="0.55" strokeLinecap="round" />
+
+      <path d="M 310 68 Q 240 106 170 75" fill="none" stroke="currentColor" strokeWidth="3" opacity="0.8" />
+      <polygon points="7,0 -5,-4 -5,4" fill="currentColor" opacity="0.8" transform="translate(270,84) rotate(166)" />
+
+      <circle cx="209" cy="100" r="4.5" fill="currentColor" />
+      <text x="209" y="132" textAnchor="middle" fontFamily={FONT} fontSize="13" fontWeight="600" fill="currentColor" opacity="0.85">point bas</text>
+      <text x="182" y="148" textAnchor="middle" fontFamily={FONT} fontSize="12" fontWeight="600" fill="currentColor" opacity="0.7">brosse</text>
+
+      <g transform="rotate(-15 234 87)">
+        <ellipse cx="234" cy="87" rx="8" ry="3.5" fill="currentColor" />
+      </g>
+      <Ball cx="220" cy="87" r="13" />
+      <line x1="220" y1="71" x2="220" y2="48" stroke="currentColor" strokeWidth="1.3" opacity="0.6" />
+      <text x="220" y="41" textAnchor="middle" fontFamily={FONT} fontSize="13" fontWeight="600" fill="currentColor" opacity="0.85">contact</text>
+    </svg>
+  );
+}
+
 export const DIAGRAMS = {
   driver: { adresse: DriverAddressDiagram, arc: DriverArcDiagram },
   fer7: { adresse: Fer7AddressDiagram, arc: Fer7ArcDiagram },
   bois: { adresse: BoisAddressDiagram, arc: BoisArcDiagram },
   hybride: { adresse: HybrideAddressDiagram, arc: HybrideArcDiagram },
-  chip: { adresse: ChipAddressDiagram },
+  chip: { adresse: ChipAddressDiagram, arc: ChipArcDiagram },
 };
 
 export function diagramFor(club, tab) {
