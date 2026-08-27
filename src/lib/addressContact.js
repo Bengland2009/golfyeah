@@ -1,16 +1,26 @@
 // Content for the "Adresse & contact" reference sheet under Pratique — a
 // small, fixed library (same "bundled with the app, not user-editable"
-// convention as lib/venues.js and lib/trainingPlan.js). Two clubs are
-// authored today (Driver, Fer 7); Bois/Hybride and Chip are named
-// honestly as locked/coming-soon rather than shipped with placeholder
-// content that could be mistaken for real guidance.
+// convention as lib/venues.js and lib/trainingPlan.js). Driver, Fer 7,
+// Bois and Hybride are authored today; Chip is named honestly as
+// locked/coming-soon rather than shipped with placeholder content that
+// could be mistaken for real guidance. Bois/Hybride only have an
+// "adresse" entry so far — their "arc" tab isn't built yet (see
+// AddressContact.jsx's fallback for that case).
 
 export const CLUBS = [
   { id: 'driver', label: 'Driver', locked: false },
-  { id: 'bois-hybride', label: 'B/H', locked: true },
+  { id: 'bois-hybride', label: 'B/H', locked: false },
   { id: 'fer7', label: 'Fer 7', locked: false },
   { id: 'chip', label: 'Chip', locked: true },
 ];
+
+// B/H groups two sub-clubs behind one secondary toggle — Bois is the
+// default. Only relevant when the active main club is 'bois-hybride'.
+export const BH_SUBCLUBS = [
+  { id: 'bois', label: 'Bois' },
+  { id: 'hybride', label: 'Hybride' },
+];
+export const DEFAULT_BH_SUBCLUB = 'bois';
 
 export const TABS = [
   { id: 'adresse', label: 'Adresse' },
@@ -65,7 +75,34 @@ export const CONTENT = {
         { label: 'Point bas', value: 'Après la balle' },
         { label: 'Contact', value: 'Descendant — balle puis divot' },
       ],
-      footnote: 'Wedges — même mécanique que le fer 7 : balle centrée (plutôt que légèrement devant), stance légèrement plus étroit.',
+      footnote: { badge: 'Wedges', text: 'même mécanique que le fer 7 : balle centrée (plutôt que légèrement devant), stance légèrement plus étroit.' },
+    },
+  },
+  bois: {
+    adresse: {
+      context: 'Depuis le gazon',
+      keyPoints: ['Balle en avant', 'Corps presque centré', 'Balle puis brosse'],
+      caption: 'Stance légèrement plus large que les épaules, balle dans une zone avancée à l’intérieur du talon avant.',
+      zoneLabel: 'zone avancée',
+      info: [
+        { label: 'Balle', value: 'Zone avancée, à l’intérieur du talon avant' },
+        { label: 'Épaules', value: 'Parallèles à la cible, arrière légèrement plus basse' },
+        { label: 'Pression', value: 'Presque 50/50, légère préférence arrière' },
+      ],
+      footnote: { badge: 'Info', text: '3-bois plus près du talon ; 5/7-bois légèrement plus vers le centre.' },
+    },
+  },
+  hybride: {
+    adresse: {
+      context: 'Depuis le gazon',
+      keyPoints: ['Un peu devant le centre', 'Corps centré', 'Petit divot après'],
+      caption: 'Stance environ largeur d’épaules, balle dans une petite zone légèrement devant le centre.',
+      zoneLabel: 'zone hybride',
+      info: [
+        { label: 'Balle', value: '2 à 5 cm devant le centre' },
+        { label: 'Épaules', value: 'Presque nivelées, torse centré' },
+        { label: 'Pression', value: '50 % avant / 50 % arrière' },
+      ],
     },
   },
 };

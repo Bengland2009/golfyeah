@@ -4,7 +4,7 @@ import Header from '../components/Header';
 import Card from '../components/Card';
 import Badge from '../components/Badge';
 import { LockIcon } from '../components/icons';
-import { CLUBS, TABS, DEFAULT_CLUB, DEFAULT_TAB, contentFor, QUICK_COMPARE } from '../lib/addressContact';
+import { CLUBS, TABS, DEFAULT_CLUB, DEFAULT_TAB, BH_SUBCLUBS, DEFAULT_BH_SUBCLUB, contentFor, QUICK_COMPARE } from '../lib/addressContact';
 import { diagramFor } from '../components/AddressDiagrams';
 
 // Small glyphs for the info-card icon slots — one per label this screen
@@ -100,13 +100,46 @@ function CompactTabs({ options, value, onChange }) {
   );
 }
 
+// B/H's secondary Bois/Hybride choice — deliberately lighter than
+// CompactTabs (underline instead of a filled pill) so it reads as
+// subordinate to the four main club buttons above it.
+function SubClubToggle({ options, value, onChange }) {
+  return (
+    <div style={{ display: 'flex', gap: 16, paddingLeft: 2 }}>
+      {options.map((opt) => {
+        const active = value === opt.value;
+        return (
+          <button
+            key={opt.value}
+            type="button"
+            onClick={() => onChange(opt.value)}
+            style={{
+              background: 'none', border: 'none', borderBottom: active ? '2px solid var(--brand-action)' : '2px solid transparent',
+              padding: '2px 0 4px', cursor: 'pointer',
+              font: 'var(--text-small)', fontSize: 13.5, fontWeight: active ? 700 : 500,
+              color: active ? 'var(--text-body)' : 'var(--text-muted)',
+            }}
+          >
+            {opt.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function AddressContact() {
   const navigate = useNavigate();
   const [club, setClub] = useState(DEFAULT_CLUB);
+  const [subClub, setSubClub] = useState(DEFAULT_BH_SUBCLUB);
   const [tab, setTab] = useState(DEFAULT_TAB);
 
-  const content = contentFor(club, tab);
-  const Diagram = diagramFor(club, tab);
+  const isBH = club === 'bois-hybride';
+  const effectiveClub = isBH ? subClub : club;
+  const isArcPendingForBH = isBH && tab === 'arc';
+
+  const content = contentFor(effectiveClub, tab);
+  const Diagram = diagramFor(effectiveClub, tab);
 
   return (
     <div>
@@ -121,6 +154,19 @@ export default function AddressContact() {
             <ClubButton key={c.id} club={c} active={club === c.id} onClick={() => setClub(c.id)} />
           ))}
         </div>
+
+        {isBH && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <SubClubToggle
+              options={BH_SUBCLUBS.map((s) => ({ value: s.id, label: s.label }))}
+              value={subClub}
+              onChange={setSubClub}
+            />
+            <div style={{ font: 'var(--text-small)', fontSize: 12, color: 'var(--text-muted)', paddingLeft: 2 }}>
+              Depuis le gazon
+            </div>
+          </div>
+        )}
 
         <CompactTabs
           options={TABS.map((t) => ({ value: t.id, label: t.label }))}
@@ -169,7 +215,7 @@ export default function AddressContact() {
 
               {content.footnote && (
                 <div style={{ font: 'var(--text-small)', fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.5, paddingTop: 10 }}>
-                  <Badge>Wedges</Badge> — {content.footnote.replace(/^Wedges\s*—\s*/, '')}
+                  <Badge>{content.footnote.badge}</Badge> — {content.footnote.text}
                 </div>
               )}
             </Card>
@@ -177,7 +223,7 @@ export default function AddressContact() {
         ) : (
           <Card>
             <div style={{ font: 'var(--text-body)', color: 'var(--text-muted)', textAlign: 'center', padding: '12px 0' }}>
-              Bientôt disponible pour ce bâton.
+              {isArcPendingForBH ? 'À venir pour Arc et contact.' : 'Bientôt disponible pour ce bâton.'}
             </div>
           </Card>
         )}

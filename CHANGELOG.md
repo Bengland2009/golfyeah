@@ -2,6 +2,23 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.45.0 — 2026-08-27
+
+- **B/H débloqué : vues Adresse pour le Bois et l'Hybride.** Le bouton
+  B/H n'est plus verrouillé — il se comporte comme Driver et Fer 7.
+  Une fois actif, un sélecteur secondaire Bois/Hybride apparaît (Bois par
+  défaut), avec l'indication « Depuis le gazon » (ce premier jet ne
+  couvre pas le bois frappé sur tee). Chaque sous-bâton a son « À
+  retenir », son schéma (même langage visuel que Driver/Fer 7) et ses
+  détails. Nouveauté du schéma : au lieu d'un simple point, la balle a
+  maintenant une courte zone dorée acceptable (« zone avancée » pour le
+  Bois, près du talon avant ; « zone hybride » pour l'Hybride, nettement
+  plus centrée), reproduite sur le repère au sol, en plus de la balle
+  pleine à la position recommandée. L'onglet Arc et contact affiche
+  temporairement « À venir » pour B/H, sans réutiliser le visuel du
+  Driver ou du Fer 7. Driver, Fer 7, Chip et le reste de la navigation
+  sont inchangés.
+
 ## v1.44.0 — 2026-08-27
 
 - **Retouche visuelle du schéma d'adresse.** La balle était trop grosse et

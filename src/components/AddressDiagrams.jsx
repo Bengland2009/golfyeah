@@ -35,6 +35,22 @@ function ClubHead({ cx, cy, club }) {
       </g>
     );
   }
+  if (club === 'bois') {
+    return (
+      <g transform={`rotate(-10 ${cx} ${cy})`}>
+        <ellipse cx={cx} cy={cy} rx="6.2" ry="4.1" fill="currentColor" />
+        <ellipse cx={cx - 2.9} cy={cy} rx="2" ry="3.1" fill="var(--brand-primary)" opacity="0.9" />
+      </g>
+    );
+  }
+  if (club === 'hybride') {
+    return (
+      <g transform={`rotate(-9 ${cx} ${cy})`}>
+        <ellipse cx={cx} cy={cy} rx="5.2" ry="4.3" fill="currentColor" />
+        <ellipse cx={cx - 2.4} cy={cy} rx="1.8" ry="2.9" fill="var(--brand-primary)" opacity="0.9" />
+      </g>
+    );
+  }
   return (
     <g transform={`rotate(-8 ${cx} ${cy})`}>
       <rect x={cx - 5.5} y={cy - 2.1} width="11" height="4.2" rx="2" fill="currentColor" />
@@ -73,7 +89,13 @@ function Shoe({ cx, cy, angle }) {
 // which is what makes Driver's wider stance and more-forward ball legible
 // against Fer 7's narrower one. Replaces the old face-view figure
 // (shoulders/club-shaft/pressure): that already lives as text below.
-function TopView({ frontX, backX, ballX, talonAvantX, arcFront, arcBack, club, ariaLabel }) {
+//
+// `zoneX1`/`zoneX2`/`zoneLabel` are optional — when set (Bois, Hybride),
+// a short gold band is drawn around the ball and reproduced on the ruler
+// to show an acceptable range, while the solid ball and the green ruler
+// dot still mark the single recommended point within it. Driver/Fer 7
+// don't pass these, so their diagrams are unaffected.
+function TopView({ frontX, backX, ballX, talonAvantX, arcFront, arcBack, club, zoneX1, zoneX2, zoneLabel, ariaLabel }) {
   const centreX = 100;
   const pivotY = 100;
   const heelY = pivotY + 15;
@@ -81,6 +103,7 @@ function TopView({ frontX, backX, ballX, talonAvantX, arcFront, arcBack, club, a
   const ballR = 6.5;
   const clubheadCx = ballX + 17;
   const rulerY = 158;
+  const hasZone = zoneX1 != null && zoneX2 != null;
 
   return (
     <svg viewBox="0 0 200 180" role="img" style={{ width: '100%', height: 'auto', display: 'block', color: 'var(--text-body)' }}
@@ -89,6 +112,12 @@ function TopView({ frontX, backX, ballX, talonAvantX, arcFront, arcBack, club, a
       <line x1="170" y1="18" x2="30" y2="18" stroke="currentColor" strokeWidth="1.4" opacity="0.55" strokeDasharray="1 4" />
       <polygon points="37,14 37,22 30,18" fill="currentColor" opacity="0.55" />
 
+      {hasZone && (
+        <>
+          <rect x={zoneX1} y={ballY - 2.5} width={zoneX2 - zoneX1} height="5" rx="2.5" fill={GOLD} opacity="0.3" />
+          <text x={(zoneX1 + zoneX2) / 2} y="29" textAnchor="middle" fontFamily={FONT} fontSize="7.5" fontWeight="600" fill={GOLD_DEEP}>{zoneLabel}</text>
+        </>
+      )}
       <Ball cx={ballX} cy={ballY} r={ballR} flat />
       <ClubHead cx={clubheadCx} cy={ballY} club={club} />
       <line x1={ballX} y1={ballY + ballR + 4} x2={ballX} y2={rulerY} stroke="var(--text-muted)" strokeWidth="1.3" strokeDasharray="1 3" opacity="0.6" />
@@ -104,6 +133,9 @@ function TopView({ frontX, backX, ballX, talonAvantX, arcFront, arcBack, club, a
       <text x={backX} y={heelY + 27} textAnchor="middle" fontFamily={FONT} fontSize="8.5" fill="var(--text-muted)">10°</text>
 
       <line x1="15" y1={rulerY} x2="185" y2={rulerY} stroke="var(--border-default)" strokeWidth="1.3" />
+      {hasZone && (
+        <line x1={zoneX1} y1={rulerY} x2={zoneX2} y2={rulerY} stroke={GOLD} strokeWidth="4" strokeLinecap="round" opacity="0.55" />
+      )}
       <line x1={talonAvantX} y1={rulerY - 4} x2={talonAvantX} y2={rulerY + 4} stroke="var(--text-muted)" strokeWidth="1.3" />
       <line x1={centreX} y1={rulerY - 4} x2={centreX} y2={rulerY + 4} stroke="var(--text-muted)" strokeWidth="1.3" />
       <circle cx={ballX} cy={rulerY} r="3" fill="var(--brand-action)" />
@@ -201,9 +233,47 @@ export function Fer7ArcDiagram() {
   );
 }
 
+export function BoisAddressDiagram() {
+  return (
+    <TopView
+      frontX={50}
+      backX={150}
+      ballX={70}
+      talonAvantX={64}
+      zoneX1={64}
+      zoneX2={80}
+      zoneLabel="zone avancée"
+      arcFront={{ x: 43.66, y: 86.41 }}
+      arcBack={{ x: 152.6, y: 85.23 }}
+      club="bois"
+      ariaLabel="Vue du joueur vers le sol pour le bois : stance légèrement plus large que les épaules, pied avant à gauche, pied arrière à droite, cible à gauche, tête de bois derrière la balle. La balle se joue dans une courte zone avancée, à l'intérieur du talon avant."
+    />
+  );
+}
+
+export function HybrideAddressDiagram() {
+  return (
+    <TopView
+      frontX={57.5}
+      backX={142.5}
+      ballX={94}
+      talonAvantX={71.5}
+      zoneX1={90}
+      zoneX2={98}
+      zoneLabel="zone hybride"
+      arcFront={{ x: 51.16, y: 86.41 }}
+      arcBack={{ x: 145.1, y: 85.23 }}
+      club="hybride"
+      ariaLabel="Vue du joueur vers le sol pour l'hybride : stance environ largeur d'épaules, pied avant à gauche, pied arrière à droite, cible à gauche, tête d'hybride derrière la balle. La balle se joue dans une courte zone légèrement devant le centre."
+    />
+  );
+}
+
 export const DIAGRAMS = {
   driver: { adresse: DriverAddressDiagram, arc: DriverArcDiagram },
   fer7: { adresse: Fer7AddressDiagram, arc: Fer7ArcDiagram },
+  bois: { adresse: BoisAddressDiagram },
+  hybride: { adresse: HybrideAddressDiagram },
 };
 
 export function diagramFor(club, tab) {
