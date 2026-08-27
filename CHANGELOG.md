@@ -2,6 +2,22 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.38.0 — 2026-08-27
+
+- **Vue du dessus agrandie et plus lisible dans Adresse & contact.** Les
+  pictogrammes de pieds sont maintenant de vraies silhouettes de bottine
+  vues du dessus (talon étroit, avant-pied arrondi, liseré au collet et à
+  la pointe) plutôt que de simples ovales. La vue est agrandie pour rester
+  utile sur mobile, avec plus d'espace entre les pieds, la balle, les
+  angles et les libellés — plus aucun élément ne se touche. La balle est
+  maintenant clairement séparée des pieds, positionnée devant la ligne des
+  talons (pas collée aux chaussures). Chaque pied porte désormais un
+  libellé « avant »/« arrière » en plus de son angle (« 25° »/« 10° »), et
+  une note « repère de départ » précise que ces angles ne sont pas des
+  règles absolues. Logique spatiale inchangée (cible à gauche, pied avant
+  à gauche, pied arrière à droite) — seule la taille et la lisibilité
+  changent.
+
 ## v1.37.0 — 2026-08-27
 
 - **Vue du dessus corrigée dans Adresse & contact.** La vue du dessus
