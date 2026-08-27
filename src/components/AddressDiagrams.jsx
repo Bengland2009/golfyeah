@@ -51,6 +51,14 @@ function ClubHead({ cx, cy, club }) {
       </g>
     );
   }
+  if (club === 'chip') {
+    return (
+      <g transform={`rotate(-20 ${cx} ${cy})`}>
+        <rect x={cx - 5} y={cy - 1.8} width="10" height="3.6" rx="1.6" fill="currentColor" />
+        <rect x={cx - 5} y={cy - 1.8} width="2.4" height="3.6" rx="1.2" fill="var(--brand-primary)" opacity="0.9" />
+      </g>
+    );
+  }
   return (
     <g transform={`rotate(-8 ${cx} ${cy})`}>
       <rect x={cx - 5.5} y={cy - 2.1} width="11" height="4.2" rx="2" fill="currentColor" />
@@ -103,10 +111,23 @@ function Shoe({ cx, cy, angle }) {
 // which is why zone diagrams use a taller viewBox than Driver/Fer 7.
 // Driver/Fer 7 pass neither `zone` nor `viewBoxHeight`, so they render
 // exactly as before.
-function TopView({ frontX, backX, ballX, talonAvantX, arcFront, arcBack, club, zone, viewBoxHeight = 180, ariaLabel }) {
+//
+// `frontAngle`/`backAngle` (default -25/10) and `showAngleDetail` (default
+// true) let Chip use a much smaller, unlabelled opening instead of the
+// other clubs' fixed 25°/10° — no arcs, no degree text, just the shoes
+// themselves turned slightly. `frontPivotY` (defaults to the shared
+// `pivotY`) lets Chip's front foot sit lower/further from the ball than
+// the back foot, for its dropped-back, "légèrement retiré" stance. None of
+// these are passed by Driver/Fer 7/Bois/Hybride, so they're unaffected.
+function TopView({
+  frontX, backX, ballX, talonAvantX, arcFront, arcBack, club, zone, viewBoxHeight = 180,
+  frontAngle = -25, backAngle = 10, showAngleDetail = true, frontPivotY, ariaLabel,
+}) {
   const centreX = 100;
   const pivotY = 100;
-  const heelY = pivotY + 15;
+  const frontY = frontPivotY ?? pivotY;
+  const frontHeelY = frontY + 15;
+  const backHeelY = pivotY + 15;
   const ballY = 44;
   const ballR = 6.5;
   const clubheadCx = ballX + 17;
@@ -124,15 +145,23 @@ function TopView({ frontX, backX, ballX, talonAvantX, arcFront, arcBack, club, z
       <ClubHead cx={clubheadCx} cy={ballY} club={club} />
       <line x1={ballX} y1={ballY + ballR + 4} x2={ballX} y2={rulerY} stroke="var(--text-muted)" strokeWidth="1.3" strokeDasharray="1 3" opacity="0.6" />
 
-      <Shoe cx={frontX} cy={pivotY} angle={-25} />
-      <path d={`M ${frontX} ${pivotY - 15} A 15 15 0 0 0 ${arcFront.x} ${arcFront.y}`} fill="none" stroke="var(--text-muted)" strokeWidth="1.4" opacity="0.75" />
-      <text x={frontX} y={heelY + 14} textAnchor="middle" fontFamily={FONT} fontSize="10" fontWeight="600" fill="var(--text-body)">avant</text>
-      <text x={frontX} y={heelY + 27} textAnchor="middle" fontFamily={FONT} fontSize="8.5" fill="var(--text-muted)">25°</text>
+      <Shoe cx={frontX} cy={frontY} angle={frontAngle} />
+      {showAngleDetail && (
+        <path d={`M ${frontX} ${frontY - 15} A 15 15 0 0 0 ${arcFront.x} ${arcFront.y}`} fill="none" stroke="var(--text-muted)" strokeWidth="1.4" opacity="0.75" />
+      )}
+      <text x={frontX} y={frontHeelY + 14} textAnchor="middle" fontFamily={FONT} fontSize="10" fontWeight="600" fill="var(--text-body)">avant</text>
+      {showAngleDetail && (
+        <text x={frontX} y={frontHeelY + 27} textAnchor="middle" fontFamily={FONT} fontSize="8.5" fill="var(--text-muted)">25°</text>
+      )}
 
-      <Shoe cx={backX} cy={pivotY} angle={10} />
-      <path d={`M ${backX} ${pivotY - 15} A 15 15 0 0 1 ${arcBack.x} ${arcBack.y}`} fill="none" stroke="var(--text-muted)" strokeWidth="1.4" opacity="0.75" />
-      <text x={backX} y={heelY + 14} textAnchor="middle" fontFamily={FONT} fontSize="10" fontWeight="600" fill="var(--text-body)">arrière</text>
-      <text x={backX} y={heelY + 27} textAnchor="middle" fontFamily={FONT} fontSize="8.5" fill="var(--text-muted)">10°</text>
+      <Shoe cx={backX} cy={pivotY} angle={backAngle} />
+      {showAngleDetail && (
+        <path d={`M ${backX} ${pivotY - 15} A 15 15 0 0 1 ${arcBack.x} ${arcBack.y}`} fill="none" stroke="var(--text-muted)" strokeWidth="1.4" opacity="0.75" />
+      )}
+      <text x={backX} y={backHeelY + 14} textAnchor="middle" fontFamily={FONT} fontSize="10" fontWeight="600" fill="var(--text-body)">arrière</text>
+      {showAngleDetail && (
+        <text x={backX} y={backHeelY + 27} textAnchor="middle" fontFamily={FONT} fontSize="8.5" fill="var(--text-muted)">10°</text>
+      )}
 
       <line x1="15" y1={rulerY} x2="185" y2={rulerY} stroke="var(--border-default)" strokeWidth="1.3" />
 
@@ -283,6 +312,30 @@ export function HybrideAddressDiagram() {
   );
 }
 
+// A standard chip on a good lie: much narrower than Fer 7, front foot
+// dropped back and turned slightly open toward the target (no fixed degree
+// — just the shoe's own angle, per the brief's "no 25°/10°" rule), back
+// foot left nearly square. Ball sits in a very short zone right at/just
+// left of centre — the shortest of any club's zone, since a chip's ball
+// position barely moves.
+export function ChipAddressDiagram() {
+  return (
+    <TopView
+      frontX={75}
+      backX={125}
+      ballX={95}
+      zone={{ x1: 93, x2: 97, label: 'centre à légèrement devant' }}
+      viewBoxHeight={195}
+      frontAngle={-14}
+      backAngle={4}
+      frontPivotY={118}
+      showAngleDetail={false}
+      club="chip"
+      ariaLabel="Vue du joueur vers le sol pour le chip : stance nettement plus étroit que le fer 7, pied avant à gauche légèrement retiré et ouvert vers la cible, pied arrière à droite presque carré, cible à gauche, tête de wedge derrière la balle. La balle se joue dans une très courte zone allant du centre à légèrement devant."
+    />
+  );
+}
+
 // Both played off the turf: the club meets the ball before the ground, and
 // the low point of the arc — like the turf interaction after it — falls
 // past the ball, toward the target. Since these diagrams put the target on
@@ -348,6 +401,7 @@ export const DIAGRAMS = {
   fer7: { adresse: Fer7AddressDiagram, arc: Fer7ArcDiagram },
   bois: { adresse: BoisAddressDiagram, arc: BoisArcDiagram },
   hybride: { adresse: HybrideAddressDiagram, arc: HybrideArcDiagram },
+  chip: { adresse: ChipAddressDiagram },
 };
 
 export function diagramFor(club, tab) {

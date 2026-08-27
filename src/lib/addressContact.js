@@ -1,15 +1,17 @@
 // Content for the "Adresse & contact" reference sheet under Pratique — a
 // small, fixed library (same "bundled with the app, not user-editable"
 // convention as lib/venues.js and lib/trainingPlan.js). Driver, Fer 7,
-// Bois and Hybride are authored today, each with both tabs; Chip is
-// named honestly as locked/coming-soon rather than shipped with
-// placeholder content that could be mistaken for real guidance.
+// Bois and Hybride are authored today, each with both tabs. Chip is
+// unlocked with only its "adresse" entry so far (a standard chip off a
+// good lie) — its "arc" tab isn't built yet, and neither are the
+// roulée/haute variants, so the UI shows a temporary "À venir" there
+// rather than reusing another club's content.
 
 export const CLUBS = [
   { id: 'driver', label: 'Driver', locked: false },
   { id: 'bois-hybride', label: 'B/H', locked: false },
   { id: 'fer7', label: 'Fer 7', locked: false },
-  { id: 'chip', label: 'Chip', locked: true },
+  { id: 'chip', label: 'Chip', locked: false },
 ];
 
 // B/H groups two sub-clubs behind one secondary toggle — Bois is the
@@ -117,6 +119,19 @@ export const CONTENT = {
         { label: 'Contact', value: 'Balle puis petit divot' },
         { label: 'Point bas', value: 'Après la balle' },
       ],
+    },
+  },
+  chip: {
+    adresse: {
+      context: 'Standard · bonne lie',
+      keyPoints: ['Balle centre à légèrement devant', 'Stance étroit et ouvert', '60–70 % sur le pied avant'],
+      caption: 'Stance étroit et légèrement ouvert, balle près du centre, pression sur l’avant.',
+      info: [
+        { label: 'Balle', value: 'Centre à légèrement devant' },
+        { label: 'Corps', value: 'Sternum légèrement devant, épaules presque nivelées' },
+        { label: 'Pression', value: '60–70 % sur le pied avant et y rester' },
+      ],
+      footnote: { badge: 'Référence', text: 'chip standard sur une bonne lie. Les variantes roulée et haute seront ajoutées plus tard.' },
     },
   },
 };

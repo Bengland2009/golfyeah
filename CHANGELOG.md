@@ -2,6 +2,25 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.49.0 — 2026-08-27
+
+- **Chip débloqué : setup Adresse pour un chip standard.** Le bouton
+  Chip n'est plus verrouillé — il se comporte comme les autres bâtons,
+  avec le contexte discret « Standard · bonne lie » (pas de sélecteur
+  Bois/Hybride pour lui). Le schéma reprend le langage visuel des autres
+  vues Adresse : stance nettement plus étroit que le fer 7, pied avant
+  visiblement retiré (placé plus bas, loin de la balle) et légèrement
+  ouvert vers la cible, pied arrière presque carré — sans afficher
+  d'angle fixe comme 25°/10°, seulement les libellés avant/arrière. La
+  balle a sa propre courte zone (la plus courte de tous les bâtons),
+  centrée à légèrement devant, avec une tête de wedge fine et
+  légèrement ouverte à droite de la balle. Les cartes de comparaison
+  Driver vs Fer 7 et Bois vs Hybride sont masquées quand Chip est actif
+  (rien à comparer pour l'instant) et réapparaissent normalement avec
+  les autres bâtons. L'onglet Arc et contact affiche temporairement
+  « À venir » pour Chip, sans réutiliser le visuel d'un autre bâton.
+  Driver, Fer 7 et B/H restent inchangés.
+
 ## v1.48.0 — 2026-08-27
 
 - **Schémas Arc et contact de Bois et Hybride retravaillés.** La flèche

@@ -55,6 +55,12 @@ const INFO_ICONS = {
       <circle cx="32" cy="15" r="1.8" fill="currentColor" />
     </svg>
   ),
+  'Corps': (
+    <svg viewBox="0 0 40 40" width={19} height={19}>
+      <line x1="12" y1="14" x2="28" y2="16" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+      <line x1="20" y1="15" x2="20" y2="28" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" opacity="0.8" />
+    </svg>
+  ),
 };
 
 function ClubButton({ club, active, onClick }) {
@@ -150,6 +156,14 @@ export default function AddressContact() {
   const content = contentFor(effectiveClub, tab);
   const Diagram = diagramFor(effectiveClub, tab);
 
+  // A club can have "adresse" content but no "arc" yet (Chip today) — that's
+  // a temporary "coming soon for this tab", distinct from a genuinely
+  // locked/unbuilt club, so it gets its own message rather than reusing
+  // another club's diagram or the generic locked-club text.
+  const isArcPending = tab === 'arc' && !content && !!contentFor(effectiveClub, 'adresse');
+
+  const isChip = club === 'chip';
+  const showCompareCard = !isChip;
   const compareTitle = isBH ? QUICK_COMPARE_BH_TITLE : QUICK_COMPARE_TITLE;
   const compareRows = isBH ? QUICK_COMPARE_BH : QUICK_COMPARE;
 
@@ -167,16 +181,20 @@ export default function AddressContact() {
           ))}
         </div>
 
-        {isBH && (
+        {(isBH || content?.context) && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <SubClubToggle
-              options={BH_SUBCLUBS.map((s) => ({ value: s.id, label: s.label }))}
-              value={subClub}
-              onChange={setSubClub}
-            />
-            <div style={{ font: 'var(--text-small)', fontSize: 12, color: 'var(--text-muted)', paddingLeft: 2 }}>
-              Depuis le gazon
-            </div>
+            {isBH && (
+              <SubClubToggle
+                options={BH_SUBCLUBS.map((s) => ({ value: s.id, label: s.label }))}
+                value={subClub}
+                onChange={setSubClub}
+              />
+            )}
+            {content?.context && (
+              <div style={{ font: 'var(--text-small)', fontSize: 12, color: 'var(--text-muted)', paddingLeft: 2 }}>
+                {content.context}
+              </div>
+            )}
           </div>
         )}
 
@@ -235,24 +253,26 @@ export default function AddressContact() {
         ) : (
           <Card>
             <div style={{ font: 'var(--text-body)', color: 'var(--text-muted)', textAlign: 'center', padding: '12px 0' }}>
-              Bientôt disponible pour ce bâton.
+              {isArcPending ? 'À venir pour Arc et contact.' : 'Bientôt disponible pour ce bâton.'}
             </div>
           </Card>
         )}
 
-        <Card tint>
-          <div style={{ font: 'var(--text-eyebrow)', fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 'var(--letter-spacing-eyebrow)', marginBottom: 10 }}>
-            {compareTitle}
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {compareRows.map((c) => (
-              <div key={c.club} style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                <span style={{ font: 'var(--text-label)', fontSize: 14, flexShrink: 0, minWidth: 58 }}>{c.club}</span>
-                <span style={{ font: 'var(--text-small)', fontSize: 13, color: 'var(--text-muted)' }}>{c.label}</span>
-              </div>
-            ))}
-          </div>
-        </Card>
+        {showCompareCard && (
+          <Card tint>
+            <div style={{ font: 'var(--text-eyebrow)', fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 'var(--letter-spacing-eyebrow)', marginBottom: 10 }}>
+              {compareTitle}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {compareRows.map((c) => (
+                <div key={c.club} style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                  <span style={{ font: 'var(--text-label)', fontSize: 14, flexShrink: 0, minWidth: 58 }}>{c.club}</span>
+                  <span style={{ font: 'var(--text-small)', fontSize: 13, color: 'var(--text-muted)' }}>{c.label}</span>
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
       </div>
     </div>
   );
