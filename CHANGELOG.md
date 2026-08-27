@@ -2,6 +2,21 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.42.0 — 2026-08-27
+
+- **Diagramme d'adresse repensé en une seule vue.** L'ancien schéma
+  mélangeait une vue du dessus miniature et un pictogramme de face
+  (épaules, bâton, pression) dans la même image — deux perspectives
+  incompatibles qui rendaient l'espace difficile à lire, et la balle
+  semblait coincée entre les chaussures. Il n'y a maintenant qu'un seul
+  diagramme, une « vue arrière surélevée » : les pieds (avant/arrière,
+  toujours à 25°/10°), la balle, une ligne des orteils, et une ligne
+  pointillée qui projette la balle sur cette ligne pour montrer son
+  alignement latéral — jamais sa distance physique aux pieds. Les
+  informations sur les épaules et la pression restent affichées, mais en
+  texte dans les fiches sous le diagramme, où elles vivaient déjà.
+  L'onglet Arc et contact n'est pas touché.
+
 ## v1.41.0 — 2026-08-27
 
 - **Position de la balle corrigée dans la vue du dessus.** La balle

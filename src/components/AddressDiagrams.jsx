@@ -37,58 +37,60 @@ function Shoe({ cx, cy, angle }) {
   );
 }
 
+// Single, unified "vue arrière surélevée" — as if the golfer is looking down
+// at their own stance from just behind and above. Two distinct axes only:
+// lateral (avant/arrière feet, left-right) and depth (ball ahead of the toe
+// line). A dashed line projects the ball straight down onto the toe line to
+// show lateral alignment only — never a physical ball-to-foot distance.
+// Replaces the old face-view figure (shoulders/club/pressure): that
+// information already lives as text in the info-cards below the diagram.
+function TopView({ frontX, backX, ballX, arcFront, arcBack, ariaLabel }) {
+  const pivotY = 100;
+  const toeLineY = pivotY - 17;
+  const heelY = pivotY + 15;
+  const ballY = 55;
+  const toeLineX1 = frontX - 35;
+  const toeLineX2 = backX + 35;
+
+  return (
+    <svg viewBox="0 0 400 175" role="img" style={{ width: '100%', height: 'auto', display: 'block', color: 'var(--text-body)' }}
+      aria-label={ariaLabel}>
+      <text x={(backX + 10 + frontX - 30) / 2} y="18" textAnchor="middle" fontFamily={FONT} fontSize="8.5" fill="var(--text-muted)">cible à gauche</text>
+      <line x1={backX + 10} y1="28" x2={frontX - 30} y2="28" stroke="currentColor" strokeWidth="1.3" opacity="0.55" strokeDasharray="1 4" />
+      <polygon points={`${frontX - 30},24 ${frontX - 30},32 ${frontX - 37},28`} fill="currentColor" opacity="0.55" />
+
+      <Ball cx={ballX} cy={ballY} r={6} />
+      <line x1={ballX} y1={ballY + 8} x2={ballX} y2={toeLineY} stroke="var(--text-muted)" strokeWidth="1.2" strokeDasharray="1 3" opacity="0.6" />
+      <circle cx={ballX} cy={toeLineY} r="2.5" fill="var(--brand-action)" />
+
+      <line x1={toeLineX1} y1={toeLineY} x2={toeLineX2} y2={toeLineY} stroke="var(--brand-action)" strokeWidth="1.2" strokeDasharray="2 3" opacity="0.55" />
+      <text x={toeLineX2 + 6} y={toeLineY + 3} textAnchor="start" fontFamily={FONT} fontSize="7" fill="var(--text-muted)" opacity="0.75">ligne des orteils</text>
+
+      <Shoe cx={frontX} cy={pivotY} angle={-25} />
+      <path d={`M ${frontX} ${pivotY - 15} A 15 15 0 0 0 ${arcFront.x} ${arcFront.y}`} fill="none" stroke="var(--text-muted)" strokeWidth="1.4" opacity="0.75" />
+      <text x={frontX} y={heelY + 14} textAnchor="middle" fontFamily={FONT} fontSize="8" fontWeight="600" fill="var(--text-body)">avant</text>
+      <text x={frontX} y={heelY + 27} textAnchor="middle" fontFamily={FONT} fontSize="7.5" fill="var(--text-muted)">25°</text>
+
+      <Shoe cx={backX} cy={pivotY} angle={10} />
+      <path d={`M ${backX} ${pivotY - 15} A 15 15 0 0 1 ${arcBack.x} ${arcBack.y}`} fill="none" stroke="var(--text-muted)" strokeWidth="1.4" opacity="0.75" />
+      <text x={backX} y={heelY + 14} textAnchor="middle" fontFamily={FONT} fontSize="8" fontWeight="600" fill="var(--text-body)">arrière</text>
+      <text x={backX} y={heelY + 27} textAnchor="middle" fontFamily={FONT} fontSize="7.5" fill="var(--text-muted)">10°</text>
+
+      <text x={(frontX + backX) / 2} y={heelY + 38} textAnchor="middle" fontFamily={FONT} fontSize="6.5" fill="var(--text-muted)" opacity="0.65">repère de départ — alignement, pas une distance</text>
+    </svg>
+  );
+}
+
 export function DriverAddressDiagram() {
   return (
-    <svg viewBox="0 0 400 300" role="img" style={{ width: '100%', height: 'auto', display: 'block', color: 'var(--text-body)' }}
-      aria-label="Vue de face à l'adresse pour le driver, avec vue du dessus en médaillon : pieds plus larges que les épaules, balle près du talon avant, épaule arrière plus basse, pression 45 pour cent avant et 55 pour cent arrière.">
-      <text x="15" y="13" fontFamily={FONT} fontSize="9" fill="var(--text-muted)">vue du dessus — cible à gauche</text>
-
-      <line x1="118" y1="26" x2="27" y2="26" stroke="currentColor" strokeWidth="1.3" opacity="0.55" strokeDasharray="1 4" />
-      <polygon points="27,22 27,30 20,26" fill="currentColor" opacity="0.55" />
-
-      <line x1="18" y1="65" x2="116" y2="65" stroke="var(--brand-action)" strokeWidth="1.2" opacity="0.5" />
-
-      <line x1="50" y1="44" x2="50" y2="63" stroke="var(--text-muted)" strokeWidth="1" strokeDasharray="1 3" opacity="0.45" />
-      <line x1="50" y1="61" x2="50" y2="69" stroke="var(--text-muted)" strokeWidth="1.2" opacity="0.55" />
-      <Ball cx={50} cy={38} r={5} />
-
-      <Shoe cx={30} cy={65} angle={-25} />
-      <path d="M 30 50 A 15 15 0 0 0 23.66 51.41" fill="none" stroke="var(--text-muted)" strokeWidth="1.4" opacity="0.75" />
-      <text x="30" y="91" textAnchor="middle" fontFamily={FONT} fontSize="8" fontWeight="600" fill="var(--text-body)">avant</text>
-      <text x="30" y="104" textAnchor="middle" fontFamily={FONT} fontSize="7.5" fill="var(--text-muted)">25°</text>
-
-      <Shoe cx={108} cy={65} angle={10} />
-      <path d="M 108 50 A 15 15 0 0 1 110.6 50.23" fill="none" stroke="var(--text-muted)" strokeWidth="1.4" opacity="0.75" />
-      <text x="108" y="91" textAnchor="middle" fontFamily={FONT} fontSize="8" fontWeight="600" fill="var(--text-body)">arrière</text>
-      <text x="108" y="104" textAnchor="middle" fontFamily={FONT} fontSize="7.5" fill="var(--text-muted)">10°</text>
-
-      <text x="69" y="117" textAnchor="middle" fontFamily={FONT} fontSize="6.5" fill="var(--text-muted)" opacity="0.65">repère de départ</text>
-
-      <line x1="100" y1="250" x2="300" y2="250" stroke="var(--brand-action)" strokeWidth="1.5" opacity="0.6" />
-      <path d="M 135,259 L 135,246 A 15 13 0 0 1 165,246 L 165,259 Z" fill="var(--brand-action)" />
-      <path d="M 235,259 L 235,246 A 15 13 0 0 1 265,246 L 265,259 Z" fill="var(--brand-action)" />
-      <text x="250" y="271" textAnchor="middle" fontFamily={FONT} fontSize="12" fontWeight="600" fill="var(--text-muted)">arrière</text>
-      <text x="150" y="271" textAnchor="middle" fontFamily={FONT} fontSize="12" fontWeight="600" fill="var(--text-muted)">avant</text>
-
-      <line x1="196" y1="225" x2="206" y2="135" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="1 4" opacity="0.5" />
-
-      <line x1="244" y1="148" x2="168" y2="122" stroke="currentColor" strokeWidth="7" strokeLinecap="round" />
-      <text x="206" y="106" textAnchor="middle" fontFamily={SERIF} fontSize="12.5" fontWeight="700" fill="currentColor" opacity="0.9">épaules</text>
-
-      <line x1="168" y1="122" x2="178" y2="158" stroke="currentColor" strokeWidth="3" strokeLinecap="round" opacity="0.55" />
-      <line x1="244" y1="148" x2="178" y2="158" stroke="currentColor" strokeWidth="3" strokeLinecap="round" opacity="0.55" />
-      <line x1="178" y1="158" x2="148" y2="239" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <ellipse cx="152" cy="246" rx="10" ry="5.5" fill="currentColor" stroke="#fff" strokeWidth="1.2" transform="rotate(15 152 246)" />
-      <circle cx="178" cy="158" r="5" fill="currentColor" />
-
-      <Ball cx={140} cy={250} r={7} />
-
-      <text x="305" y="282" textAnchor="start" fontFamily={FONT} fontSize="11" fontWeight="600" fill="var(--text-muted)" opacity="0.9">pression</text>
-      <line x1="150" y1="278" x2="250" y2="278" stroke="var(--border-default)" strokeWidth="5" strokeLinecap="round" />
-      <circle cx="205" cy="278" r="4.5" fill="currentColor" />
-      <text x="250" y="294" textAnchor="middle" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="var(--text-muted)">55%</text>
-      <text x="150" y="294" textAnchor="middle" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="var(--text-muted)">45%</text>
-    </svg>
+    <TopView
+      frontX={150}
+      backX={250}
+      ballX={175}
+      arcFront={{ x: 143.66, y: 86.41 }}
+      arcBack={{ x: 252.6, y: 85.23 }}
+      ariaLabel="Vue arrière surélevée du stance pour le driver : pied avant à gauche, pied arrière à droite, cible à gauche, balle projetée à l'intérieur du talon avant par rapport à la ligne des orteils."
+    />
   );
 }
 
@@ -122,56 +124,14 @@ export function DriverArcDiagram() {
 
 export function Fer7AddressDiagram() {
   return (
-    <svg viewBox="0 0 400 300" role="img" style={{ width: '100%', height: 'auto', display: 'block', color: 'var(--text-body)' }}
-      aria-label="Vue de face à l'adresse pour le fer 7, avec vue du dessus en médaillon : pieds largeur d'épaules, balle légèrement devant le centre, épaules carrées, pression 52 pour cent avant et 48 pour cent arrière.">
-      <text x="15" y="13" fontFamily={FONT} fontSize="9" fill="var(--text-muted)">vue du dessus — cible à gauche</text>
-
-      <line x1="104" y1="26" x2="27" y2="26" stroke="currentColor" strokeWidth="1.3" opacity="0.55" strokeDasharray="1 4" />
-      <polygon points="27,22 27,30 20,26" fill="currentColor" opacity="0.55" />
-
-      <line x1="32" y1="65" x2="102" y2="65" stroke="var(--brand-action)" strokeWidth="1.2" opacity="0.5" />
-
-      <line x1="63" y1="44" x2="63" y2="63" stroke="var(--text-muted)" strokeWidth="1" strokeDasharray="1 3" opacity="0.45" />
-      <line x1="63" y1="61" x2="63" y2="69" stroke="var(--text-muted)" strokeWidth="1.2" opacity="0.55" />
-      <Ball cx={63} cy={38} r={5} />
-
-      <Shoe cx={44} cy={65} angle={-25} />
-      <path d="M 44 50 A 15 15 0 0 0 37.66 51.41" fill="none" stroke="var(--text-muted)" strokeWidth="1.4" opacity="0.75" />
-      <text x="44" y="91" textAnchor="middle" fontFamily={FONT} fontSize="8" fontWeight="600" fill="var(--text-body)">avant</text>
-      <text x="44" y="104" textAnchor="middle" fontFamily={FONT} fontSize="7.5" fill="var(--text-muted)">25°</text>
-
-      <Shoe cx={94} cy={65} angle={10} />
-      <path d="M 94 50 A 15 15 0 0 1 96.6 50.23" fill="none" stroke="var(--text-muted)" strokeWidth="1.4" opacity="0.75" />
-      <text x="94" y="91" textAnchor="middle" fontFamily={FONT} fontSize="8" fontWeight="600" fill="var(--text-body)">arrière</text>
-      <text x="94" y="104" textAnchor="middle" fontFamily={FONT} fontSize="7.5" fill="var(--text-muted)">10°</text>
-
-      <text x="69" y="117" textAnchor="middle" fontFamily={FONT} fontSize="6.5" fill="var(--text-muted)" opacity="0.65">repère de départ</text>
-
-      <line x1="100" y1="250" x2="300" y2="250" stroke="var(--brand-action)" strokeWidth="1.5" opacity="0.6" />
-      <path d="M 145,259 L 145,246 A 15 13 0 0 1 175,246 L 175,259 Z" fill="var(--brand-action)" />
-      <path d="M 225,259 L 225,246 A 15 13 0 0 1 255,246 L 255,259 Z" fill="var(--brand-action)" />
-      <text x="240" y="271" textAnchor="middle" fontFamily={FONT} fontSize="12" fontWeight="600" fill="var(--text-muted)">arrière</text>
-      <text x="160" y="271" textAnchor="middle" fontFamily={FONT} fontSize="12" fontWeight="600" fill="var(--text-muted)">avant</text>
-
-      <line x1="209" y1="225" x2="214" y2="137" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="1 4" opacity="0.5" />
-
-      <line x1="250" y1="140" x2="178" y2="134" stroke="currentColor" strokeWidth="7" strokeLinecap="round" />
-      <text x="214" y="108" textAnchor="middle" fontFamily={SERIF} fontSize="12.5" fontWeight="700" fill="currentColor" opacity="0.9">épaules</text>
-
-      <line x1="178" y1="134" x2="197" y2="163" stroke="currentColor" strokeWidth="3" strokeLinecap="round" opacity="0.55" />
-      <line x1="250" y1="140" x2="197" y2="163" stroke="currentColor" strokeWidth="3" strokeLinecap="round" opacity="0.55" />
-      <line x1="197" y1="163" x2="201" y2="241" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <ellipse cx="205" cy="247" rx="9" ry="5" fill="currentColor" stroke="#fff" strokeWidth="1.2" transform="rotate(-13 205 247)" />
-      <circle cx="197" cy="163" r="5" fill="currentColor" />
-
-      <Ball cx={193} cy={250} r={7} />
-
-      <text x="305" y="282" textAnchor="start" fontFamily={FONT} fontSize="10" fill="var(--text-muted)" opacity="0.85">pression</text>
-      <line x1="160" y1="278" x2="240" y2="278" stroke="var(--border-default)" strokeWidth="5" strokeLinecap="round" />
-      <circle cx="198" cy="278" r="4.5" fill="currentColor" />
-      <text x="240" y="294" textAnchor="middle" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="var(--text-muted)">48%</text>
-      <text x="160" y="294" textAnchor="middle" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="var(--text-muted)">52%</text>
-    </svg>
+    <TopView
+      frontX={165}
+      backX={235}
+      ballX={192}
+      arcFront={{ x: 158.66, y: 86.41 }}
+      arcBack={{ x: 237.6, y: 85.23 }}
+      ariaLabel="Vue arrière surélevée du stance pour le fer 7 : pied avant à gauche, pied arrière à droite, cible à gauche, balle projetée légèrement devant le centre par rapport à la ligne des orteils."
+    />
   );
 }
 
