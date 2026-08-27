@@ -2,6 +2,20 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.43.0 — 2026-08-27
+
+- **Diagramme d'adresse agrandi et retravaillé.** Le dessin était trop
+  petit et la balle semblait collée aux chaussures. Il occupe maintenant
+  presque toute la largeur de la carte : la balle est nettement au-dessus
+  des pieds, avec une petite tête de bâton juste à côté (la cible est à
+  gauche). Sous les pieds, une ligne de repère simple (talon avant /
+  centre) montre où la balle s'aligne dans le stance — Driver : exactement
+  sur l'intérieur du talon avant, plus avancée qu'avant ; Fer 7 :
+  légèrement à gauche du centre. Le texte minuscule « repère de départ »
+  est retiré ; tous les libellés sont maintenant lisibles sur un écran de
+  360 px. Pieds à 25°/10°, cible à gauche et onglet Arc et contact
+  inchangés.
+
 ## v1.42.0 — 2026-08-27
 
 - **Diagramme d'adresse repensé en une seule vue.** L'ancien schéma

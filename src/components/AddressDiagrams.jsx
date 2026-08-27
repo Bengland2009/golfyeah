@@ -37,46 +37,55 @@ function Shoe({ cx, cy, angle }) {
   );
 }
 
-// Single, unified "vue arrière surélevée" — as if the golfer is looking down
-// at their own stance from just behind and above. Two distinct axes only:
-// lateral (avant/arrière feet, left-right) and depth (ball ahead of the toe
-// line). A dashed line projects the ball straight down onto the toe line to
-// show lateral alignment only — never a physical ball-to-foot distance.
-// Replaces the old face-view figure (shoulders/club/pressure): that
-// information already lives as text in the info-cards below the diagram.
-function TopView({ frontX, backX, ballX, arcFront, arcBack, ariaLabel }) {
-  const pivotY = 100;
-  const toeLineY = pivotY - 17;
+// Single, unified "vue du joueur vers le sol, légèrement surélevée" — as if
+// looking down and slightly forward at one's own stance. Ball and clubhead
+// sit well above the feet with a clear gap; a fixed-width alignment ruler
+// below the feet (talon avant / centre) acts like a measuring line, and a
+// dashed plumb line drops from the ball straight onto it, showing where the
+// ball sits laterally in the stance — never a physical distance. Both clubs
+// share the same viewBox and ruler/arrow span, so the ruler reads as a
+// constant backdrop: only the stance width and ball position move on it,
+// which is what makes Driver's wider stance and more-forward ball legible
+// against Fer 7's narrower one. Replaces the old face-view figure
+// (shoulders/club-shaft/pressure): that already lives as text below.
+function TopView({ frontX, backX, ballX, talonAvantX, arcFront, arcBack, ariaLabel }) {
+  const centreX = 100;
+  const pivotY = 132;
   const heelY = pivotY + 15;
-  const ballY = 55;
-  const toeLineX1 = frontX - 35;
-  const toeLineX2 = backX + 35;
+  const ballY = 58;
+  const ballR = 11;
+  const clubheadCx = ballX + 16;
+  const rulerY = 192;
 
   return (
-    <svg viewBox="0 0 400 175" role="img" style={{ width: '100%', height: 'auto', display: 'block', color: 'var(--text-body)' }}
+    <svg viewBox="0 0 200 218" role="img" style={{ width: '100%', height: 'auto', display: 'block', color: 'var(--text-body)' }}
       aria-label={ariaLabel}>
-      <text x={(backX + 10 + frontX - 30) / 2} y="18" textAnchor="middle" fontFamily={FONT} fontSize="8.5" fill="var(--text-muted)">cible à gauche</text>
-      <line x1={backX + 10} y1="28" x2={frontX - 30} y2="28" stroke="currentColor" strokeWidth="1.3" opacity="0.55" strokeDasharray="1 4" />
-      <polygon points={`${frontX - 30},24 ${frontX - 30},32 ${frontX - 37},28`} fill="currentColor" opacity="0.55" />
+      <text x={centreX} y="12" textAnchor="middle" fontFamily={FONT} fontSize="9" fill="var(--text-muted)">cible à gauche</text>
+      <line x1="170" y1="24" x2="30" y2="24" stroke="currentColor" strokeWidth="1.4" opacity="0.55" strokeDasharray="1 4" />
+      <polygon points="37,20 37,28 30,24" fill="currentColor" opacity="0.55" />
 
-      <Ball cx={ballX} cy={ballY} r={6} />
-      <line x1={ballX} y1={ballY + 8} x2={ballX} y2={toeLineY} stroke="var(--text-muted)" strokeWidth="1.2" strokeDasharray="1 3" opacity="0.6" />
-      <circle cx={ballX} cy={toeLineY} r="2.5" fill="var(--brand-action)" />
-
-      <line x1={toeLineX1} y1={toeLineY} x2={toeLineX2} y2={toeLineY} stroke="var(--brand-action)" strokeWidth="1.2" strokeDasharray="2 3" opacity="0.55" />
-      <text x={toeLineX2 + 6} y={toeLineY + 3} textAnchor="start" fontFamily={FONT} fontSize="7" fill="var(--text-muted)" opacity="0.75">ligne des orteils</text>
+      <Ball cx={ballX} cy={ballY} r={ballR} />
+      <g transform={`rotate(-18 ${clubheadCx} 56)`}>
+        <ellipse cx={clubheadCx} cy="56" rx="9" ry="6" fill="currentColor" opacity="0.82" />
+      </g>
+      <line x1={ballX} y1={ballY + ballR + 4} x2={ballX} y2={rulerY} stroke="var(--text-muted)" strokeWidth="1.3" strokeDasharray="1 3" opacity="0.6" />
 
       <Shoe cx={frontX} cy={pivotY} angle={-25} />
       <path d={`M ${frontX} ${pivotY - 15} A 15 15 0 0 0 ${arcFront.x} ${arcFront.y}`} fill="none" stroke="var(--text-muted)" strokeWidth="1.4" opacity="0.75" />
-      <text x={frontX} y={heelY + 14} textAnchor="middle" fontFamily={FONT} fontSize="8" fontWeight="600" fill="var(--text-body)">avant</text>
-      <text x={frontX} y={heelY + 27} textAnchor="middle" fontFamily={FONT} fontSize="7.5" fill="var(--text-muted)">25°</text>
+      <text x={frontX} y={heelY + 16} textAnchor="middle" fontFamily={FONT} fontSize="10" fontWeight="600" fill="var(--text-body)">avant</text>
+      <text x={frontX} y={heelY + 29} textAnchor="middle" fontFamily={FONT} fontSize="8.5" fill="var(--text-muted)">25°</text>
 
       <Shoe cx={backX} cy={pivotY} angle={10} />
       <path d={`M ${backX} ${pivotY - 15} A 15 15 0 0 1 ${arcBack.x} ${arcBack.y}`} fill="none" stroke="var(--text-muted)" strokeWidth="1.4" opacity="0.75" />
-      <text x={backX} y={heelY + 14} textAnchor="middle" fontFamily={FONT} fontSize="8" fontWeight="600" fill="var(--text-body)">arrière</text>
-      <text x={backX} y={heelY + 27} textAnchor="middle" fontFamily={FONT} fontSize="7.5" fill="var(--text-muted)">10°</text>
+      <text x={backX} y={heelY + 16} textAnchor="middle" fontFamily={FONT} fontSize="10" fontWeight="600" fill="var(--text-body)">arrière</text>
+      <text x={backX} y={heelY + 29} textAnchor="middle" fontFamily={FONT} fontSize="8.5" fill="var(--text-muted)">10°</text>
 
-      <text x={(frontX + backX) / 2} y={heelY + 38} textAnchor="middle" fontFamily={FONT} fontSize="6.5" fill="var(--text-muted)" opacity="0.65">repère de départ — alignement, pas une distance</text>
+      <line x1="15" y1={rulerY} x2="185" y2={rulerY} stroke="var(--border-default)" strokeWidth="1.3" />
+      <line x1={talonAvantX} y1={rulerY - 4} x2={talonAvantX} y2={rulerY + 4} stroke="var(--text-muted)" strokeWidth="1.3" />
+      <line x1={centreX} y1={rulerY - 4} x2={centreX} y2={rulerY + 4} stroke="var(--text-muted)" strokeWidth="1.3" />
+      <circle cx={ballX} cy={rulerY} r="3" fill="var(--brand-action)" />
+      <text x={talonAvantX} y={rulerY - 8} textAnchor="middle" fontFamily={FONT} fontSize="8.5" fill="var(--text-muted)">talon avant</text>
+      <text x={centreX} y={rulerY + 15} textAnchor="middle" fontFamily={FONT} fontSize="8.5" fill="var(--text-muted)">centre</text>
     </svg>
   );
 }
@@ -84,12 +93,13 @@ function TopView({ frontX, backX, ballX, arcFront, arcBack, ariaLabel }) {
 export function DriverAddressDiagram() {
   return (
     <TopView
-      frontX={150}
-      backX={250}
-      ballX={175}
-      arcFront={{ x: 143.66, y: 86.41 }}
-      arcBack={{ x: 252.6, y: 85.23 }}
-      ariaLabel="Vue arrière surélevée du stance pour le driver : pied avant à gauche, pied arrière à droite, cible à gauche, balle projetée à l'intérieur du talon avant par rapport à la ligne des orteils."
+      frontX={35}
+      backX={165}
+      ballX={49}
+      talonAvantX={49}
+      arcFront={{ x: 28.66, y: 118.41 }}
+      arcBack={{ x: 167.6, y: 117.23 }}
+      ariaLabel="Vue du joueur vers le sol pour le driver : stance large, pied avant à gauche, pied arrière à droite, cible à gauche, tête de bâton derrière la balle. La balle, bien au-dessus des pieds, s'aligne exactement avec l'intérieur du talon avant sur le repère au sol."
     />
   );
 }
@@ -125,12 +135,13 @@ export function DriverArcDiagram() {
 export function Fer7AddressDiagram() {
   return (
     <TopView
-      frontX={165}
-      backX={235}
-      ballX={192}
-      arcFront={{ x: 158.66, y: 86.41 }}
-      arcBack={{ x: 237.6, y: 85.23 }}
-      ariaLabel="Vue arrière surélevée du stance pour le fer 7 : pied avant à gauche, pied arrière à droite, cible à gauche, balle projetée légèrement devant le centre par rapport à la ligne des orteils."
+      frontX={57.5}
+      backX={142.5}
+      ballX={92}
+      talonAvantX={69.5}
+      arcFront={{ x: 51.16, y: 118.41 }}
+      arcBack={{ x: 145.1, y: 117.23 }}
+      ariaLabel="Vue du joueur vers le sol pour le fer 7 : stance largeur d'épaules, pied avant à gauche, pied arrière à droite, cible à gauche, tête de bâton derrière la balle. La balle, bien au-dessus des pieds, s'aligne légèrement à gauche du centre, vers la cible, sur le repère au sol."
     />
   );
 }
