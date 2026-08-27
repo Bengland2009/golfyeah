@@ -135,7 +135,7 @@ export const CONTENT = {
     },
     arc: {
       context: 'Standard · bonne lie',
-      keyPoints: ['Petit arc contrôlé', 'Semelle qui brosse le sol', 'Point bas juste après'],
+      keyPoints: ['Petit arc contrôlé', 'Semelle qui brosse le sol', 'Point bas sous ou légèrement après la balle'],
       caption: 'Laisse la semelle brosser le sol; ne cherche pas à cueillir la balle.',
       info: [
         { label: 'Arc', value: 'Court et contrôlé' },

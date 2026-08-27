@@ -68,6 +68,8 @@ function ClubButton({ club, active, onClick }) {
   return (
     <button
       type="button"
+      aria-pressed={active}
+      aria-disabled={disabled || undefined}
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
       style={{
@@ -99,6 +101,7 @@ function CompactTabs({ options, value, onChange }) {
           <button
             key={opt.value}
             type="button"
+            aria-pressed={active}
             onClick={() => onChange(opt.value)}
             style={{
               flex: 1, height: 32, borderRadius: 8, border: 'none', cursor: 'pointer',
@@ -128,10 +131,11 @@ function SubClubToggle({ options, value, onChange }) {
           <button
             key={opt.value}
             type="button"
+            aria-pressed={active}
             onClick={() => onChange(opt.value)}
             style={{
               background: 'none', border: 'none', borderBottom: active ? '2px solid var(--brand-action)' : '2px solid transparent',
-              padding: '2px 0 4px', cursor: 'pointer',
+              padding: '6px 2px', cursor: 'pointer',
               font: 'var(--text-small)', fontSize: 13.5, fontWeight: active ? 700 : 500,
               color: active ? 'var(--text-body)' : 'var(--text-muted)',
             }}

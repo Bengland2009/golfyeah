@@ -2,6 +2,21 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.50.1 — 2026-08-27
+
+- **Contrôle qualité final de la page Adresse & contact.** Vérification
+  des 10 états (Driver/Fer 7/Bois/Hybride/Chip × Adresse/Arc et
+  contact) à 360, 390 et 430 px : aucun débordement horizontal, aucun
+  chevauchement, aucun résidu graphique en changeant d'état. Harmonise
+  le texte « À retenir » du Chip — Arc et contact (« Point bas sous ou
+  légèrement après la balle », au lieu de « Point bas juste après »)
+  pour correspondre au détail déjà affiché plus bas. Ajoute les
+  attributs d'accessibilité manquants sur les boutons de bâton, les
+  onglets Adresse/Arc et contact et le sous-sélecteur Bois/Hybride
+  (`aria-pressed`), et agrandit légèrement la zone tactile du
+  sous-sélecteur. Aucun changement aux contenus techniques, aux
+  couleurs, à la navigation ou aux illustrations déjà validées.
+
 ## v1.50.0 — 2026-08-27
 
 - **Arc et contact pour le Chip standard.** Le contenu temporaire
