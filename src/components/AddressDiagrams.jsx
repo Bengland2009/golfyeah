@@ -18,20 +18,21 @@ function Ball({ cx, cy, r = 9 }) {
   );
 }
 
-// A shoe seen from above (top-view stance diagrams) — narrower heel,
-// wider rounded forefoot, plus a heel-collar and toe-cap seam so it reads
-// as an actual boot outline rather than a plain oval. `angle` is applied
-// around the shoe's own heel-side pivot (0° = toe pointing straight away
-// from the target line — see the "vue du dessus" blocks below).
+// A sneaker seen from above (top-view stance diagrams) — rounded toe box,
+// narrower heel, with a two-tone toe cap and heel counter so it reads as
+// an actual shoe rather than a plain oval. `angle` is applied around the
+// shoe's own pivot. At angle 0 the toe points straight toward the target
+// line (the golfer's own forward-facing direction) and the heel points
+// away from it — see the "vue du dessus" blocks below.
 function Shoe({ cx, cy, angle }) {
   return (
     <g transform={`translate(${cx},${cy}) rotate(${angle})`}>
       <path
-        d="M 0,-15 C 3.2,-15 4.2,-11.5 4,-7 C 3.8,-3 6,1.5 6.8,6.5 C 7.4,10.5 5.5,15.5 0,17 C -5.5,15.5 -7.4,10.5 -6.8,6.5 C -6,1.5 -3.8,-3 -4,-7 C -4.2,-11.5 -3.2,-15 0,-15 Z"
+        d="M 0,15 C 3.2,15 4.2,11.5 4,7 C 3.8,3 6,-1.5 6.8,-6.5 C 7.4,-10.5 5.5,-15.5 0,-17 C -5.5,-15.5 -7.4,-10.5 -6.8,-6.5 C -6,-1.5 -3.8,3 -4,7 C -4.2,11.5 -3.2,15 0,15 Z"
         fill="var(--brand-action)"
       />
-      <path d="M -3,-12 Q 0,-14.5 3,-12" stroke="#fff" strokeWidth="1" opacity="0.5" fill="none" />
-      <path d="M -3.5,9 Q 0,13 3.5,9" stroke="#fff" strokeWidth="0.8" opacity="0.4" fill="none" />
+      <ellipse cx="0" cy="-11.5" rx="4.6" ry="4.3" fill="var(--brand-primary)" />
+      <ellipse cx="0" cy="11.5" rx="3.4" ry="3.6" fill="var(--brand-primary)" />
     </g>
   );
 }
@@ -42,24 +43,24 @@ export function DriverAddressDiagram() {
       aria-label="Vue de face à l'adresse pour le driver, avec vue du dessus en médaillon : pieds plus larges que les épaules, balle près du talon avant, épaule arrière plus basse, pression 45 pour cent avant et 55 pour cent arrière.">
       <text x="15" y="13" fontFamily={FONT} fontSize="9" fill="var(--text-muted)">vue du dessus — cible à gauche</text>
 
-      <line x1="118" y1="30" x2="27" y2="30" stroke="currentColor" strokeWidth="1.3" opacity="0.55" strokeDasharray="1 4" />
-      <polygon points="27,26 27,34 20,30" fill="currentColor" opacity="0.55" />
+      <line x1="118" y1="26" x2="27" y2="26" stroke="currentColor" strokeWidth="1.3" opacity="0.55" strokeDasharray="1 4" />
+      <polygon points="27,22 27,30 20,26" fill="currentColor" opacity="0.55" />
 
-      <line x1="18" y1="52" x2="116" y2="52" stroke="var(--brand-action)" strokeWidth="1.2" opacity="0.5" />
+      <Ball cx={44} cy={38} r={5} />
 
-      <Ball cx={44} cy={41} r={5} />
+      <line x1="18" y1="65" x2="116" y2="65" stroke="var(--brand-action)" strokeWidth="1.2" opacity="0.5" />
 
-      <Shoe cx={30} cy={52} angle={25} />
-      <path d="M 30 67 A 15 15 0 0 1 23.66 65.59" fill="none" stroke="var(--text-muted)" strokeWidth="1.4" opacity="0.75" />
-      <text x="30" y="78" textAnchor="middle" fontFamily={FONT} fontSize="8" fontWeight="600" fill="var(--text-body)">avant</text>
-      <text x="30" y="91" textAnchor="middle" fontFamily={FONT} fontSize="7.5" fill="var(--text-muted)">25°</text>
+      <Shoe cx={30} cy={65} angle={-25} />
+      <path d="M 30 50 A 15 15 0 0 0 23.66 51.41" fill="none" stroke="var(--text-muted)" strokeWidth="1.4" opacity="0.75" />
+      <text x="30" y="91" textAnchor="middle" fontFamily={FONT} fontSize="8" fontWeight="600" fill="var(--text-body)">avant</text>
+      <text x="30" y="104" textAnchor="middle" fontFamily={FONT} fontSize="7.5" fill="var(--text-muted)">25°</text>
 
-      <Shoe cx={108} cy={52} angle={-10} />
-      <path d="M 108 67 A 15 15 0 0 0 110.6 66.77" fill="none" stroke="var(--text-muted)" strokeWidth="1.4" opacity="0.75" />
-      <text x="108" y="78" textAnchor="middle" fontFamily={FONT} fontSize="8" fontWeight="600" fill="var(--text-body)">arrière</text>
-      <text x="108" y="91" textAnchor="middle" fontFamily={FONT} fontSize="7.5" fill="var(--text-muted)">10°</text>
+      <Shoe cx={108} cy={65} angle={10} />
+      <path d="M 108 50 A 15 15 0 0 1 110.6 50.23" fill="none" stroke="var(--text-muted)" strokeWidth="1.4" opacity="0.75" />
+      <text x="108" y="91" textAnchor="middle" fontFamily={FONT} fontSize="8" fontWeight="600" fill="var(--text-body)">arrière</text>
+      <text x="108" y="104" textAnchor="middle" fontFamily={FONT} fontSize="7.5" fill="var(--text-muted)">10°</text>
 
-      <text x="69" y="101" textAnchor="middle" fontFamily={FONT} fontSize="6.5" fill="var(--text-muted)" opacity="0.65">repère de départ</text>
+      <text x="69" y="117" textAnchor="middle" fontFamily={FONT} fontSize="6.5" fill="var(--text-muted)" opacity="0.65">repère de départ</text>
 
       <line x1="100" y1="250" x2="300" y2="250" stroke="var(--brand-action)" strokeWidth="2.5" />
       <ellipse cx="150" cy="250" rx="27" ry="11" fill="var(--brand-action)" />
@@ -123,24 +124,24 @@ export function Fer7AddressDiagram() {
       aria-label="Vue de face à l'adresse pour le fer 7, avec vue du dessus en médaillon : pieds largeur d'épaules, balle légèrement devant le centre, épaules carrées, pression 52 pour cent avant et 48 pour cent arrière.">
       <text x="15" y="13" fontFamily={FONT} fontSize="9" fill="var(--text-muted)">vue du dessus — cible à gauche</text>
 
-      <line x1="104" y1="30" x2="27" y2="30" stroke="currentColor" strokeWidth="1.3" opacity="0.55" strokeDasharray="1 4" />
-      <polygon points="27,26 27,34 20,30" fill="currentColor" opacity="0.55" />
+      <line x1="104" y1="26" x2="27" y2="26" stroke="currentColor" strokeWidth="1.3" opacity="0.55" strokeDasharray="1 4" />
+      <polygon points="27,22 27,30 20,26" fill="currentColor" opacity="0.55" />
 
-      <line x1="32" y1="52" x2="102" y2="52" stroke="var(--brand-action)" strokeWidth="1.2" opacity="0.5" />
+      <Ball cx={61} cy={38} r={5} />
 
-      <Ball cx={61} cy={41} r={5} />
+      <line x1="32" y1="65" x2="102" y2="65" stroke="var(--brand-action)" strokeWidth="1.2" opacity="0.5" />
 
-      <Shoe cx={44} cy={52} angle={25} />
-      <path d="M 44 67 A 15 15 0 0 1 37.66 65.59" fill="none" stroke="var(--text-muted)" strokeWidth="1.4" opacity="0.75" />
-      <text x="44" y="78" textAnchor="middle" fontFamily={FONT} fontSize="8" fontWeight="600" fill="var(--text-body)">avant</text>
-      <text x="44" y="91" textAnchor="middle" fontFamily={FONT} fontSize="7.5" fill="var(--text-muted)">25°</text>
+      <Shoe cx={44} cy={65} angle={-25} />
+      <path d="M 44 50 A 15 15 0 0 0 37.66 51.41" fill="none" stroke="var(--text-muted)" strokeWidth="1.4" opacity="0.75" />
+      <text x="44" y="91" textAnchor="middle" fontFamily={FONT} fontSize="8" fontWeight="600" fill="var(--text-body)">avant</text>
+      <text x="44" y="104" textAnchor="middle" fontFamily={FONT} fontSize="7.5" fill="var(--text-muted)">25°</text>
 
-      <Shoe cx={94} cy={52} angle={-10} />
-      <path d="M 94 67 A 15 15 0 0 0 96.6 66.77" fill="none" stroke="var(--text-muted)" strokeWidth="1.4" opacity="0.75" />
-      <text x="94" y="78" textAnchor="middle" fontFamily={FONT} fontSize="8" fontWeight="600" fill="var(--text-body)">arrière</text>
-      <text x="94" y="91" textAnchor="middle" fontFamily={FONT} fontSize="7.5" fill="var(--text-muted)">10°</text>
+      <Shoe cx={94} cy={65} angle={10} />
+      <path d="M 94 50 A 15 15 0 0 1 96.6 50.23" fill="none" stroke="var(--text-muted)" strokeWidth="1.4" opacity="0.75" />
+      <text x="94" y="91" textAnchor="middle" fontFamily={FONT} fontSize="8" fontWeight="600" fill="var(--text-body)">arrière</text>
+      <text x="94" y="104" textAnchor="middle" fontFamily={FONT} fontSize="7.5" fill="var(--text-muted)">10°</text>
 
-      <text x="69" y="101" textAnchor="middle" fontFamily={FONT} fontSize="6.5" fill="var(--text-muted)" opacity="0.65">repère de départ</text>
+      <text x="69" y="117" textAnchor="middle" fontFamily={FONT} fontSize="6.5" fill="var(--text-muted)" opacity="0.65">repère de départ</text>
 
       <line x1="100" y1="250" x2="300" y2="250" stroke="var(--brand-action)" strokeWidth="2.5" />
       <ellipse cx="160" cy="250" rx="27" ry="11" fill="var(--brand-action)" />

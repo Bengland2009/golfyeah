@@ -2,6 +2,19 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.39.0 — 2026-08-27
+
+- **Correction de l'orientation des pieds dans la vue du dessus.** Les
+  chaussures pointaient dans le mauvais sens : le talon était placé côté
+  cible et la pointe s'éloignait vers le bas de l'écran. C'est maintenant
+  l'inverse — la pointe du pied pointe vers la ligne de jeu/la balle
+  (vers l'avant du golfeur), et le talon se trouve en bas (côté arrière
+  du joueur), ce qui se lit enfin comme la vraie vue du golfeur derrière
+  sa balle. Les silhouettes de chaussure sont aussi plus reconnaissables
+  (bout de pied arrondi et talon distincts, en deux tons). Aucun autre
+  changement — logique gauche/droite, cible à gauche, angles ~25°/~10° et
+  tout le reste de la page restent identiques.
+
 ## v1.38.0 — 2026-08-27
 
 - **Vue du dessus agrandie et plus lisible dans Adresse & contact.** Les
