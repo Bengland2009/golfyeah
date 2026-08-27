@@ -2,6 +2,19 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.40.0 — 2026-08-27
+
+- **Vue de face affinée dans Adresse & contact.** Le pictogramme principal
+  (épaules, bâton, balle, pieds, pression) avait des traits trop épais et
+  des pieds représentés par de grosses ellipses pleines. Les lignes sont
+  maintenant plus fines, les pieds sont des icônes plus petites et plus
+  légères (silhouette en dôme), et surtout — l'orientation gauche/droite
+  est inversée pour correspondre à la logique du reste de la page : le
+  pied avant (gauche) est maintenant à gauche, le pied arrière (droit) à
+  droite, cohérent avec « on frappe vers la gauche ». Toutes les données
+  affichées (pression, position de balle, inclinaison des épaules)
+  restent exactes — seule leur orientation et leur style visuel changent.
+
 ## v1.39.0 — 2026-08-27
 
 - **Correction de l'orientation des pieds dans la vue du dessus.** Les

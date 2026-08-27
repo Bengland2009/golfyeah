@@ -62,30 +62,30 @@ export function DriverAddressDiagram() {
 
       <text x="69" y="117" textAnchor="middle" fontFamily={FONT} fontSize="6.5" fill="var(--text-muted)" opacity="0.65">repère de départ</text>
 
-      <line x1="100" y1="250" x2="300" y2="250" stroke="var(--brand-action)" strokeWidth="2.5" />
-      <ellipse cx="150" cy="250" rx="27" ry="11" fill="var(--brand-action)" />
-      <ellipse cx="250" cy="250" rx="27" ry="11" fill="var(--brand-action)" />
-      <text x="150" y="271" textAnchor="middle" fontFamily={FONT} fontSize="12" fontWeight="600" fill="var(--text-muted)">arrière</text>
-      <text x="250" y="271" textAnchor="middle" fontFamily={FONT} fontSize="12" fontWeight="600" fill="var(--text-muted)">avant</text>
+      <line x1="100" y1="250" x2="300" y2="250" stroke="var(--brand-action)" strokeWidth="1.5" opacity="0.6" />
+      <path d="M 135,259 L 135,246 A 15 13 0 0 1 165,246 L 165,259 Z" fill="var(--brand-action)" />
+      <path d="M 235,259 L 235,246 A 15 13 0 0 1 265,246 L 265,259 Z" fill="var(--brand-action)" />
+      <text x="250" y="271" textAnchor="middle" fontFamily={FONT} fontSize="12" fontWeight="600" fill="var(--text-muted)">arrière</text>
+      <text x="150" y="271" textAnchor="middle" fontFamily={FONT} fontSize="12" fontWeight="600" fill="var(--text-muted)">avant</text>
 
-      <line x1="204" y1="225" x2="194" y2="135" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeDasharray="1 4" opacity="0.55" />
+      <line x1="196" y1="225" x2="206" y2="135" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="1 4" opacity="0.5" />
 
-      <line x1="156" y1="148" x2="232" y2="122" stroke="currentColor" strokeWidth="10" strokeLinecap="round" />
-      <text x="194" y="106" textAnchor="middle" fontFamily={SERIF} fontSize="12.5" fontWeight="700" fill="currentColor" opacity="0.9">épaules</text>
+      <line x1="244" y1="148" x2="168" y2="122" stroke="currentColor" strokeWidth="7" strokeLinecap="round" />
+      <text x="206" y="106" textAnchor="middle" fontFamily={SERIF} fontSize="12.5" fontWeight="700" fill="currentColor" opacity="0.9">épaules</text>
 
-      <line x1="232" y1="122" x2="222" y2="158" stroke="currentColor" strokeWidth="4.5" strokeLinecap="round" opacity="0.55" />
-      <line x1="156" y1="148" x2="222" y2="158" stroke="currentColor" strokeWidth="4.5" strokeLinecap="round" opacity="0.55" />
-      <line x1="222" y1="158" x2="252" y2="239" stroke="currentColor" strokeWidth="2.75" strokeLinecap="round" />
-      <ellipse cx="248" cy="246" rx="13" ry="7" fill="currentColor" stroke="#fff" strokeWidth="1.5" transform="rotate(-15 248 246)" />
-      <circle cx="222" cy="158" r="6.5" fill="currentColor" />
+      <line x1="168" y1="122" x2="178" y2="158" stroke="currentColor" strokeWidth="3" strokeLinecap="round" opacity="0.55" />
+      <line x1="244" y1="148" x2="178" y2="158" stroke="currentColor" strokeWidth="3" strokeLinecap="round" opacity="0.55" />
+      <line x1="178" y1="158" x2="148" y2="239" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <ellipse cx="152" cy="246" rx="10" ry="5.5" fill="currentColor" stroke="#fff" strokeWidth="1.2" transform="rotate(15 152 246)" />
+      <circle cx="178" cy="158" r="5" fill="currentColor" />
 
-      <Ball cx="260" cy="250" />
+      <Ball cx={140} cy={250} r={7} />
 
-      <text x="95" y="282" textAnchor="end" fontFamily={FONT} fontSize="11" fontWeight="600" fill="var(--text-muted)" opacity="0.9">pression</text>
-      <line x1="150" y1="278" x2="250" y2="278" stroke="var(--border-default)" strokeWidth="6" strokeLinecap="round" />
-      <circle cx="195" cy="278" r="5.5" fill="currentColor" />
-      <text x="150" y="294" textAnchor="middle" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="var(--text-muted)">55%</text>
-      <text x="250" y="294" textAnchor="middle" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="var(--text-muted)">45%</text>
+      <text x="305" y="282" textAnchor="start" fontFamily={FONT} fontSize="11" fontWeight="600" fill="var(--text-muted)" opacity="0.9">pression</text>
+      <line x1="150" y1="278" x2="250" y2="278" stroke="var(--border-default)" strokeWidth="5" strokeLinecap="round" />
+      <circle cx="205" cy="278" r="4.5" fill="currentColor" />
+      <text x="250" y="294" textAnchor="middle" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="var(--text-muted)">55%</text>
+      <text x="150" y="294" textAnchor="middle" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="var(--text-muted)">45%</text>
     </svg>
   );
 }
@@ -143,30 +143,30 @@ export function Fer7AddressDiagram() {
 
       <text x="69" y="117" textAnchor="middle" fontFamily={FONT} fontSize="6.5" fill="var(--text-muted)" opacity="0.65">repère de départ</text>
 
-      <line x1="100" y1="250" x2="300" y2="250" stroke="var(--brand-action)" strokeWidth="2.5" />
-      <ellipse cx="160" cy="250" rx="27" ry="11" fill="var(--brand-action)" />
-      <ellipse cx="240" cy="250" rx="27" ry="11" fill="var(--brand-action)" />
-      <text x="160" y="271" textAnchor="middle" fontFamily={FONT} fontSize="12" fontWeight="600" fill="var(--text-muted)">arrière</text>
-      <text x="240" y="271" textAnchor="middle" fontFamily={FONT} fontSize="12" fontWeight="600" fill="var(--text-muted)">avant</text>
+      <line x1="100" y1="250" x2="300" y2="250" stroke="var(--brand-action)" strokeWidth="1.5" opacity="0.6" />
+      <path d="M 145,259 L 145,246 A 15 13 0 0 1 175,246 L 175,259 Z" fill="var(--brand-action)" />
+      <path d="M 225,259 L 225,246 A 15 13 0 0 1 255,246 L 255,259 Z" fill="var(--brand-action)" />
+      <text x="240" y="271" textAnchor="middle" fontFamily={FONT} fontSize="12" fontWeight="600" fill="var(--text-muted)">arrière</text>
+      <text x="160" y="271" textAnchor="middle" fontFamily={FONT} fontSize="12" fontWeight="600" fill="var(--text-muted)">avant</text>
 
-      <line x1="191" y1="225" x2="186" y2="137" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeDasharray="1 4" opacity="0.55" />
+      <line x1="209" y1="225" x2="214" y2="137" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="1 4" opacity="0.5" />
 
-      <line x1="150" y1="140" x2="222" y2="134" stroke="currentColor" strokeWidth="10" strokeLinecap="round" />
-      <text x="186" y="108" textAnchor="middle" fontFamily={SERIF} fontSize="12.5" fontWeight="700" fill="currentColor" opacity="0.9">épaules</text>
+      <line x1="250" y1="140" x2="178" y2="134" stroke="currentColor" strokeWidth="7" strokeLinecap="round" />
+      <text x="214" y="108" textAnchor="middle" fontFamily={SERIF} fontSize="12.5" fontWeight="700" fill="currentColor" opacity="0.9">épaules</text>
 
-      <line x1="222" y1="134" x2="203" y2="163" stroke="currentColor" strokeWidth="4.5" strokeLinecap="round" opacity="0.55" />
-      <line x1="150" y1="140" x2="203" y2="163" stroke="currentColor" strokeWidth="4.5" strokeLinecap="round" opacity="0.55" />
-      <line x1="203" y1="163" x2="199" y2="241" stroke="currentColor" strokeWidth="2.75" strokeLinecap="round" />
-      <ellipse cx="195" cy="247" rx="12" ry="6.5" fill="currentColor" stroke="#fff" strokeWidth="1.5" transform="rotate(13 195 247)" />
-      <circle cx="203" cy="163" r="6.5" fill="currentColor" />
+      <line x1="178" y1="134" x2="197" y2="163" stroke="currentColor" strokeWidth="3" strokeLinecap="round" opacity="0.55" />
+      <line x1="250" y1="140" x2="197" y2="163" stroke="currentColor" strokeWidth="3" strokeLinecap="round" opacity="0.55" />
+      <line x1="197" y1="163" x2="201" y2="241" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <ellipse cx="205" cy="247" rx="9" ry="5" fill="currentColor" stroke="#fff" strokeWidth="1.2" transform="rotate(-13 205 247)" />
+      <circle cx="197" cy="163" r="5" fill="currentColor" />
 
-      <Ball cx="207" cy="250" />
+      <Ball cx={193} cy={250} r={7} />
 
-      <text x="95" y="282" textAnchor="end" fontFamily={FONT} fontSize="10" fill="var(--text-muted)" opacity="0.85">pression</text>
-      <line x1="160" y1="278" x2="240" y2="278" stroke="var(--border-default)" strokeWidth="6" strokeLinecap="round" />
-      <circle cx="202" cy="278" r="5.5" fill="currentColor" />
-      <text x="160" y="294" textAnchor="middle" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="var(--text-muted)">48%</text>
-      <text x="240" y="294" textAnchor="middle" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="var(--text-muted)">52%</text>
+      <text x="305" y="282" textAnchor="start" fontFamily={FONT} fontSize="10" fill="var(--text-muted)" opacity="0.85">pression</text>
+      <line x1="160" y1="278" x2="240" y2="278" stroke="var(--border-default)" strokeWidth="5" strokeLinecap="round" />
+      <circle cx="198" cy="278" r="4.5" fill="currentColor" />
+      <text x="240" y="294" textAnchor="middle" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="var(--text-muted)">48%</text>
+      <text x="160" y="294" textAnchor="middle" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="var(--text-muted)">52%</text>
     </svg>
   );
 }
