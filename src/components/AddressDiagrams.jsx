@@ -46,9 +46,11 @@ export function DriverAddressDiagram() {
       <line x1="118" y1="26" x2="27" y2="26" stroke="currentColor" strokeWidth="1.3" opacity="0.55" strokeDasharray="1 4" />
       <polygon points="27,22 27,30 20,26" fill="currentColor" opacity="0.55" />
 
-      <Ball cx={44} cy={38} r={5} />
-
       <line x1="18" y1="65" x2="116" y2="65" stroke="var(--brand-action)" strokeWidth="1.2" opacity="0.5" />
+
+      <line x1="50" y1="44" x2="50" y2="63" stroke="var(--text-muted)" strokeWidth="1" strokeDasharray="1 3" opacity="0.45" />
+      <line x1="50" y1="61" x2="50" y2="69" stroke="var(--text-muted)" strokeWidth="1.2" opacity="0.55" />
+      <Ball cx={50} cy={38} r={5} />
 
       <Shoe cx={30} cy={65} angle={-25} />
       <path d="M 30 50 A 15 15 0 0 0 23.66 51.41" fill="none" stroke="var(--text-muted)" strokeWidth="1.4" opacity="0.75" />
@@ -127,9 +129,11 @@ export function Fer7AddressDiagram() {
       <line x1="104" y1="26" x2="27" y2="26" stroke="currentColor" strokeWidth="1.3" opacity="0.55" strokeDasharray="1 4" />
       <polygon points="27,22 27,30 20,26" fill="currentColor" opacity="0.55" />
 
-      <Ball cx={61} cy={38} r={5} />
-
       <line x1="32" y1="65" x2="102" y2="65" stroke="var(--brand-action)" strokeWidth="1.2" opacity="0.5" />
+
+      <line x1="63" y1="44" x2="63" y2="63" stroke="var(--text-muted)" strokeWidth="1" strokeDasharray="1 3" opacity="0.45" />
+      <line x1="63" y1="61" x2="63" y2="69" stroke="var(--text-muted)" strokeWidth="1.2" opacity="0.55" />
+      <Ball cx={63} cy={38} r={5} />
 
       <Shoe cx={44} cy={65} angle={-25} />
       <path d="M 44 50 A 15 15 0 0 0 37.66 51.41" fill="none" stroke="var(--text-muted)" strokeWidth="1.4" opacity="0.75" />

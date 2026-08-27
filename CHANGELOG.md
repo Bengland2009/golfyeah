@@ -2,6 +2,18 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.41.0 — 2026-08-27
+
+- **Position de la balle corrigée dans la vue du dessus.** La balle
+  paraissait presque à l'extérieur du pied avant. Elle est maintenant
+  clairement à l'intérieur du corridor entre les deux pieds — pour le
+  Driver, alignée avec l'intérieur du talon avant (pas au-delà) ; pour le
+  Fer 7, nettement entre les deux pieds, légèrement devant le centre. Une
+  ligne de référence discrète (pointillé + petit repère sur la ligne des
+  talons) montre maintenant exactement à quoi la balle s'aligne.
+  Empreintes de pied, angles 25°/10°, cible à gauche et tout le reste
+  inchangés.
+
 ## v1.40.0 — 2026-08-27
 
 - **Vue de face affinée dans Adresse & contact.** Le pictogramme principal
