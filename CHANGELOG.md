@@ -2,6 +2,25 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.48.0 — 2026-08-27
+
+- **Schémas Arc et contact de Bois et Hybride retravaillés.** La flèche
+  « sens du swing » flottante est retirée ; une petite flèche est
+  maintenant intégrée directement sur la partie descendante de l'arc, à
+  droite de la balle, qui montre le mouvement sans élément séparé. Les
+  schémas sont agrandis (balle, tête de bâton, arc et marques au sol
+  environ 50 % plus grands) dans un viewBox plus serré, sans agrandir la
+  carte. La tête de bâton — qui ressemblait à deux points — est
+  maintenant une forme unique, ronde et peu profonde pour le Bois, plus
+  compacte pour l'Hybride. Le libellé « contact » passe au-dessus de la
+  balle avec un petit trait de liaison ; « point bas » (simplifié, sans
+  « après ») reste sous son repère. La brosse du gazon du Bois est
+  maintenant visible (petits traits), et l'arc de l'Hybride est élargi
+  d'environ 30 % et légèrement aplati — plus descendant que le Bois,
+  mais plus proche d'un fer que d'un wedge — avec un petit divot qui
+  commence juste après la balle. Les vues Adresse, la comparaison
+  Bois/Hybride et Driver/Fer 7 restent inchangés.
+
 ## v1.47.0 — 2026-08-27
 
 - **Arc et contact pour Bois et Hybride.** Le contenu temporaire « À

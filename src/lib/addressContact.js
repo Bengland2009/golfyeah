@@ -89,7 +89,7 @@ export const CONTENT = {
       footnote: { badge: 'Info', text: '3-bois plus près du talon ; 5/7-bois légèrement plus vers le centre.' },
     },
     arc: {
-      keyPoints: ['Arc large et rasant', 'Balle avant le sol', 'Légère brosse après'],
+      keyPoints: ['Arc large et rasant', 'Balle, puis le sol', 'Brosse légère après'],
       caption: 'Balayer signifie arriver peu profondément, pas frapper en remontant.',
       info: [
         { label: 'Arc', value: 'Large et peu profond' },
@@ -110,7 +110,7 @@ export const CONTENT = {
       ],
     },
     arc: {
-      keyPoints: ['Arc plus descendant', 'Balle avant le sol', 'Petit divot après'],
+      keyPoints: ['Arc plus descendant', 'Balle, puis le sol', 'Petit divot après'],
       caption: 'Frappe l’hybride comme un fer, sans chercher à soulever la balle.',
       info: [
         { label: 'Arc', value: 'Plus compact et légèrement descendant' },

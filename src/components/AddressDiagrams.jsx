@@ -295,57 +295,50 @@ export function HybrideAddressDiagram() {
 // difference carries the distinction, not just color, per the brief.
 export function BoisArcDiagram() {
   return (
-    <svg viewBox="0 0 400 190" role="img" style={{ width: '100%', height: 'auto', display: 'block', color: 'var(--text-body)' }}
-      aria-label="Vue de côté pour le bois, joué depuis le gazon : arc large et peu profond. La tête touche la balle avant le sol ; le point bas survient légèrement après la balle, vers la cible à gauche, suivi d'une légère brosse du gazon — jamais un contact remontant comme au driver.">
-      <defs>
-        <marker id="arrowArcB" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-          <path d="M0,0 L10,5 L0,10 z" fill="currentColor" />
-        </marker>
-      </defs>
-      <text x="350" y="30" textAnchor="end" fontFamily={FONT} fontSize="10.5" fill="currentColor" opacity="0.65">sens du swing</text>
-      <line x1="350" y1="42" x2="290" y2="42" stroke="currentColor" strokeWidth="1.5" markerEnd="url(#arrowArcB)" opacity="0.6" />
+    <svg viewBox="0 0 400 170" role="img" style={{ width: '100%', height: 'auto', display: 'block', color: 'var(--text-body)' }}
+      aria-label="Vue de côté pour le bois, joué depuis le gazon : arc large et peu profond, avec une flèche sur sa partie descendante montrant la tête de bâton se déplacer de droite à gauche. Elle touche la balle avant le sol ; le point bas, à gauche de la balle, est suivi d'une légère brosse du gazon — jamais un contact remontant comme au driver.">
+      <rect x="40" y="100" width="320" height="18" fill="var(--surface-tint)" />
+      <line x1="40" y1="100" x2="360" y2="100" stroke="var(--brand-action)" strokeWidth="3.2" />
+      <line x1="159" y1="98" x2="168" y2="103" stroke="currentColor" strokeWidth="2" opacity="0.55" strokeLinecap="round" />
+      <line x1="172" y1="98" x2="181" y2="103" stroke="currentColor" strokeWidth="2" opacity="0.55" strokeLinecap="round" />
+      <line x1="185" y1="98" x2="194" y2="103" stroke="currentColor" strokeWidth="2" opacity="0.55" strokeLinecap="round" />
+      <line x1="198" y1="98" x2="207" y2="103" stroke="currentColor" strokeWidth="2" opacity="0.55" strokeLinecap="round" />
 
-      <rect x="40" y="132" width="320" height="18" fill="var(--surface-tint)" />
-      <line x1="40" y1="132" x2="360" y2="132" stroke="var(--brand-action)" strokeWidth="2.5" />
-      <ellipse cx="178" cy="132" rx="24" ry="3" fill="currentColor" opacity="0.16" />
-      <path d="M 350 100 Q 210 145 90 110" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.8" />
+      <path d="M 350 65 Q 210 109 90 72" fill="none" stroke="currentColor" strokeWidth="3" opacity="0.8" />
+      <polygon points="7,0 -5,-4 -5,4" fill="currentColor" opacity="0.8" transform="translate(300,78) rotate(168)" />
 
-      <circle cx="195" cy="132" r="3" fill="currentColor" />
-      <text x="195" y="152" textAnchor="middle" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="currentColor" opacity="0.85">point bas</text>
-      <text x="148" y="169" textAnchor="middle" fontFamily={FONT} fontSize="10.5" fontWeight="600" fill="currentColor" opacity="0.7">brosse légère</text>
+      <circle cx="195" cy="100" r="4.5" fill="currentColor" />
+      <text x="195" y="132" textAnchor="middle" fontFamily={FONT} fontSize="13" fontWeight="600" fill="currentColor" opacity="0.85">point bas</text>
+      <text x="148" y="148" textAnchor="middle" fontFamily={FONT} fontSize="12" fontWeight="600" fill="currentColor" opacity="0.7">brosse légère</text>
 
-      <Ball cx="245" cy="123" />
-      <ClubHead cx="260" cy="120" club="bois" />
-      <text x="277" y="132" textAnchor="start" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="currentColor" opacity="0.85">contact</text>
+      <ellipse cx="261" cy="87" rx="13" ry="7" fill="currentColor" />
+      <Ball cx="245" cy="87" r="13" />
+      <line x1="245" y1="71" x2="245" y2="48" stroke="currentColor" strokeWidth="1.3" opacity="0.6" />
+      <text x="245" y="41" textAnchor="middle" fontFamily={FONT} fontSize="13" fontWeight="600" fill="currentColor" opacity="0.85">contact</text>
     </svg>
   );
 }
 
 export function HybrideArcDiagram() {
   return (
-    <svg viewBox="0 0 400 190" role="img" style={{ width: '100%', height: 'auto', display: 'block', color: 'var(--text-body)' }}
-      aria-label="Vue de côté pour l'hybride, joué depuis le gazon : arc plus compact et plus descendant que celui du bois. La tête touche la balle avant le sol ; le point bas survient après la balle, vers la cible à gauche, suivi d'un petit divot discret.">
-      <defs>
-        <marker id="arrowArcH" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-          <path d="M0,0 L10,5 L0,10 z" fill="currentColor" />
-        </marker>
-      </defs>
-      <text x="350" y="30" textAnchor="end" fontFamily={FONT} fontSize="10.5" fill="currentColor" opacity="0.65">sens du swing</text>
-      <line x1="350" y1="42" x2="290" y2="42" stroke="currentColor" strokeWidth="1.5" markerEnd="url(#arrowArcH)" opacity="0.6" />
+    <svg viewBox="0 0 400 170" role="img" style={{ width: '100%', height: 'auto', display: 'block', color: 'var(--text-body)' }}
+      aria-label="Vue de côté pour l'hybride, joué depuis le gazon : arc plus compact et plus descendant que celui du bois, mais pas aussi abrupt qu'un wedge, avec une flèche sur sa partie descendante montrant la tête de bâton se déplacer de droite à gauche. Elle touche la balle avant le sol ; le point bas, à gauche de la balle, est suivi d'un petit divot qui commence juste après elle.">
+      <rect x="40" y="100" width="320" height="18" fill="var(--surface-tint)" />
+      <line x1="40" y1="100" x2="360" y2="100" stroke="var(--brand-action)" strokeWidth="3.2" />
+      <ellipse cx="192" cy="100" rx="17" ry="4.5" fill="currentColor" opacity="0.22" />
+      <ellipse cx="203" cy="97" rx="7" ry="3" fill="currentColor" opacity="0.35" />
 
-      <rect x="40" y="132" width="320" height="18" fill="var(--surface-tint)" />
-      <line x1="40" y1="132" x2="360" y2="132" stroke="var(--brand-action)" strokeWidth="2.5" />
-      <ellipse cx="158" cy="132.5" rx="12" ry="2.8" fill="currentColor" opacity="0.22" />
-      <ellipse cx="152" cy="132" rx="5" ry="2" fill="currentColor" opacity="0.35" />
-      <path d="M 300 70 Q 210 195 150 78" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.8" />
+      <path d="M 320 25 Q 220 140 125 44" fill="none" stroke="currentColor" strokeWidth="3" opacity="0.8" />
+      <polygon points="7,0 -5,-4 -5,4" fill="currentColor" opacity="0.8" transform="translate(250,80) rotate(157)" />
 
-      <circle cx="175" cy="132" r="3" fill="currentColor" />
-      <text x="175" y="152" textAnchor="middle" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="currentColor" opacity="0.85">point bas après</text>
-      <text x="148" y="169" textAnchor="middle" fontFamily={FONT} fontSize="10.5" fontWeight="600" fill="currentColor" opacity="0.7">petit divot</text>
+      <circle cx="175" cy="100" r="4.5" fill="currentColor" />
+      <text x="175" y="132" textAnchor="middle" fontFamily={FONT} fontSize="13" fontWeight="600" fill="currentColor" opacity="0.85">point bas</text>
+      <text x="148" y="148" textAnchor="middle" fontFamily={FONT} fontSize="12" fontWeight="600" fill="currentColor" opacity="0.7">petit divot</text>
 
-      <Ball cx="210" cy="123" />
-      <ClubHead cx="224" cy="120" club="hybride" />
-      <text x="234" y="124" textAnchor="start" fontFamily={FONT} fontSize="11.5" fontWeight="600" fill="currentColor" opacity="0.85">contact descendant</text>
+      <ellipse cx="224" cy="87" rx="9" ry="8" fill="currentColor" />
+      <Ball cx="210" cy="87" r="13" />
+      <line x1="210" y1="71" x2="210" y2="48" stroke="currentColor" strokeWidth="1.3" opacity="0.6" />
+      <text x="210" y="41" textAnchor="middle" fontFamily={FONT} fontSize="13" fontWeight="600" fill="currentColor" opacity="0.85">contact</text>
     </svg>
   );
 }
