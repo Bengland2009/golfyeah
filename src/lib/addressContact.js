@@ -83,7 +83,6 @@ export const CONTENT = {
       context: 'Depuis le gazon',
       keyPoints: ['Balle en avant', 'Corps presque centré', 'Balle puis brosse'],
       caption: 'Stance légèrement plus large que les épaules, balle dans une zone avancée à l’intérieur du talon avant.',
-      zoneLabel: 'zone avancée',
       info: [
         { label: 'Balle', value: 'Zone avancée, à l’intérieur du talon avant' },
         { label: 'Épaules', value: 'Parallèles à la cible, arrière légèrement plus basse' },
@@ -97,7 +96,6 @@ export const CONTENT = {
       context: 'Depuis le gazon',
       keyPoints: ['Un peu devant le centre', 'Corps centré', 'Petit divot après'],
       caption: 'Stance environ largeur d’épaules, balle dans une petite zone légèrement devant le centre.',
-      zoneLabel: 'zone hybride',
       info: [
         { label: 'Balle', value: '2 à 5 cm devant le centre' },
         { label: 'Épaules', value: 'Presque nivelées, torse centré' },
@@ -107,11 +105,20 @@ export const CONTENT = {
   },
 };
 
-// The one-line Driver-vs-Fer comparison shown at the bottom of the page
-// — the single biggest difference a beginner needs to walk away with.
+// The one-line quick-compare card at the bottom of the page — the single
+// biggest difference a beginner needs to walk away with. Swapped for the
+// B/H pair (title + rows) whenever B/H is the active main club, so the
+// card never compares clubs that aren't on screen.
+export const QUICK_COMPARE_TITLE = 'Driver vs Fer 7';
 export const QUICK_COMPARE = [
   { club: 'Driver', label: 'Balle avant · contact en remontant' },
   { club: 'Fer 7', label: 'Balle plus centrée · contact descendant' },
+];
+
+export const QUICK_COMPARE_BH_TITLE = 'Bois vs Hybride';
+export const QUICK_COMPARE_BH = [
+  { club: 'Bois', label: 'Balle avancée · contact rasant' },
+  { club: 'Hybride', label: 'Balle plus centrée · contact descendant' },
 ];
 
 export function contentFor(club, tab) {

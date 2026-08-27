@@ -90,12 +90,20 @@ function Shoe({ cx, cy, angle }) {
 // against Fer 7's narrower one. Replaces the old face-view figure
 // (shoulders/club-shaft/pressure): that already lives as text below.
 //
-// `zoneX1`/`zoneX2`/`zoneLabel` are optional — when set (Bois, Hybride),
-// a short gold band is drawn around the ball and reproduced on the ruler
-// to show an acceptable range, while the solid ball and the green ruler
-// dot still mark the single recommended point within it. Driver/Fer 7
-// don't pass these, so their diagrams are unaffected.
-function TopView({ frontX, backX, ballX, talonAvantX, arcFront, arcBack, club, zoneX1, zoneX2, zoneLabel, ariaLabel }) {
+// `zone` is optional — when set (Bois, Hybride), the acceptable range is
+// drawn as a bold bracketed segment ON the ruler (two tall gold end-caps
+// joined by a solid bar), labelled either at each end (`zone.left`/
+// `zone.right` — Bois's "3-bois"/"5/7-bois") or once, centered under the
+// segment (`zone.label` — Hybride's "2–5 cm devant"). The solid ball and
+// the green ruler dot still mark the single recommended point inside it.
+// No zone-above-the-ball band or label anymore — the ruler is the only
+// place the range is shown, so it doesn't compete with the ball for
+// attention. When a zone is present, the ruler's own "centre" caption
+// drops to a second row (there's more going on right at ruler height),
+// which is why zone diagrams use a taller viewBox than Driver/Fer 7.
+// Driver/Fer 7 pass neither `zone` nor `viewBoxHeight`, so they render
+// exactly as before.
+function TopView({ frontX, backX, ballX, talonAvantX, arcFront, arcBack, club, zone, viewBoxHeight = 180, ariaLabel }) {
   const centreX = 100;
   const pivotY = 100;
   const heelY = pivotY + 15;
@@ -103,21 +111,15 @@ function TopView({ frontX, backX, ballX, talonAvantX, arcFront, arcBack, club, z
   const ballR = 6.5;
   const clubheadCx = ballX + 17;
   const rulerY = 158;
-  const hasZone = zoneX1 != null && zoneX2 != null;
+  const centreLabelY = zone ? rulerY + 24 : rulerY + 13;
 
   return (
-    <svg viewBox="0 0 200 180" role="img" style={{ width: '100%', height: 'auto', display: 'block', color: 'var(--text-body)' }}
+    <svg viewBox={`0 0 200 ${viewBoxHeight}`} role="img" style={{ width: '100%', height: 'auto', display: 'block', color: 'var(--text-body)' }}
       aria-label={ariaLabel}>
       <text x={centreX} y="8" textAnchor="middle" fontFamily={FONT} fontSize="9" fill="var(--text-muted)">cible à gauche</text>
       <line x1="170" y1="18" x2="30" y2="18" stroke="currentColor" strokeWidth="1.4" opacity="0.55" strokeDasharray="1 4" />
       <polygon points="37,14 37,22 30,18" fill="currentColor" opacity="0.55" />
 
-      {hasZone && (
-        <>
-          <rect x={zoneX1} y={ballY - 2.5} width={zoneX2 - zoneX1} height="5" rx="2.5" fill={GOLD} opacity="0.3" />
-          <text x={(zoneX1 + zoneX2) / 2} y="29" textAnchor="middle" fontFamily={FONT} fontSize="7.5" fontWeight="600" fill={GOLD_DEEP}>{zoneLabel}</text>
-        </>
-      )}
       <Ball cx={ballX} cy={ballY} r={ballR} flat />
       <ClubHead cx={clubheadCx} cy={ballY} club={club} />
       <line x1={ballX} y1={ballY + ballR + 4} x2={ballX} y2={rulerY} stroke="var(--text-muted)" strokeWidth="1.3" strokeDasharray="1 3" opacity="0.6" />
@@ -133,14 +135,30 @@ function TopView({ frontX, backX, ballX, talonAvantX, arcFront, arcBack, club, z
       <text x={backX} y={heelY + 27} textAnchor="middle" fontFamily={FONT} fontSize="8.5" fill="var(--text-muted)">10°</text>
 
       <line x1="15" y1={rulerY} x2="185" y2={rulerY} stroke="var(--border-default)" strokeWidth="1.3" />
-      {hasZone && (
-        <line x1={zoneX1} y1={rulerY} x2={zoneX2} y2={rulerY} stroke={GOLD} strokeWidth="4" strokeLinecap="round" opacity="0.55" />
+
+      {zone ? (
+        <>
+          <line x1={zone.x1} y1={rulerY} x2={zone.x2} y2={rulerY} stroke={GOLD_DEEP} strokeWidth="3.4" />
+          <line x1={zone.x1} y1={rulerY - 7} x2={zone.x1} y2={rulerY + 7} stroke={GOLD_DEEP} strokeWidth="2.2" />
+          <line x1={zone.x2} y1={rulerY - 7} x2={zone.x2} y2={rulerY + 7} stroke={GOLD_DEEP} strokeWidth="2.2" />
+          {zone.label ? (
+            <text x={(zone.x1 + zone.x2) / 2} y={rulerY + 13} textAnchor="middle" fontFamily={FONT} fontSize="8" fontWeight="700" fill={GOLD_DEEP}>{zone.label}</text>
+          ) : (
+            <>
+              <text x={zone.x1 - 2} y={rulerY + 13} textAnchor="end" fontFamily={FONT} fontSize="8" fontWeight="700" fill={GOLD_DEEP}>{zone.left}</text>
+              <text x={zone.x2 + 2} y={rulerY + 13} textAnchor="start" fontFamily={FONT} fontSize="8" fontWeight="700" fill={GOLD_DEEP}>{zone.right}</text>
+            </>
+          )}
+        </>
+      ) : (
+        <>
+          <line x1={talonAvantX} y1={rulerY - 4} x2={talonAvantX} y2={rulerY + 4} stroke="var(--text-muted)" strokeWidth="1.3" />
+          <text x={talonAvantX} y={rulerY + 13} textAnchor="middle" fontFamily={FONT} fontSize="8" fill="var(--text-muted)">talon</text>
+        </>
       )}
-      <line x1={talonAvantX} y1={rulerY - 4} x2={talonAvantX} y2={rulerY + 4} stroke="var(--text-muted)" strokeWidth="1.3" />
       <line x1={centreX} y1={rulerY - 4} x2={centreX} y2={rulerY + 4} stroke="var(--text-muted)" strokeWidth="1.3" />
       <circle cx={ballX} cy={rulerY} r="3" fill="var(--brand-action)" />
-      <text x={talonAvantX} y={rulerY + 13} textAnchor="middle" fontFamily={FONT} fontSize="8" fill="var(--text-muted)">talon</text>
-      <text x={centreX} y={rulerY + 13} textAnchor="middle" fontFamily={FONT} fontSize="8" fill="var(--text-muted)">centre</text>
+      <text x={centreX} y={centreLabelY} textAnchor="middle" fontFamily={FONT} fontSize="8" fill="var(--text-muted)">centre</text>
     </svg>
   );
 }
@@ -239,14 +257,12 @@ export function BoisAddressDiagram() {
       frontX={50}
       backX={150}
       ballX={70}
-      talonAvantX={64}
-      zoneX1={64}
-      zoneX2={80}
-      zoneLabel="zone avancée"
+      zone={{ x1: 64, x2: 80, left: '3-bois', right: '5/7-bois' }}
+      viewBoxHeight={195}
       arcFront={{ x: 43.66, y: 86.41 }}
       arcBack={{ x: 152.6, y: 85.23 }}
       club="bois"
-      ariaLabel="Vue du joueur vers le sol pour le bois : stance légèrement plus large que les épaules, pied avant à gauche, pied arrière à droite, cible à gauche, tête de bois derrière la balle. La balle se joue dans une courte zone avancée, à l'intérieur du talon avant."
+      ariaLabel="Vue du joueur vers le sol pour le bois : stance légèrement plus large que les épaules, pied avant à gauche, pied arrière à droite, cible à gauche, tête de bois derrière la balle. La balle se joue dans une courte zone acceptable sur le repère au sol, du 3-bois (près du talon avant) au 5/7-bois (plus vers le centre)."
     />
   );
 }
@@ -256,15 +272,13 @@ export function HybrideAddressDiagram() {
     <TopView
       frontX={57.5}
       backX={142.5}
-      ballX={94}
-      talonAvantX={71.5}
-      zoneX1={90}
-      zoneX2={98}
-      zoneLabel="zone hybride"
+      ballX={91}
+      zone={{ x1: 87, x2: 94, label: '2–5 cm devant' }}
+      viewBoxHeight={195}
       arcFront={{ x: 51.16, y: 86.41 }}
       arcBack={{ x: 145.1, y: 85.23 }}
       club="hybride"
-      ariaLabel="Vue du joueur vers le sol pour l'hybride : stance environ largeur d'épaules, pied avant à gauche, pied arrière à droite, cible à gauche, tête d'hybride derrière la balle. La balle se joue dans une courte zone légèrement devant le centre."
+      ariaLabel="Vue du joueur vers le sol pour l'hybride : stance environ largeur d'épaules, pied avant à gauche, pied arrière à droite, cible à gauche, tête d'hybride derrière la balle. La balle se joue dans une courte zone acceptable, 2 à 5 cm devant le centre sur le repère au sol."
     />
   );
 }

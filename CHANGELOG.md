@@ -2,6 +2,23 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.46.0 — 2026-08-27
+
+- **Zone de balle rendue lisible pour Bois et Hybride.** Le petit segment
+  beige au-dessus de la balle était trop discret pour se lire. Il est
+  retiré, avec son libellé "zone avancée/hybride" au-dessus de la balle.
+  La zone acceptable est maintenant un segment encadré (deux repères
+  gras) directement sur le repère au sol : pour le Bois, `3-bois` à
+  gauche et `5/7-bois` vers le centre ; pour l'Hybride, un segment court
+  près du centre libellé `2–5 cm devant`. La balle pleine et le point
+  vert recommandé restent à leur position exacte, à l'intérieur du
+  segment.
+- **Carte de comparaison contextuelle.** La carte "Driver vs Fer 7" en
+  bas de page reste telle quelle pour Driver/Fer 7, mais devient
+  "Bois vs Hybride" (Bois : balle avancée · contact rasant — Hybride :
+  balle plus centrée · contact descendant) dès que B/H est le bâton
+  actif, pour ne plus comparer des bâtons hors écran.
+
 ## v1.45.0 — 2026-08-27
 
 - **B/H débloqué : vues Adresse pour le Bois et l'Hybride.** Le bouton

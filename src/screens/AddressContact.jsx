@@ -4,7 +4,10 @@ import Header from '../components/Header';
 import Card from '../components/Card';
 import Badge from '../components/Badge';
 import { LockIcon } from '../components/icons';
-import { CLUBS, TABS, DEFAULT_CLUB, DEFAULT_TAB, BH_SUBCLUBS, DEFAULT_BH_SUBCLUB, contentFor, QUICK_COMPARE } from '../lib/addressContact';
+import {
+  CLUBS, TABS, DEFAULT_CLUB, DEFAULT_TAB, BH_SUBCLUBS, DEFAULT_BH_SUBCLUB, contentFor,
+  QUICK_COMPARE, QUICK_COMPARE_TITLE, QUICK_COMPARE_BH, QUICK_COMPARE_BH_TITLE,
+} from '../lib/addressContact';
 import { diagramFor } from '../components/AddressDiagrams';
 
 // Small glyphs for the info-card icon slots — one per label this screen
@@ -141,6 +144,9 @@ export default function AddressContact() {
   const content = contentFor(effectiveClub, tab);
   const Diagram = diagramFor(effectiveClub, tab);
 
+  const compareTitle = isBH ? QUICK_COMPARE_BH_TITLE : QUICK_COMPARE_TITLE;
+  const compareRows = isBH ? QUICK_COMPARE_BH : QUICK_COMPARE;
+
   return (
     <div>
       <Header title="Adresse & contact" onBack={() => navigate('/pratique')} />
@@ -230,10 +236,10 @@ export default function AddressContact() {
 
         <Card tint>
           <div style={{ font: 'var(--text-eyebrow)', fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 'var(--letter-spacing-eyebrow)', marginBottom: 10 }}>
-            Driver vs Fer 7
+            {compareTitle}
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {QUICK_COMPARE.map((c) => (
+            {compareRows.map((c) => (
               <div key={c.club} style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
                 <span style={{ font: 'var(--text-label)', fontSize: 14, flexShrink: 0, minWidth: 58 }}>{c.club}</span>
                 <span style={{ font: 'var(--text-small)', fontSize: 13, color: 'var(--text-muted)' }}>{c.label}</span>
