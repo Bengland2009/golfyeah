@@ -2,6 +2,20 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v1.37.0 — 2026-08-27
+
+- **Vue du dessus corrigée dans Adresse & contact.** La vue du dessus
+  (onglet Adresse, Driver et Fer 7) montre maintenant deux vraies
+  empreintes de pied au lieu d'une simple barre plate. Elle se lit comme
+  la vue du golfeur lui-même : caméra derrière le joueur droitier, cible
+  à gauche, pied gauche (avant) à gauche, pied droit (arrière) à droite,
+  léger V (pied gauche ouvert ~25° vers la cible, pied droit ~10°), avec
+  petits arcs et libellés d'angle présentés comme repère de départ. La
+  position de la balle reste inchangée (juste à l'intérieur du talon
+  gauche pour le Driver, légèrement devant le centre pour le Fer 7).
+  Aucun autre élément touché — boutons, onglets, cartes d'info, vue de
+  face et schémas Arc et contact sont identiques.
+
 ## v1.36.0 — 2026-08-26
 
 - **Adresse & contact : lecture plus rapide, mobile plus confortable.**

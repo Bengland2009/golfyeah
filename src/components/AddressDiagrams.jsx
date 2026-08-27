@@ -22,13 +22,27 @@ export function DriverAddressDiagram() {
   return (
     <svg viewBox="0 0 400 300" role="img" style={{ width: '100%', height: 'auto', display: 'block', color: 'var(--text-body)' }}
       aria-label="Vue de face à l'adresse pour le driver, avec vue du dessus en médaillon : pieds plus larges que les épaules, balle près du talon avant, épaule arrière plus basse, pression 45 pour cent avant et 55 pour cent arrière.">
-      <text x="20" y="15" fontFamily={FONT} fontSize="8.5" fill="var(--text-muted)">vue du dessus</text>
-      <line x1="20" y1="26" x2="112" y2="26" stroke="currentColor" strokeWidth="1.3" opacity="0.6" strokeDasharray="1 4" />
-      <polygon points="112,22 124,26 112,30" fill="currentColor" opacity="0.6" />
-      <circle cx="104" cy="26" r="4" fill={GOLD} stroke={GOLD_DEEP} strokeWidth="0.8" />
-      <line x1="33" y1="48" x2="105" y2="48" stroke="var(--brand-action)" strokeWidth="1.3" />
-      <ellipse cx="42" cy="48" rx="9" ry="4.5" fill="var(--brand-action)" />
-      <ellipse cx="96" cy="48" rx="9" ry="4.5" fill="var(--brand-action)" />
+      <text x="20" y="15" fontFamily={FONT} fontSize="8.5" fill="var(--text-muted)">vue du dessus — cible à gauche</text>
+
+      <line x1="104" y1="32" x2="22" y2="32" stroke="currentColor" strokeWidth="1.3" opacity="0.55" strokeDasharray="1 4" />
+      <polygon points="24,28 24,36 17,32" fill="currentColor" opacity="0.55" />
+
+      <line x1="20" y1="44" x2="104" y2="44" stroke="var(--brand-action)" strokeWidth="1.1" opacity="0.5" />
+      <circle cx="38" cy="32" r="4" fill={GOLD} stroke={GOLD_DEEP} strokeWidth="0.8" />
+
+      <g transform="translate(28,44) rotate(25)">
+        <ellipse cx="0" cy="-6" rx="2.6" ry="3.4" fill="var(--brand-action)" />
+        <ellipse cx="0" cy="4" rx="4.3" ry="7" fill="var(--brand-action)" />
+      </g>
+      <path d="M 28 55 A 11 11 0 0 1 23.35 53.97" fill="none" stroke="var(--text-muted)" strokeWidth="1.3" opacity="0.75" />
+      <text x="24" y="63" textAnchor="middle" fontFamily={FONT} fontSize="7.5" fill="var(--text-muted)">25°</text>
+
+      <g transform="translate(96,44) rotate(-10)">
+        <ellipse cx="0" cy="-6" rx="2.6" ry="3.4" fill="var(--brand-action)" />
+        <ellipse cx="0" cy="4" rx="4.3" ry="7" fill="var(--brand-action)" />
+      </g>
+      <path d="M 96 55 A 11 11 0 0 0 97.91 54.83" fill="none" stroke="var(--text-muted)" strokeWidth="1.3" opacity="0.75" />
+      <text x="98" y="63" textAnchor="middle" fontFamily={FONT} fontSize="7.5" fill="var(--text-muted)">10°</text>
 
       <line x1="100" y1="250" x2="300" y2="250" stroke="var(--brand-action)" strokeWidth="2.5" />
       <ellipse cx="150" cy="250" rx="27" ry="11" fill="var(--brand-action)" />
@@ -90,13 +104,27 @@ export function Fer7AddressDiagram() {
   return (
     <svg viewBox="0 0 400 300" role="img" style={{ width: '100%', height: 'auto', display: 'block', color: 'var(--text-body)' }}
       aria-label="Vue de face à l'adresse pour le fer 7, avec vue du dessus en médaillon : pieds largeur d'épaules, balle légèrement devant le centre, épaules carrées, pression 52 pour cent avant et 48 pour cent arrière.">
-      <text x="20" y="15" fontFamily={FONT} fontSize="8.5" fill="var(--text-muted)">vue du dessus</text>
-      <line x1="20" y1="26" x2="88" y2="26" stroke="currentColor" strokeWidth="1.3" opacity="0.6" strokeDasharray="1 4" />
-      <polygon points="88,22 100,26 88,30" fill="currentColor" opacity="0.6" />
-      <circle cx="76" cy="26" r="4" fill={GOLD} stroke={GOLD_DEEP} strokeWidth="0.8" />
-      <line x1="39" y1="48" x2="103" y2="48" stroke="var(--brand-action)" strokeWidth="1.3" />
-      <ellipse cx="48" cy="48" rx="9" ry="4.5" fill="var(--brand-action)" />
-      <ellipse cx="94" cy="48" rx="9" ry="4.5" fill="var(--brand-action)" />
+      <text x="20" y="15" fontFamily={FONT} fontSize="8.5" fill="var(--text-muted)">vue du dessus — cible à gauche</text>
+
+      <line x1="96" y1="32" x2="26" y2="32" stroke="currentColor" strokeWidth="1.3" opacity="0.55" strokeDasharray="1 4" />
+      <polygon points="28,28 28,36 21,32" fill="currentColor" opacity="0.55" />
+
+      <line x1="32" y1="44" x2="96" y2="44" stroke="var(--brand-action)" strokeWidth="1.1" opacity="0.5" />
+      <circle cx="46" cy="32" r="4" fill={GOLD} stroke={GOLD_DEEP} strokeWidth="0.8" />
+
+      <g transform="translate(40,44) rotate(25)">
+        <ellipse cx="0" cy="-6" rx="2.6" ry="3.4" fill="var(--brand-action)" />
+        <ellipse cx="0" cy="4" rx="4.3" ry="7" fill="var(--brand-action)" />
+      </g>
+      <path d="M 40 55 A 11 11 0 0 1 35.35 53.97" fill="none" stroke="var(--text-muted)" strokeWidth="1.3" opacity="0.75" />
+      <text x="36" y="63" textAnchor="middle" fontFamily={FONT} fontSize="7.5" fill="var(--text-muted)">25°</text>
+
+      <g transform="translate(88,44) rotate(-10)">
+        <ellipse cx="0" cy="-6" rx="2.6" ry="3.4" fill="var(--brand-action)" />
+        <ellipse cx="0" cy="4" rx="4.3" ry="7" fill="var(--brand-action)" />
+      </g>
+      <path d="M 88 55 A 11 11 0 0 0 89.91 54.83" fill="none" stroke="var(--text-muted)" strokeWidth="1.3" opacity="0.75" />
+      <text x="90" y="63" textAnchor="middle" fontFamily={FONT} fontSize="7.5" fill="var(--text-muted)">10°</text>
 
       <line x1="100" y1="250" x2="300" y2="250" stroke="var(--brand-action)" strokeWidth="2.5" />
       <ellipse cx="160" cy="250" rx="27" ry="11" fill="var(--brand-action)" />
