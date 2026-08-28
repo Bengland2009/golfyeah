@@ -2,6 +2,16 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v2.1.1 — 2026-08-28
+
+- **Correction du schéma de l'Exercice 2 (Exercices guidés).** Le V était
+  trop fermé ; les deux bâtons forment maintenant un angle intérieur
+  ouvert de 145° (angle extérieur réflexe de 215°), symétrique autour de
+  l'axe vertical, avec une pente d'environ 17,5° sous l'horizontale à
+  partir du sommet. Le V paraît nettement plus large et plus plat.
+  Aucun autre exercice, texte, espacement ou comportement de la page
+  n'est modifié.
+
 ## v2.1.0 — 2026-08-28
 
 - **Nouveau module « Exercices guidés » dans Pratique.** Une carte

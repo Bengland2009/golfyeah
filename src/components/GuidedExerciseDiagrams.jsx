@@ -61,8 +61,8 @@ export function Exercise1Diagram() {
 export function Exercise2Diagram() {
   return (
     <Frame ariaLabel="Deux bâtons formant un V dont le sommet se trouve près de la balle.">
-      <line x1="100" y1="80" x2="35" y2="150" stroke={STICK} strokeWidth="3" strokeLinecap="round" />
-      <line x1="100" y1="80" x2="165" y2="150" stroke={STICK} strokeWidth="3" strokeLinecap="round" />
+      <line x1="100" y1="80" x2="15" y2="106.8" stroke={STICK} strokeWidth="3" strokeLinecap="round" />
+      <line x1="100" y1="80" x2="185" y2="106.8" stroke={STICK} strokeWidth="3" strokeLinecap="round" />
       <TargetBall />
       <Feet />
     </Frame>
