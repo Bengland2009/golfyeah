@@ -2,6 +2,13 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v2.2.1 — 2026-08-28
+
+- **Retrait de l'étiquette « À valider » (Exercices guidés).** Elle
+  disparaît des cinq cartes sans être remplacée ; l'espace vide qu'elle
+  laissait sous le texte de chaque exercice est retiré. Rien d'autre
+  n'est modifié.
+
 ## v2.2.0 — 2026-08-28
 
 - **Textes des cinq exercices guidés.** Chaque carte affiche maintenant

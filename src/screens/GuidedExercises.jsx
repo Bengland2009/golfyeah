@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Card from '../components/Card';
-import Badge from '../components/Badge';
 import { GUIDED_EXERCISES } from '../lib/guidedExercises';
 import { guidedExerciseDiagramFor } from '../components/GuidedExerciseDiagrams';
 
@@ -28,9 +27,6 @@ export default function GuidedExercises() {
                 <div style={{ marginTop: 10 }}>
                   <div style={{ font: 'var(--text-label)', fontSize: 14, color: 'var(--text-body)', marginBottom: 4 }}>{exercise.name}</div>
                   <div style={{ font: 'var(--text-small)', fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.45 }}>{exercise.text}</div>
-                </div>
-                <div style={{ textAlign: 'center', marginTop: 10 }}>
-                  <Badge>À valider</Badge>
                 </div>
               </Card>
             );
