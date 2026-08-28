@@ -2,11 +2,14 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
-## v1.50.1 — 2026-08-27
+## v2.0.0 — 2026-08-27
 
-- **Contrôle qualité final de la page Adresse & contact.** Vérification
-  des 10 états (Driver/Fer 7/Bois/Hybride/Chip × Adresse/Arc et
-  contact) à 360, 390 et 430 px : aucun débordement horizontal, aucun
+- **Adresse & contact : fonctionnalité complète.** Les quatre bâtons
+  (Driver, Fer 7, Bois/Hybride, Chip) sont maintenant tous déverrouillés
+  avec un contenu complet pour les deux onglets, Adresse et Arc et
+  contact. Contrôle qualité final de la page : vérification des 10
+  états (Driver/Fer 7/Bois/Hybride/Chip × Adresse/Arc et contact) à
+  360, 390 et 430 px — aucun débordement horizontal, aucun
   chevauchement, aucun résidu graphique en changeant d'état. Harmonise
   le texte « À retenir » du Chip — Arc et contact (« Point bas sous ou
   légèrement après la balle », au lieu de « Point bas juste après »)
