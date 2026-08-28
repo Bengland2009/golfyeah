@@ -203,6 +203,14 @@ export function LockIcon(props) {
     </svg>
   );
 }
+export function AlignmentSticksIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" width={22} height={22} {...common} {...props}>
+      <line x1="4" y1="20" x2="18" y2="4" />
+      <line x1="6" y1="4" x2="20" y2="20" />
+    </svg>
+  );
+}
 export function AlignIcon(props) {
   return (
     <svg viewBox="0 0 24 24" width={22} height={22} {...common} {...props}>

@@ -2,6 +2,20 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v2.1.0 — 2026-08-28
+
+- **Nouveau module « Exercices guidés » dans Pratique.** Une carte
+  « Exercices guidés » apparaît entre « Plan d'entraînement » et
+  « Adresse & contact », avec une nouvelle icône de bâtons d'alignement
+  croisés. Elle ouvre une page listant cinq installations au sol
+  (bâtons d'alignement), chacune avec un schéma SVG vu du dessus dans
+  le même langage visuel qu'« Adresse & contact » (chaussures et balle
+  réutilisées telles quelles) et une étiquette discrète « À valider ».
+  Cette première passe pose uniquement l'entrée, la navigation et les
+  cinq schémas — aucun objectif technique, minuterie, suivi ou critère
+  de réussite n'est encore défini. Aucun changement à « Adresse &
+  contact », au plan d'entraînement ni aux autres pages.
+
 ## v2.0.0 — 2026-08-27
 
 - **Adresse & contact : fonctionnalité complète.** Les quatre bâtons

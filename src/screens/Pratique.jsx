@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import TopBar from '../components/TopBar';
 import Card from '../components/Card';
-import { RulerIcon, PlusCircleIcon, TargetIcon, TrendingUpIcon, FlagIcon, AlignIcon } from '../components/icons';
+import { RulerIcon, PlusCircleIcon, TargetIcon, TrendingUpIcon, FlagIcon, AlignIcon, AlignmentSticksIcon } from '../components/icons';
 
 const CARDS = [
   {
@@ -9,6 +9,12 @@ const CARDS = [
     title: 'Plan d’entraînement',
     description: 'Un plan simple sur 4 semaines pour améliorer contact, direction et répétabilité.',
     to: '/pratique/plan',
+  },
+  {
+    Icon: AlignmentSticksIcon,
+    title: 'Exercices guidés',
+    description: '5 exercices avec bâtons d’alignement pour travailler tes repères.',
+    to: '/pratique/exercices-guides',
   },
   {
     Icon: AlignIcon,

@@ -11,7 +11,7 @@ const SERIF = "'Libre Baskerville', Georgia, serif";
 
 // `flat` drops the glossy highlight for the more compact, sober top-view
 // diagrams — the side-view Arc diagrams keep the original glossier ball.
-function Ball({ cx, cy, r = 9, flat = false }) {
+export function Ball({ cx, cy, r = 9, flat = false }) {
   return (
     <>
       <circle cx={cx} cy={cy} r={r} fill={GOLD} stroke={GOLD_DEEP} strokeWidth={1.2} />
@@ -73,7 +73,7 @@ function ClubHead({ cx, cy, club }) {
 // shoe's own pivot. At angle 0 the toe points straight toward the target
 // line (the golfer's own forward-facing direction) and the heel points
 // away from it — see the "vue du dessus" blocks below.
-function Shoe({ cx, cy, angle }) {
+export function Shoe({ cx, cy, angle }) {
   return (
     <g transform={`translate(${cx},${cy}) rotate(${angle})`}>
       <path
