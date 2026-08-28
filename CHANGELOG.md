@@ -2,6 +2,17 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v2.2.0 — 2026-08-28
+
+- **Textes des cinq exercices guidés.** Chaque carte affiche maintenant
+  un nom (« Le corridor », « Le V du swing », « Rotation des hanches »,
+  « Face alignée », « Balle puis sol ») et une courte description sous
+  son schéma, avant la mention « À valider ». L'introduction devient
+  « Cinq idées simples pour travailler tes repères. » Aucun SVG, aucune
+  carte, aucune dimension, aucune navigation ni aucun composant n'est
+  modifié — seuls les styles typographiques déjà utilisés ailleurs dans
+  l'app sont réemployés.
+
 ## v2.1.4 — 2026-08-28
 
 - **Correction du second bâton de l'Exercice 4 (Exercices guidés).** Il

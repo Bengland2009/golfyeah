@@ -13,7 +13,7 @@ export default function GuidedExercises() {
       <Header title="Exercices guidés" onBack={() => navigate('/pratique')} />
       <div style={{ padding: 'var(--page-padding-mobile)', display: 'flex', flexDirection: 'column', gap: 18 }}>
         <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)', lineHeight: 1.4 }}>
-          Choisis un exercice et reproduis l’installation au sol.
+          Cinq idées simples pour travailler tes repères.
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -24,6 +24,10 @@ export default function GuidedExercises() {
                 <div style={{ font: 'var(--text-h3)', fontSize: 16, marginBottom: 10 }}>Exercice {exercise.id}</div>
                 <div style={{ maxWidth: 240, margin: '0 auto' }}>
                   {Diagram && <Diagram />}
+                </div>
+                <div style={{ marginTop: 10 }}>
+                  <div style={{ font: 'var(--text-label)', fontSize: 14, color: 'var(--text-body)', marginBottom: 4 }}>{exercise.name}</div>
+                  <div style={{ font: 'var(--text-small)', fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.45 }}>{exercise.text}</div>
                 </div>
                 <div style={{ textAlign: 'center', marginTop: 10 }}>
                   <Badge>À valider</Badge>
