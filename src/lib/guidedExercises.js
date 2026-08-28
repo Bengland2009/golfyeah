@@ -14,7 +14,7 @@ export const GUIDED_EXERCISES = [
   },
   {
     id: 3,
-    name: 'Rotation des hanches',
+    name: 'Rotation des hanches à Fondrouge',
     text: 'Place un bâton au sol à 45° et un autre dans les boucles de ta ceinture. Tourne lentement les hanches pour amener le bâton de la ceinture au même angle. Sans frapper de balle.',
   },
   {

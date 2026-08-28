@@ -2,6 +2,11 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v2.2.2 — 2026-08-28
+
+- **Renomme l'Exercice 3.** « Rotation des hanches » devient « Rotation
+  des hanches à Fondrouge ». Rien d'autre n'est modifié.
+
 ## v2.2.1 — 2026-08-28
 
 - **Retrait de l'étiquette « À valider » (Exercices guidés).** Elle
