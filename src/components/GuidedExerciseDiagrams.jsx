@@ -93,7 +93,7 @@ export function Exercise4Diagram() {
   return (
     <Frame ariaLabel="Deux bâtons parallèles, mais décalés l'un par rapport à l'autre.">
       <line x1="15" y1="34" x2="58" y2="34" stroke={STICK} strokeWidth="3" strokeLinecap="round" />
-      <line x1="105" y1="115" x2="175" y2="115" stroke={STICK} strokeWidth="3" strokeLinecap="round" />
+      <line x1="60" y1="115" x2="140" y2="115" stroke={STICK} strokeWidth="3" strokeLinecap="round" />
       <TargetBall />
       <Feet />
     </Frame>

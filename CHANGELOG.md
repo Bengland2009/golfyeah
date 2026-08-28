@@ -2,6 +2,14 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v2.1.4 — 2026-08-28
+
+- **Correction du second bâton de l'Exercice 4 (Exercices guidés).** Il
+  était décalé vers la droite, hors de l'alignement des pieds ; il est
+  maintenant positionné devant les deux pieds, sur toute leur largeur,
+  comme dans le croquis de référence. Le premier bâton, aligné sur la
+  balle, est inchangé.
+
 ## v2.1.3 — 2026-08-28
 
 - **Angle affiché sur le schéma de l'Exercice 3 (Exercices guidés).** Le
