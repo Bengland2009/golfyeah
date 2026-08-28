@@ -2,6 +2,14 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v2.1.3 — 2026-08-28
+
+- **Angle affiché sur le schéma de l'Exercice 3 (Exercices guidés).** Le
+  bâton diagonal forme maintenant exactement 45° avec le bâton parallèle
+  à la ligne des pieds, et cet angle est indiqué par un petit arc et une
+  étiquette « 45° », comme dans le croquis de référence. Les autres
+  exercices sont inchangés.
+
 ## v2.1.2 — 2026-08-28
 
 - **Correction du schéma de l'Exercice 4 (Exercices guidés).** Le

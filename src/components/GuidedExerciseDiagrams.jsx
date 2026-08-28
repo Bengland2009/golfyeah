@@ -8,6 +8,7 @@
 import { Ball, Shoe } from './AddressDiagrams';
 
 const STICK = '#4A5450';
+const FONT = 'Inter, -apple-system, sans-serif';
 const FRONT_X = 78;
 const BACK_X = 122;
 const FOOT_Y = 138;
@@ -69,12 +70,17 @@ export function Exercise2Diagram() {
   );
 }
 
-// #3 — One stick along the feet line, one diagonal stick crossing it.
+// #3 — One stick along the feet line, one diagonal stick crossing it at
+// 45° (measured from the horizontal, on the front-foot side), with an
+// angle arc and label showing that 45°.
 export function Exercise3Diagram() {
   return (
-    <Frame ariaLabel="Un bâton parallèle à la ligne des pieds et un bâton diagonal.">
+    <Frame ariaLabel="Un bâton parallèle à la ligne des pieds et un bâton diagonal, formant un angle de 45° avec le sol.">
       <line x1="55" y1="138" x2="145" y2="138" stroke={STICK} strokeWidth="3" strokeLinecap="round" />
-      <line x1="122" y1="138" x2="60" y2="55" stroke={STICK} strokeWidth="3" strokeLinecap="round" />
+      <line x1="122" y1="138" x2="39" y2="55" stroke={STICK} strokeWidth="3" strokeLinecap="round" />
+      <path d="M 100 138 Q 99.8 128.8 106.4 122.4" fill="none" stroke="var(--text-muted)" strokeWidth="1.4" opacity="0.75" />
+      <polygon points="97,141 103,141 100,132" fill="var(--text-muted)" opacity="0.75" />
+      <text x="94" y="129" textAnchor="middle" fontFamily={FONT} fontSize="9" fill="var(--text-muted)">45°</text>
       <TargetBall />
       <Feet />
     </Frame>
