@@ -1,5 +1,24 @@
 // Pure scoring/statistics logic — no UI, no Firebase.
 
+const FR_MONTHS = [
+  'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
+  'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre',
+];
+
+// Every round's `date` is written as "D moisNom AAAA" (e.g. "28 août
+// 2026") via toLocaleDateString('fr-CA', {day:'numeric', month:'long',
+// year:'numeric'}) — the one place a round's actual played-on date lives.
+// Parses it back to a sortable timestamp; unparseable/missing dates sort
+// as 0 (oldest) rather than throwing.
+export function roundDateValue(dateStr) {
+  if (!dateStr) return 0;
+  const m = /^(\d{1,2})\s+(\S+)\s+(\d{4})$/.exec(dateStr.trim());
+  if (!m) return 0;
+  const monthIndex = FR_MONTHS.indexOf(m[2].toLowerCase());
+  if (monthIndex === -1) return 0;
+  return new Date(Number(m[3]), monthIndex, Number(m[1])).getTime();
+}
+
 export function parLabel(n) {
   if (n === 0) return 'E';
   return n > 0 ? '+' + n : String(n);

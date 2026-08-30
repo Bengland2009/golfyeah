@@ -5,7 +5,7 @@ import {
 import { db, isFirebaseConfigured, GROUP_ID } from '../lib/firebase';
 import { useAuth } from './AuthContext';
 import { CLUB_ORDER, DEFAULT_MY_CLUBS, SEED_PLAYERS, SEED_COURSE, seedRounds, seedRange } from '../lib/seed';
-import { finalizeRound, coursePar } from '../lib/scoring';
+import { finalizeRound, coursePar, roundDateValue } from '../lib/scoring';
 import { matchPlayer } from '../lib/identity';
 
 const FS_COLLECTIONS = ['players', 'courses', 'rounds', 'range', 'myClubs', 'expenses', 'feedback', 'feedbackComments', 'trainingLogs', 'trainingLevel'];
@@ -148,16 +148,19 @@ export function DataProvider({ children }) {
   const trainingLevelMap = isFirebaseConfigured ? fsTrainingLevel : local.trainingLevel;
 
   const liveRound = allRounds.find((r) => r.status === 'active') || null;
-  // Every screen that reads this (Home's "dernière partie", trophies,
-  // bestProgression) assumes newest-first. The Firestore query behind
-  // allRounds has no orderBy, so its snapshot order isn't reliably
-  // chronological — sort explicitly instead of trusting it. Rounds from
-  // before createdAt existed fall back to 0 (oldest), which just sinks
-  // them to the end rather than breaking the sort.
+  // Every screen that reads this (Home's "dernière partie", the Parties
+  // list, trophies, bestProgression) assumes newest-first. The Firestore
+  // query behind allRounds has no orderBy, so its snapshot order isn't
+  // reliably chronological — sort explicitly instead of trusting it.
+  // Sort by the round's actual played-on date (roundDateValue, parsed from
+  // `date` — present on every round, old or new) rather than createdAt:
+  // a round entered today for a past date should rank by when it was
+  // played, not when its Firestore doc happened to be written. createdAt
+  // only breaks ties between rounds played the same day.
   const completedRounds = useMemo(
     () => allRounds
       .filter((r) => r.status === 'completed' && (r.season || 2026) === season)
-      .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)),
+      .sort((a, b) => (roundDateValue(b.date) - roundDateValue(a.date)) || ((b.createdAt || 0) - (a.createdAt || 0))),
     [allRounds, season]
   );
 

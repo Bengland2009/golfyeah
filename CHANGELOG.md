@@ -2,6 +2,18 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v2.2.4 — 2026-08-28
+
+- **Vrai correctif : « Dernière partie » et la liste Parties triaient
+  mal.** Le correctif précédent (v2.2.3) triait par `createdAt`, un
+  horodatage technique absent de toutes les parties déjà existantes —
+  elles restaient donc dans l'ordre brut, non chronologique, renvoyé
+  par Firestore. Le tri se base maintenant sur la date réellement jouée
+  de la partie (`date`, déjà présente sur chaque partie, ancienne ou
+  nouvelle), avec `createdAt` en simple départage pour deux parties
+  jouées le même jour. Napierville (28 août) s'affiche maintenant bien
+  comme la dernière partie de Sam.
+
 ## v2.2.3 — 2026-08-28
 
 - **Correction : « Dernière partie » n'affichait pas toujours la partie
