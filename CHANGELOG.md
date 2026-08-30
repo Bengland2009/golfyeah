@@ -2,6 +2,31 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v2.2.6 — 2026-08-28
+
+- **Parties : recherche, filtres et tri (itération 2).** Entre le
+  bouton « + Nouvelle partie » et la liste : un champ de recherche
+  (terrain ou joueur, insensible aux accents/majuscules, effaçable en
+  un clic), une rangée compacte avec le sélecteur d'année (généré à
+  partir des parties existantes, année la plus récente par défaut), le
+  bouton « Filtres » (date de début/fin, joueur — généré à partir des
+  joueurs réellement présents — nombre de trous, environnement, avec
+  Réinitialiser/Appliquer et un badge de compte quand des filtres
+  secondaires sont actifs) et le tri (plus récentes/plus anciennes).
+  Le nombre de résultats s'affiche au singulier/pluriel, et l'absence
+  de résultat propose de réinitialiser les filtres. Tous les critères
+  se combinent en ET. La page n'est plus limitée à la saison affichée
+  ailleurs dans l'app : elle regroupe désormais toutes les parties
+  complétées, l'année devenant le nouveau filtre de portée sur cette
+  page — d'où le texte d'état vide ajusté (« Aucune partie
+  enregistrée. » au lieu de « ... cette saison. »). La recherche, les
+  filtres, l'année et le tri sont conservés en mémoire pendant la
+  session lorsqu'on ouvre une partie puis qu'on revient à la liste. La
+  liste compacte, l'en-tête, le bouton « + Nouvelle partie » et le
+  formulaire « Nouvelle partie » restent inchangés ; aucune
+  modification, suppression ou détection de doublons n'est ajoutée
+  dans cette itération.
+
 ## v2.2.5 — 2026-08-28
 
 - **Parties : première itération de la réorganisation en liste
