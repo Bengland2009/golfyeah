@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TopBar from '../components/TopBar';
 import Button from '../components/Button';
@@ -7,6 +7,7 @@ import Badge from '../components/Badge';
 import Sheet from '../components/Sheet';
 import RadioRow from '../components/RadioRow';
 import SegmentedControl from '../components/SegmentedControl';
+import { MoreVerticalIcon } from '../components/icons';
 import { useData } from '../contexts/DataContext';
 import { parLabel, toneFor, coursePar, roundDateValue } from '../lib/scoring';
 
@@ -32,39 +33,49 @@ function normalize(s) {
 
 // One compact, full-width row per round — replaces the old one-card-per-
 // round layout so many rounds can be scanned/compared without excessive
-// scrolling.
-function RoundRow({ round, course, players, isLast, onClick }) {
+// scrolling. The "⋯" button sits outside the row's own click-to-open zone
+// (its own element, own handler, stopPropagation) so it never opens the
+// round, and gets a full 44×44 hit area even though the visible glyph is
+// small.
+function RoundRow({ round, course, players, isLast, onClick, onMenu }) {
   const par = course ? coursePar(course, round.holes) : round.par || 72;
   const envLabel = course?.kind ? (course.kind === 'interieur' ? 'Simulateur' : 'Extérieur') : null;
 
   return (
-    <div
-      onClick={onClick}
-      style={{
-        cursor: 'pointer', padding: '14px 4px',
-        borderBottom: isLast ? 'none' : '1px solid var(--border-default)',
-      }}
-    >
-      <div style={{ font: 'var(--text-body)', fontSize: 16, fontWeight: 700, lineHeight: 1.3 }}>
-        {course?.name}
+    <div style={{ display: 'flex', alignItems: 'stretch', borderBottom: isLast ? 'none' : '1px solid var(--border-default)' }}>
+      <div onClick={onClick} style={{ flex: 1, minWidth: 0, cursor: 'pointer', padding: '14px 0 14px 4px' }}>
+        <div style={{ font: 'var(--text-body)', fontSize: 16, fontWeight: 700, lineHeight: 1.3 }}>
+          {course?.name}
+        </div>
+        <div style={{ font: 'var(--text-small)', fontSize: 12.5, color: 'var(--text-muted)', marginTop: 2, marginBottom: 8 }}>
+          {round.date} · {round.holes} trous{envLabel ? ` · ${envLabel}` : ''}
+        </div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', columnGap: 16, rowGap: 6 }}>
+          {round.playerIds.map((pid) => {
+            const p = players.find((pp) => pp.id === pid);
+            const diff = round.totals[pid] - par;
+            return (
+              <div key={pid} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ font: 'var(--text-small)', fontSize: 13.5, fontWeight: 600 }}>{p?.name}</span>
+                <Badge tone={toneFor(diff)}>
+                  <span style={{ fontVariantNumeric: 'tabular-nums' }}>{parLabel(diff)}</span>
+                </Badge>
+              </div>
+            );
+          })}
+        </div>
       </div>
-      <div style={{ font: 'var(--text-small)', fontSize: 12.5, color: 'var(--text-muted)', marginTop: 2, marginBottom: 8 }}>
-        {round.date} · {round.holes} trous{envLabel ? ` · ${envLabel}` : ''}
-      </div>
-      <div style={{ display: 'flex', flexWrap: 'wrap', columnGap: 16, rowGap: 6 }}>
-        {round.playerIds.map((pid) => {
-          const p = players.find((pp) => pp.id === pid);
-          const diff = round.totals[pid] - par;
-          return (
-            <div key={pid} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ font: 'var(--text-small)', fontSize: 13.5, fontWeight: 600 }}>{p?.name}</span>
-              <Badge tone={toneFor(diff)}>
-                <span style={{ fontVariantNumeric: 'tabular-nums' }}>{parLabel(diff)}</span>
-              </Badge>
-            </div>
-          );
-        })}
-      </div>
+      <button
+        type="button"
+        onClick={(e) => { e.stopPropagation(); onMenu(e); }}
+        aria-label={`Options pour ${course?.name || 'cette partie'} du ${round.date}`}
+        style={{
+          flexShrink: 0, width: 44, height: 44, alignSelf: 'center', border: 'none', background: 'none',
+          cursor: 'pointer', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}
+      >
+        <MoreVerticalIcon width={20} height={20} />
+      </button>
     </div>
   );
 }
@@ -76,7 +87,7 @@ const selectStyle = {
 
 export default function Rounds() {
   const navigate = useNavigate();
-  const { allRounds, players, courses } = useData();
+  const { allRounds, players, courses, deleteRound } = useData();
 
   const [search, setSearch] = useState(rememberedState.search);
   const [year, setYear] = useState(rememberedState.year); // undefined = "not chosen yet" -> defaults to most recent
@@ -85,9 +96,64 @@ export default function Rounds() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [draft, setDraft] = useState(filters);
 
+  const [menuRound, setMenuRound] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
+  const [toast, setToast] = useState(null);
+  // The "⋯" button that was actually clicked, so focus can return to it
+  // once the whole menu → confirm flow closes — not just the intermediate
+  // menu sheet, which may already be gone from the DOM by then.
+  const activeMenuButtonRef = useRef(null);
+
   useEffect(() => {
     rememberedState = { search, year, sort, filters };
   }, [search, year, sort, filters]);
+
+  useEffect(() => {
+    if (!toast) return undefined;
+    const t = setTimeout(() => setToast(null), 3000);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const openMenu = (round, e) => {
+    activeMenuButtonRef.current = e.currentTarget;
+    setDeleteError(null);
+    setMenuRound(round);
+  };
+  const restoreMenuButtonFocus = () => {
+    requestAnimationFrame(() => activeMenuButtonRef.current?.focus());
+  };
+  const closeMenu = () => {
+    setMenuRound(null);
+    restoreMenuButtonFocus();
+  };
+  const openDeleteConfirmFromMenu = () => {
+    setMenuRound(null);
+    setDeleteError(null);
+    setDeleteTarget(menuRound);
+  };
+  const closeDeleteConfirm = () => {
+    if (deleting) return;
+    setDeleteTarget(null);
+    setDeleteError(null);
+    restoreMenuButtonFocus();
+  };
+  const confirmDelete = async () => {
+    if (deleting || !deleteTarget) return;
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      await deleteRound(deleteTarget.id);
+      setDeleting(false);
+      setDeleteTarget(null);
+      setToast('Partie supprimée.');
+      restoreMenuButtonFocus();
+    } catch (err) {
+      setDeleting(false);
+      setDeleteError('La suppression a échoué. Vérifie ta connexion et réessaie.');
+    }
+  };
 
   const allCompleted = useMemo(() => allRounds.filter((r) => r.status === 'completed'), [allRounds]);
 
@@ -250,6 +316,7 @@ export default function Rounds() {
                     players={players}
                     isLast={i === filteredRounds.length - 1}
                     onClick={() => navigate(`/resume/${r.id}`)}
+                    onMenu={(e) => openMenu(r, e)}
                   />
                 ))}
               </Card>
@@ -319,6 +386,88 @@ export default function Rounds() {
           </Button>
         </div>
       </Sheet>
+
+      <Sheet open={menuRound != null} onClose={closeMenu} ariaLabel={`Actions pour ${menuRound ? courses.find((c) => c.id === menuRound.courseId)?.name || 'cette partie' : ''}`}>
+        <div style={{ font: 'var(--text-h3)' }}>{menuRound ? courses.find((c) => c.id === menuRound.courseId)?.name : ''}</div>
+        <button
+          type="button"
+          onClick={() => navigate(`/resume/${menuRound.id}/modifier`)}
+          style={{ textAlign: 'left', padding: '14px 4px', font: 'var(--text-body)', border: 'none', background: 'none', cursor: 'pointer', borderBottom: '1px solid var(--border-default)' }}
+        >
+          Modifier
+        </button>
+        <button
+          type="button"
+          onClick={openDeleteConfirmFromMenu}
+          style={{ textAlign: 'left', padding: '14px 4px', font: 'var(--text-body)', fontWeight: 600, color: 'var(--color-score-under)', border: 'none', background: 'none', cursor: 'pointer' }}
+        >
+          Supprimer
+        </button>
+      </Sheet>
+
+      <Sheet
+        open={deleteTarget != null}
+        onClose={closeDeleteConfirm}
+        ariaLabel="Supprimer cette partie ?"
+      >
+        {deleteTarget && (
+          <>
+            <div style={{ font: 'var(--text-h3)' }}>Supprimer cette partie?</div>
+
+            <Card tint style={{ padding: '12px 14px' }}>
+              <div style={{ font: 'var(--text-label)', fontWeight: 700 }}>
+                {courses.find((c) => c.id === deleteTarget.courseId)?.name}
+              </div>
+              <div style={{ font: 'var(--text-small)', color: 'var(--text-muted)', marginTop: 2 }}>
+                {deleteTarget.date} · {deleteTarget.holes} trous
+              </div>
+              <div style={{ font: 'var(--text-small)', marginTop: 6 }}>
+                {deleteTarget.playerIds.map((pid) => players.find((p) => p.id === pid)?.name).filter(Boolean).join(', ')}
+              </div>
+            </Card>
+
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, font: 'var(--text-small)', color: 'var(--text-muted)' }}>
+              <span aria-hidden="true" style={{ fontSize: 15, lineHeight: 1.3 }}>⚠</span>
+              <span>Cette action retirera la partie et ses scores des statistiques et du classement.</span>
+            </div>
+
+            {deleteError && (
+              <div style={{ font: 'var(--text-small)', color: 'var(--color-score-under)', fontWeight: 600 }}>
+                {deleteError}
+              </div>
+            )}
+
+            <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+              <Button variant="secondary" onClick={closeDeleteConfirm} disabled={deleting} style={{ flex: 1 }}>
+                Annuler
+              </Button>
+              <Button
+                variant="primary"
+                onClick={confirmDelete}
+                disabled={deleting}
+                style={{ flex: 1, background: deleting ? undefined : 'var(--color-score-under)', fontWeight: 700 }}
+              >
+                {deleting ? 'Suppression…' : 'Supprimer'}
+              </Button>
+            </div>
+          </>
+        )}
+      </Sheet>
+
+      {toast && (
+        <div
+          role="status"
+          aria-live="polite"
+          style={{
+            position: 'fixed', left: 16, right: 16, bottom: 'calc(84px + env(safe-area-inset-bottom, 0px))',
+            maxWidth: 'calc(430px - 32px)', margin: '0 auto',
+            background: 'var(--brand-primary)', color: '#fff', borderRadius: 10, padding: '12px 16px',
+            font: 'var(--text-small)', fontWeight: 600, boxShadow: 'var(--shadow-elevated)', zIndex: 80,
+          }}
+        >
+          {toast}
+        </div>
+      )}
     </div>
   );
 }

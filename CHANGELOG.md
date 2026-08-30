@@ -2,6 +2,28 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v2.2.7 — 2026-08-28
+
+- **Parties : gérer une partie depuis la liste (itération 3).** Un
+  bouton « ⋯ » (zone tactile 44×44) apparaît sur chaque ligne, sans
+  jamais ouvrir la partie. Il ouvre un menu « Modifier » (route
+  existante `/resume/:id/modifier`) / « Supprimer ». La suppression
+  demande confirmation — terrain, date, trous, joueurs concernés, et
+  l'avertissement que les statistiques et le classement seront mis à
+  jour — avec un état de chargement qui empêche les double-clics. La
+  fonction `deleteRound` déjà existante est réutilisée telle quelle
+  (elle supprime déjà la partie et ses dépenses associées ; terrain et
+  profils des joueurs ne sont jamais touchés). En cas d'échec, la
+  partie reste dans la liste avec un message d'erreur clair. Après une
+  suppression réussie : retrait immédiat de la liste, compteur mis à
+  jour, recherche/année/filtres/tri conservés, message « Partie
+  supprimée. » — sans action Annuler, faute d'une vraie infrastructure
+  de suppression différée. Le composant `Sheet` partagé gagne au
+  passage une vraie accessibilité clavier (Échap, piège de focus,
+  restitution du focus au bouton déclencheur), dont bénéficient aussi
+  les autres écrans qui l'utilisent déjà. Recherche, année, filtres,
+  tri, compteur et liste compacte restent inchangés.
+
 ## v2.2.6 — 2026-08-28
 
 - **Parties : recherche, filtres et tri (itération 2).** Entre le
