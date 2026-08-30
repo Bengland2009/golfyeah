@@ -2,6 +2,20 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v2.2.5 — 2026-08-28
+
+- **Parties : première itération de la réorganisation en liste
+  compacte.** Les grandes cartes sont remplacées par une liste
+  verticale de lignes pleine largeur séparées par un trait léger :
+  nom du terrain en gras, ligne secondaire discrète (date complète ·
+  nombre de trous · Extérieur/Simulateur), puis tous les joueurs et
+  leurs scores relatifs au par sur une ligne compacte, sans jamais
+  masquer un joueur derrière une ellipse. Toute la ligne ouvre la
+  partie existante (même route qu'avant). En-tête, bouton « + Nouvelle
+  partie », tri du plus récent au plus ancien, et toutes les autres
+  pages sont inchangés. Aucun filtre, tri sélectionnable, modification
+  ou suppression n'est ajouté dans cette itération.
+
 ## v2.2.4 — 2026-08-28
 
 - **Vrai correctif : « Dernière partie » et la liste Parties triaient
