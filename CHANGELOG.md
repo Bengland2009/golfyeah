@@ -2,6 +2,18 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v2.2.3 — 2026-08-28
+
+- **Correction : « Dernière partie » n'affichait pas toujours la partie
+  la plus récente.** La requête Firestore des parties n'a pas d'ordre
+  garanti (aucun `orderBy`), alors que l'accueil, le classement et les
+  trophées supposent tous un tableau trié du plus récent au plus
+  ancien. Une nouvelle partie pouvait donc apparaître n'importe où dans
+  la liste plutôt qu'en premier. Les parties enregistrent maintenant un
+  horodatage de création (`createdAt`), et la liste est explicitement
+  triée par cet horodatage avant d'être utilisée. Les anciennes parties
+  sans horodatage se classent simplement en dernier, sans erreur.
+
 ## v2.2.2 — 2026-08-28
 
 - **Renomme l'Exercice 3.** « Rotation des hanches » devient « Rotation

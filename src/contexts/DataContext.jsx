@@ -148,8 +148,16 @@ export function DataProvider({ children }) {
   const trainingLevelMap = isFirebaseConfigured ? fsTrainingLevel : local.trainingLevel;
 
   const liveRound = allRounds.find((r) => r.status === 'active') || null;
+  // Every screen that reads this (Home's "dernière partie", trophies,
+  // bestProgression) assumes newest-first. The Firestore query behind
+  // allRounds has no orderBy, so its snapshot order isn't reliably
+  // chronological — sort explicitly instead of trusting it. Rounds from
+  // before createdAt existed fall back to 0 (oldest), which just sinks
+  // them to the end rather than breaking the sort.
   const completedRounds = useMemo(
-    () => allRounds.filter((r) => r.status === 'completed' && (r.season || 2026) === season),
+    () => allRounds
+      .filter((r) => r.status === 'completed' && (r.season || 2026) === season)
+      .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)),
     [allRounds, season]
   );
 
@@ -222,7 +230,7 @@ export function DataProvider({ children }) {
     playerIds.forEach((id) => { scores[id] = []; beers[id] = 0; });
     const round = {
       courseId, format, holes: format, holeIndex: 0, playerIds, scores, beers,
-      holeOverrides: {}, status: 'active', season,
+      holeOverrides: {}, status: 'active', season, createdAt: Date.now(),
     };
     if (isFirebaseConfigured) {
       await addDoc(collection(db, 'groups', GROUP_ID, 'rounds'), round);
@@ -290,7 +298,7 @@ export function DataProvider({ children }) {
   // (leaderboard, Profile stats, Summary) treats it identically either way.
   const createCompletedRound = useCallback(async (data) => {
     const round = {
-      ...data, status: 'completed', season,
+      ...data, status: 'completed', season, createdAt: Date.now(),
       date: new Date().toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' }),
     };
     if (isFirebaseConfigured) {
