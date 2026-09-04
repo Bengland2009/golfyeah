@@ -2,6 +2,19 @@
 
 Toutes les versions notables de Golfyeah! sont documentées ici.
 
+## v2.2.8 — 2026-08-28
+
+- **Nouveau : Compteur de coups (Pratique).** Une carte « Compteur de
+  coups » dans Pratique ouvre un compteur autonome — grand chiffre,
+  bouton « +1 coup », « Annuler le dernier coup » (désactivé à 0) et
+  « Remettre à zéro » (avec confirmation si le compteur est supérieur
+  à 0). Reprend le langage visuel du Golf Tracker (gros chiffre,
+  bouton circulaire vert) mais dans un écran entièrement séparé, sans
+  aucun lien avec `DataContext` : aucune partie n'est créée, aucun
+  terrain ni joueur n'est requis, rien n'est enregistré ni dans les
+  statistiques ni dans le classement ni dans l'historique. Quitter
+  l'écran efface simplement le compteur.
+
 ## v2.2.7 — 2026-08-28
 
 - **Parties : gérer une partie depuis la liste (itération 3).** Un

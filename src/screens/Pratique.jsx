@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import TopBar from '../components/TopBar';
 import Card from '../components/Card';
-import { RulerIcon, PlusCircleIcon, TargetIcon, TrendingUpIcon, FlagIcon, AlignIcon, AlignmentSticksIcon } from '../components/icons';
+import { RulerIcon, PlusCircleIcon, TargetIcon, TrendingUpIcon, FlagIcon, AlignIcon, AlignmentSticksIcon, GolfBallIcon } from '../components/icons';
 
 const CARDS = [
   {
@@ -39,6 +39,12 @@ const CARDS = [
     title: 'Caddie',
     description: 'Distances de référence, conseils et aide-mémoire sur le parcours.',
     to: '/pratique/caddie',
+  },
+  {
+    Icon: GolfBallIcon,
+    title: 'Compteur de coups',
+    description: 'Compter rapidement sans démarrer une partie.',
+    to: '/pratique/compteur',
   },
   {
     Icon: TrendingUpIcon,
